@@ -1,6 +1,13 @@
+/**
+ * Layout with conditional header driven by session.funnel_type + current_step.
+ *
+ * FRAMER SEAM: This app is entered only via /start?session_id=... from Framer.
+ * When mock mode is enabled, session comes from mocks; banner is shown.
+ */
 import { Outlet } from "react-router-dom"
 import { useSessionOptional } from "../context/SessionContext"
 import { AppHeader } from "../components/AppHeader"
+import { MockBanner } from "../components/MockBanner"
 
 export function AppLayout() {
   const sessionContext = useSessionOptional()
@@ -22,7 +29,10 @@ export function AppLayout() {
     <div className="app-layout">
       <AppHeader fullNav={showFullHeader} />
       <main className="app-main">
-        <Outlet />
+        <div className="petrx-container">
+          <MockBanner />
+          <Outlet />
+        </div>
       </main>
     </div>
   )

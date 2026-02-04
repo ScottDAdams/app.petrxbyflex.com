@@ -1,8 +1,9 @@
 import { useLocation } from "react-router-dom"
+import { getMockStep } from "../mocks/mockMode"
 import { SessionProvider } from "./SessionContext"
 
 /**
- * Provides session when URL is /start?session_id=...
+ * Provides session when URL is /start?session_id=... or when mock mode is enabled (?mock=... or PETRX_MOCK_FLOW).
  * Otherwise children render without session (idle).
  */
 export function SessionProviderFromUrl({
@@ -11,10 +12,15 @@ export function SessionProviderFromUrl({
   children: React.ReactNode
 }) {
   const { pathname, search } = useLocation()
-  const sessionId =
-    pathname === "/start" || pathname === "/start/"
-      ? new URLSearchParams(search).get("session_id")?.trim() ?? null
-      : null
+  const isStart = pathname === "/start" || pathname === "/start/"
+  const sessionId = isStart
+    ? new URLSearchParams(search).get("session_id")?.trim() ?? null
+    : null
+  const mockStep = isStart ? getMockStep() : null
 
-  return <SessionProvider sessionId={sessionId}>{children}</SessionProvider>
+  return (
+    <SessionProvider sessionId={sessionId} mockStep={mockStep}>
+      {children}
+    </SessionProvider>
+  )
 }
