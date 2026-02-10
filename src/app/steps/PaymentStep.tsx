@@ -44,7 +44,7 @@ export function PaymentStep({
                 leadId={leadId}
                 accountId={accountId}
                 amount={amount}
-                disabled={reviewDisabled}
+                disabled={!leadId || !accountId || amount == null || amount <= 0}
               />
             </div>
           </div>

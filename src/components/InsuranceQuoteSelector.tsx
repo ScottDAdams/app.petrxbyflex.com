@@ -25,6 +25,7 @@ export function InsuranceQuoteSelector({
   disabled = false,
 }: InsuranceQuoteSelectorProps) {
   const { allPolicies, allReimbursements, allDeductibles } = processedPlans
+  const displayName = (petName && petName.trim().length > 0) ? petName.trim() : "Your Pet"
 
   const allowedDeductibles = React.useMemo(() => {
     const set = new Set<string>()
@@ -48,24 +49,30 @@ export function InsuranceQuoteSelector({
   }, [allPolicies, selectedReimbursement, selectedDeductible])
 
   const planType = React.useMemo(() => {
-    const deductible = parseInt(selectedDeductible || "500", 10)
-    if (deductible <= 1000) {
-      return { type: "signature" as const, name: "Signature Plan", description: "Coverage for accidents and illnesses, designed for life's daily adventures." }
+    // Find the selected policy to get isHighDeductible
+    const selectedPolicy = allPolicies.find(
+      (p) =>
+        Math.round(((p.reimbursement as number) || 0) * 100).toString() === selectedReimbursement &&
+        String(p.deductible) === selectedDeductible
+    )
+    const isHighDeductible = (selectedPolicy?.isHighDeductible as boolean) ?? false
+    if (!isHighDeductible) {
+      return { type: "signature" as const, name: "Most Popular", description: "Coverage for accidents and illnesses, designed for life's daily adventures." }
     }
     return { type: "value" as const, name: "Value Plan", description: "Signature coverage at a lower monthly cost. Higher deductibles mean lower monthly premiums." }
-  }, [selectedDeductible])
+  }, [selectedDeductible, selectedReimbursement, allPolicies])
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>
-        {petName}'s Custom Quote from Healthy Paws Pet Insurance
+        {displayName}&apos;s Custom Quote from Healthy Paws Pet Insurance
       </h2>
       <p style={styles.subtitle}>
         Protect your pet from unexpected vet bills while saving on prescriptions
       </p>
       <div style={styles.card}>
-        <div style={{ ...styles.planBanner, ...(planType.type === "value" ? styles.planBannerValue : {}) }}>
-          {planType.name.toUpperCase()}
+        <div style={{ ...styles.planBadge, ...(planType.type === "value" ? styles.planBadgeValue : {}) }}>
+          {planType.name}
         </div>
         <div style={styles.cardContent}>
           <div style={styles.priceColumn}>
@@ -137,21 +144,20 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
     position: "relative",
   },
-  planBanner: {
+  planBadge: {
     position: "absolute",
-    top: 24,
-    right: -45,
-    background: "var(--color-brand)",
-    color: "#fff",
-    padding: "10px 45px",
-    fontSize: "0.85em",
-    fontWeight: 600,
-    transform: "rotate(35deg)",
-    transformOrigin: "center",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    top: 16,
+    right: 16,
+    padding: "6px 10px",
+    borderRadius: 999,
+    fontSize: 12,
+    fontWeight: 700,
+    background: "#eaf2ff",
+    color: "var(--color-brand)",
+    border: "1px solid var(--color-brand)",
     zIndex: 2,
   },
-  planBannerValue: { top: 10, background: "var(--color-brand-light)", color: "var(--color-brand)" },
+  planBadgeValue: { background: "#fff", color: "var(--color-brand)", border: "1px solid var(--color-brand)" },
   cardContent: { display: "flex", gap: 24, alignItems: "flex-start" },
   priceColumn: { flex: 1, minWidth: 0, display: "flex", flexDirection: "column" },
   priceLabel: { fontSize: "0.9em", color: "#7f8c8d", marginBottom: 8 },

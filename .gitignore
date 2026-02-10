@@ -3,3 +3,10 @@ dist/
 *.local
 .env
 .DS_Store
+data/breed-reference-report.json
+data/breed-reference-missing.json
+data/breed-svg-progress.json
+data/breed-svg-report.json
+data/breed-svg-bad/
+data/breed-avatar-progress.json
+data/breed-avatar-report.json

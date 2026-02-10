@@ -5,7 +5,7 @@
  * (redirect from Framer). Backend is the source of truth; no Framer runtime here.
  * When mock mode is enabled (?mock=... or PETRX_MOCK_FLOW), session comes from mocks only.
  */
-import React, { createContext, useContext, useCallback, useState } from "react"
+import React, { createContext, useContext, useCallback, useRef, useState } from "react"
 import type { MockStep } from "../mocks/sessions"
 import { mockSessions } from "../mocks/sessions"
 import { fetchSession, SessionData } from "../api/session"
@@ -18,7 +18,8 @@ type SessionState =
 
 type SessionContextValue = {
   state: SessionState
-  refetch: () => Promise<void>
+  /** Refetch session from API; returns the fetched session on success (so callers can merge fields). */
+  refetch: () => Promise<SessionData | null>
   setSession: (session: SessionData | null) => void
 }
 
@@ -36,23 +37,50 @@ export function SessionProvider({
   const [state, setState] = useState<SessionState>(
     sessionId || mockStep ? { status: "loading" } : { status: "idle" }
   )
+  const stateRef = useRef(state)
+  stateRef.current = state
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<SessionData | null> => {
     if (mockStep) {
       setState({ status: "ready", session: mockSessions[mockStep] })
-      return
+      return null
     }
     if (!sessionId) {
       setState({ status: "idle" })
-      return
+      return null
     }
     setState({ status: "loading" })
     try {
       const session = await fetchSession(sessionId)
       setState({ status: "ready", session })
+      return session
     } catch (e) {
       const message = e instanceof Error ? e.message : "Invalid session"
       setState({ status: "error", message })
+      return null
+    }
+  }, [sessionId, mockStep])
+
+  /** Refetch from API. If we already have a session (ready), do not set loading — refresh in background to avoid unmounting the flow. */
+  const refetch = useCallback(async (): Promise<SessionData | null> => {
+    if (mockStep) {
+      setState({ status: "ready", session: mockSessions[mockStep] })
+      return null
+    }
+    if (!sessionId) {
+      setState({ status: "idle" })
+      return null
+    }
+    const isBackground = stateRef.current.status === "ready"
+    if (!isBackground) setState({ status: "loading" })
+    try {
+      const session = await fetchSession(sessionId)
+      setState({ status: "ready", session })
+      return session
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Invalid session"
+      setState({ status: "error", message })
+      return null
     }
   }, [sessionId, mockStep])
 
@@ -67,7 +95,7 @@ export function SessionProvider({
 
   const value: SessionContextValue = {
     state,
-    refetch: load,
+    refetch,
     setSession,
   }
 

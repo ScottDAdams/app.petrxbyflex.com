@@ -1,0 +1,4 @@
+# Exclude large directories to reduce Docker build context size
+# Comment out these lines if you need to deploy/rebuild breed avatars or data files
+data/
+public/assets/breed-avatars

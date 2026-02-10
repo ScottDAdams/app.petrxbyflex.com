@@ -1,0 +1,3632 @@
+{
+  "cats": {
+    "2000": {
+      "label": "Abyssinian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Abyssinian%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Gustav_chocolate.jpg/960px-Gustav_chocolate.jpg"
+    },
+    "2001": {
+      "label": "American Bobtail",
+      "pageUrl": "https://en.wikipedia.org/wiki/American_Bobtail",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/American_bobtail_2.jpg/500px-American_bobtail_2.jpg"
+    },
+    "2002": {
+      "label": "American Curl",
+      "pageUrl": "https://www.wikidata.org/wiki/Q7960",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/American%20curl%202.jpg"
+    },
+    "2003": {
+      "label": "American Domestic",
+      "pageUrl": "https://en.wikipedia.org/wiki/Moggy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Three_stray_cats_in_Japan_street%2C_August_2014.jpg/960px-Three_stray_cats_in_Japan_street%2C_August_2014.jpg"
+    },
+    "2004": {
+      "label": "American Shorthair",
+      "pageUrl": "https://www.wikidata.org/wiki/Q7962",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Jewelkatz%20Romeo%20Of%20Stalker-Bars.jpg"
+    },
+    "2005": {
+      "label": "American Wirehair",
+      "pageUrl": "https://www.wikidata.org/wiki/Q7964",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/American%20Wirehair%20-%20CFF%20cat%20show%20Heinola%202008-05-04%20IMG%208721.JPG"
+    },
+    "2006": {
+      "label": "Angora",
+      "pageUrl": "https://en.wikipedia.org/wiki/Turkish%20Angora",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG/960px-Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG"
+    },
+    "2007": {
+      "label": "Ashera",
+      "pageUrl": "https://en.wikipedia.org/wiki/Ashera",
+      "source": "image-search",
+      "thumbnailUrl": "https://cdn.book-family.com/petbook/data/uploads/2025/01/ashera-katze-gettyimages-1383013997.jpg?impolicy=smart-crop&width=992&height=558"
+    },
+    "2008": {
+      "label": "Balinese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Balinese%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/Old-Style_Balinese_Cat.png"
+    },
+    "2009": {
+      "label": "Bengal",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bengal%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Paintedcats_Red_Star_standing.jpg/960px-Paintedcats_Red_Star_standing.jpg"
+    },
+    "2010": {
+      "label": "Birman",
+      "pageUrl": "https://en.wikipedia.org/wiki/Birman",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/06/Birmanstrofe.jpg"
+    },
+    "2015": {
+      "label": "Burmilla",
+      "pageUrl": "https://en.wikipedia.org/wiki/Burmilla",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Male_Burmilla_cat.jpeg"
+    },
+    "2016": {
+      "label": "California Spangled",
+      "pageUrl": "https://en.wikipedia.org/wiki/California%20Spangled",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Spangled_Cat.jpg"
+    },
+    "2019": {
+      "label": "Chausie",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chausie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/06/ChausieA.jpg"
+    },
+    "2020": {
+      "label": "Chinchilla",
+      "pageUrl": "https://en.wikipedia.org/wiki/Persian%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Persialainen.jpg"
+    },
+    "2022": {
+      "label": "Cornish Rex",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cornish%20Rex",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Rex_staredown.jpg/960px-Rex_staredown.jpg"
+    },
+    "2024": {
+      "label": "Devon Rex",
+      "pageUrl": "https://en.wikipedia.org/wiki/Devon%20Rex",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Devon_Rex_Cassini.jpeg/960px-Devon_Rex_Cassini.jpeg"
+    },
+    "2026": {
+      "label": "Dutch Rex",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rex%20mutation",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Broken_Castor_Rex_Rabbit.JPG/960px-Broken_Castor_Rex_Rabbit.JPG"
+    },
+    "2030": {
+      "label": "Exotic",
+      "pageUrl": "https://en.wikipedia.org/wiki/Felidae",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Serval_%28Leptailurus_serval%29_%2814034520905%29.jpg/2560px-Serval_%28Leptailurus_serval%29_%2814034520905%29.jpg"
+    },
+    "2033": {
+      "label": "Havana Brown",
+      "pageUrl": "https://en.wikipedia.org/wiki/Havana%20Brown",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Havana_kittens.jpg/960px-Havana_kittens.jpg"
+    },
+    "2035": {
+      "label": "Himalayan",
+      "pageUrl": "https://en.wikipedia.org/wiki/Himalayan%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Sonny_Bunny.jpg/960px-Sonny_Bunny.jpg"
+    },
+    "2038": {
+      "label": "Kashmir",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kashmir",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Kashmir_region._LOC_2003626427_-_showing_sub-regions_administered_by_different_countries.jpg/960px-Kashmir_region._LOC_2003626427_-_showing_sub-regions_administered_by_different_countries.jpg"
+    },
+    "2040": {
+      "label": "La Perm",
+      "pageUrl": "https://en.wikipedia.org/wiki/LaPerm",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Laperm_LH_blacktortie_white.jpg"
+    },
+    "2042": {
+      "label": "Manx",
+      "pageUrl": "https://en.wikipedia.org/wiki/Manx%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Manx_cat_by_Karen_Weaver.jpg"
+    },
+    "2043": {
+      "label": "Munchkin",
+      "pageUrl": "https://en.wikipedia.org/wiki/Munchkin%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Longhairedmunchkin.jpg"
+    },
+    "2044": {
+      "label": "Nebelung",
+      "pageUrl": "https://en.wikipedia.org/wiki/Nebelung",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/29/Aleksandr_van_Song_de_Chine.jpg"
+    },
+    "2045": {
+      "label": "Norwegian Forest Cat",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norwegian%20Forest%20Cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Norwegian_Forest_Cat_in_snow.jpg/960px-Norwegian_Forest_Cat_in_snow.jpg"
+    },
+    "2048": {
+      "label": "Oriental",
+      "pageUrl": "https://en.wikipedia.org/wiki/Oriental%20Shorthair",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/91/Oriental_Shorthair_Blue_Eyed_White_cat_%28juvenile%29.jpg"
+    },
+    "2049": {
+      "label": "Persian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Persian%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Persialainen.jpg"
+    },
+    "2050": {
+      "label": "Peterbald",
+      "pageUrl": "https://en.wikipedia.org/wiki/Peterbald",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Tamila_the_lilac_tabby_Peterbald_cat.jpg"
+    },
+    "2055": {
+      "label": "Safari",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20experimental%20cat%20breeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Highlander_cat_%282010%29_Hugo_by_TAnthony.jpg/960px-Highlander_cat_%282010%29_Hugo_by_TAnthony.jpg"
+    },
+    "2056": {
+      "label": "Savannah",
+      "pageUrl": "https://en.wikipedia.org/wiki/Savannah%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Savannah_Cat_portrait.jpg/960px-Savannah_Cat_portrait.jpg"
+    },
+    "2058": {
+      "label": "Selkirk Rex",
+      "pageUrl": "https://en.wikipedia.org/wiki/Selkirk%20Rex",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/en/c/c3/PolloSelkirkRex.jpg"
+    },
+    "2060": {
+      "label": "Seychellois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bicolor%20cat",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Photograph_of_Socks_the_Cat-_07-13-1994_%286461517483%29.jpg/960px-Photograph_of_Socks_the_Cat-_07-13-1994_%286461517483%29.jpg"
+    },
+    "2061": {
+      "label": "Siamese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Siamese%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Siam_lilacpoint.jpg/960px-Siam_lilacpoint.jpg"
+    },
+    "2062": {
+      "label": "Siberian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Siberian%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Murmur%27s_Siberian_Cat_siberiano_golden_%28cropped%29.JPG/639px-Murmur%27s_Siberian_Cat_siberiano_golden_%28cropped%29.JPG"
+    },
+    "2064": {
+      "label": "Snowshoe",
+      "pageUrl": "https://en.wikipedia.org/wiki/Snowshoe%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Chizhik_Cat_%28cropped%29.jpg/960px-Chizhik_Cat_%28cropped%29.jpg"
+    },
+    "2066": {
+      "label": "Somali",
+      "pageUrl": "https://en.wikipedia.org/wiki/Somali%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/%D0%A1%D0%BE%D0%BC%D0%B0%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%BE%D1%88%D0%BA%D0%B0.jpg/960px-%D0%A1%D0%BE%D0%BC%D0%B0%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D0%BE%D1%88%D0%BA%D0%B0.jpg"
+    },
+    "2067": {
+      "label": "Sphynx",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sphynx%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Sphynx_-_cat._img_031.jpg/960px-Sphynx_-_cat._img_031.jpg"
+    },
+    "2071": {
+      "label": "Turkish Angora",
+      "pageUrl": "https://en.wikipedia.org/wiki/Turkish%20Angora",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG/960px-Turkish_Angora_in_Ankara_Zoo_%28AO%C3%87%29.JPG"
+    },
+    "2074": {
+      "label": "American Keuda",
+      "pageUrl": "https://www.catster.com/cat-breeds/american-keuda/",
+      "source": "catster",
+      "thumbnailUrl": "https://www.catster.com/wp-content/uploads/2023/11/american-keuda-cat_Vladimir_Kazachkov_Shutterstock.jpg.webp"
+    },
+    "2075": {
+      "label": "American Longhair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Moggy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Three_stray_cats_in_Japan_street%2C_August_2014.jpg/960px-Three_stray_cats_in_Japan_street%2C_August_2014.jpg"
+    },
+    "2076": {
+      "label": "Australian Mist",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian_Mist",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Australian_Mist.jpg"
+    },
+    "2077": {
+      "label": "Bengalese",
+      "pageUrl": "https://www.wikidata.org/wiki/Q9610",
+      "source": "wikidata",
+      "thumbnailUrl": "https://kittens-bengal.com/media/2024/12/reginamur-bengal-kittens-grand-rapids-mi.webp"
+    },
+    "2078": {
+      "label": "Brazilian Shorthair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Brazilian%20Shorthair",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/Gato_pelo_curto_brasileiro.JPG"
+    },
+    "2079": {
+      "label": "Calico",
+      "pageUrl": "https://en.wikipedia.org/wiki/Calico%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/CalicoCat.jpg/960px-CalicoCat.jpg"
+    },
+    "2080": {
+      "label": "Cameo Longhair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cat%20coat%20genetics",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Charline_the_cat_and_her_kittens.jpg/960px-Charline_the_cat_and_her_kittens.jpg"
+    },
+    "2081": {
+      "label": "Colorpoint",
+      "pageUrl": "https://en.wikipedia.org/wiki/Colorpoint_Shorthair",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Chocolate_Tortie_Pt_11636-140.jpg/500px-Chocolate_Tortie_Pt_11636-140.jpg"
+    },
+    "2082": {
+      "label": "Colorpoint Longhair",
+      "pageUrl": "https://www.pinterest.com/ideas/colorpoint-longhair-cat/896579131022/",
+      "source": "pinterest",
+      "thumbnailUrl": "https://i.pinimg.com/736x/64/d8/30/64d8308e46c56e56bc503548c9e08da1.jpg"
+    },
+    "2083": {
+      "label": "Feral",
+      "pageUrl": "https://www.wikidata.org/wiki/Q2404562",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Feral%20cat%20Virginia%20crop.jpg"
+    },
+    "2084": {
+      "label": "Highland Fold",
+      "pageUrl": "https://www.wikidata.org/wiki/Q42636",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Purple-scottish-fold.png"
+    },
+    "2085": {
+      "label": "Highland Lynx",
+      "pageUrl": "https://www.wikidata.org/wiki/Q25471053",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Highlander%20cat%20profile%20(2010)%20Hugo%20by%20TAnthony.jpg"
+    },
+    "2086": {
+      "label": "Mekong Bobtail",
+      "pageUrl": "https://en.wikipedia.org/wiki/Mekong_Bobtail",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/95/Mekong_bobtail_%28Thai_bobtail%29._Chocolate_point_colour..jpg"
+    },
+    "2087": {
+      "label": "Minuet",
+      "pageUrl": "https://www.wikidata.org/wiki/Q205734",
+      "source": "wikidata",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/54/White_Gray_Minuet_Cat.png"
+    },
+    "2088": {
+      "label": "Napoleon",
+      "pageUrl": "https://www.petsradar.com/cats/cat-breeds/munchkin-cat-breed-profile",
+      "source": "wikidata",
+      "thumbnailUrl": "https://cdn.mos.cms.futurecdn.net/q9QuxPt7CzaDD7wNug23R-1200-80.jpg.webp"
+    },
+    "2089": {
+      "label": "Pinto",
+      "pageUrl": "https://www.wikidata.org/wiki/Q10276290",
+      "source": "wikidata",
+      "thumbnailUrl": "https://dbw3zep4prcju.cloudfront.net/animal/dedde64d-82cd-41ee-ae27-e03ed368e336/image/0109aa24-a3d3-4912-b34d-ccff3db60e0a.jpg?versionId=GGqjb3iMhLCkcLSs0U84MYW_ActXpnif"
+    },
+    "2090": {
+      "label": "Sterling",
+      "pageUrl": "https://en.wikipedia.org/wiki/Persian%20cat",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Persialainen.jpg"
+    },
+    "2091": {
+      "label": "Toybob",
+      "pageUrl": "https://en.wikipedia.org/wiki/Toybob",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7a/TOB_Velena-Kutc_%2815818956518%29_%28cropped%29.jpg"
+    },
+    "317": {
+      "label": "Mixed Breed",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cat",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Cat_poster_1.jpg/640px-Cat_poster_1.jpg"
+    },
+    "318": {
+      "label": "Domestic Long Hair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Moggy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Three_stray_cats_in_Japan_street%2C_August_2014.jpg/960px-Three_stray_cats_in_Japan_street%2C_August_2014.jpg"
+    },
+    "319": {
+      "label": "Domestic Short Hair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Moggy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Three_stray_cats_in_Japan_street%2C_August_2014.jpg/960px-Three_stray_cats_in_Japan_street%2C_August_2014.jpg"
+    },
+    "320": {
+      "label": "Domestic Medium Hair",
+      "pageUrl": "https://en.wikipedia.org/wiki/Moggy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Three_stray_cats_in_Japan_street%2C_August_2014.jpg/960px-Three_stray_cats_in_Japan_street%2C_August_2014.jpg"
+    }
+  },
+  "dogs": {
+    "1000": {
+      "label": "Affenpinscher",
+      "pageUrl": "https://www.wikidata.org/wiki/Q7254",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Affenpinscher.jpg"
+    },
+    "1001": {
+      "label": "Afghan Hound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Afghan%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Afghan_dog_-_cropped.jpg"
+    },
+    "1002": {
+      "label": "Airedale Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Airedale%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/52/Airedale_Terrier.jpg"
+    },
+    "1003": {
+      "label": "Akita",
+      "pageUrl": "https://en.wikipedia.org/wiki/Akita%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Akita_Collage.png"
+    },
+    "1004": {
+      "label": "Alaskan Husky",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21205",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Goose-Alaskan%20Husky.jpg"
+    },
+    "1005": {
+      "label": "Alaskan Malamute",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21206",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Alaskan%20Malamute.jpg"
+    },
+    "1006": {
+      "label": "American Black &\u00a0Tan Coonhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Black_and_Tan_Coonhound",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/BTCoonhnd.jpg"
+    },
+    "1007": {
+      "label": "American Cocker Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Cocker%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/62/PointbreakHoneyimHome.jpg"
+    },
+    "1008": {
+      "label": "American English Coonhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20English%20Coonhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/English_Coonhound.jpg"
+    },
+    "1009": {
+      "label": "American Eskimo Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Canadian%20Eskimo%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/79/Spoonsced.jpg"
+    },
+    "101": {
+      "label": "Mixed Breed Toy: 1 - 10 lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://placehold.co/600x400?text=Mixed%20Breed%20Toy"
+    },
+    "1010": {
+      "label": "American Foxhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Foxhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e7/AmericanFoxhound2.jpg"
+    },
+    "1011": {
+      "label": "American Pit Bull Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Pit%20Bull%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/001_American_Pit_Bull_Terrier.jpg/960px-001_American_Pit_Bull_Terrier.jpg"
+    },
+    "1012": {
+      "label": "American Staffordshire Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Staffordshire%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg/599px-AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg"
+    },
+    "1013": {
+      "label": "American Water Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37856",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/AmWaterSpan1.jpg"
+    },
+    "1014": {
+      "label": "Anatolian Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kangal%20Shepherd%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Kangal_front_on.jpg/960px-Kangal_front_on.jpg"
+    },
+    "1015": {
+      "label": "Australian Cattle Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Cattle%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/ACD-blue-spud.jpg/800px-ACD-blue-spud.jpg"
+    },
+    "1016": {
+      "label": "Australian Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Australian_Shepherd_red_bi.JPG/960px-Australian_Shepherd_red_bi.JPG"
+    },
+    "1017": {
+      "label": "Australian Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37530",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Australian%20Terrier%20002%20U.jpg"
+    },
+    "1018": {
+      "label": "Basenji",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37871",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/2008-05-01%20a%20Basenji%2003.jpg"
+    },
+    "1019": {
+      "label": "Basset Hound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37716",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Basset%20Hound%20600.jpg"
+    },
+    "102": {
+      "label": "Mixed Breed Small: 11 - 30 lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog",
+      "thumbnailUrl": "https://placehold.co/600x400?text=Mixed%20Breed%20Small"
+    },
+    "1020": {
+      "label": "Beagle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Beagle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Beagle_600.jpg/600px-Beagle_600.jpg"
+    },
+    "1021": {
+      "label": "Bearded Collie",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37619",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bearded%20Collie.jpg"
+    },
+    "1022": {
+      "label": "Beauceron",
+      "pageUrl": "https://en.wikipedia.org/wiki/Beauceron",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/31/BeauceronStand.jpg"
+    },
+    "1023": {
+      "label": "Bedlington Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37582",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bedlington%20terrier.jpeg"
+    },
+    "1024": {
+      "label": "Belgian Malinois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1025": {
+      "label": "Belgian Sheepdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1026": {
+      "label": "Belgian Tervuren",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1027": {
+      "label": "Bernese Mountain Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37608",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bouviers%20Bernois%20Ganjo.jpg"
+    },
+    "1028": {
+      "label": "Bichon Frise",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bichon%20Fris%C3%A9",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Bichon_Fris%C3%A9_-_studdogbichon.jpg/960px-Bichon_Fris%C3%A9_-_studdogbichon.jpg"
+    },
+    "1029": {
+      "label": "Black and Tan Coonhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37537",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Black%20and%20Tan%20Coonhound.jpg"
+    },
+    "103": {
+      "label": "Mixed Breed Medium: 31 - 59 lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Dog_00154.JPG/960px-Dog_00154.JPG"
+    },
+    "1030": {
+      "label": "Black Russian Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38634",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Russianblack.jpg"
+    },
+    "1031": {
+      "label": "Blenheim\u00a0& Prince Charles English\u00a0Toy Spaniel",
+      "pageUrl": "https://www.akc.org/dog-breeds/english-toy-spaniel/",
+      "source": "manual",
+      "thumbnailUrl": "https://www.akc.org/wp-content/uploads/2017/11/English-Toy-Spaniel-On-White-01.jpg"
+    },
+    "1032": {
+      "label": "Bloodhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bloodhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Bloodhound_Erland22.jpg/960px-Bloodhound_Erland22.jpg"
+    },
+    "1033": {
+      "label": "Blue Heeler",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Cattle%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/ACD-blue-spud.jpg/800px-ACD-blue-spud.jpg"
+    },
+    "1034": {
+      "label": "Boerboel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37589",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Boerboel.jpg"
+    },
+    "1035": {
+      "label": "Bolognese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bolognese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Male_adult_bolognese_dog_%28cropped%29.jpg/960px-Male_adult_bolognese_dog_%28cropped%29.jpg"
+    },
+    "1036": {
+      "label": "Border Collie",
+      "pageUrl": "https://en.wikipedia.org/wiki/Border%20Collie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Border_Collie_600.jpg/600px-Border_Collie_600.jpg"
+    },
+    "1037": {
+      "label": "Border Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37558",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Border%20Terri%C3%ABr.JPG"
+    },
+    "1038": {
+      "label": "Borzoi",
+      "pageUrl": "https://en.wikipedia.org/wiki/Borzoi",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Chart_rosyjski_borzoj_rybnik-kamien_pl.jpg/960px-Chart_rosyjski_borzoj_rybnik-kamien_pl.jpg"
+    },
+    "1039": {
+      "label": "Boston Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37550",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/BOSTON%20TERRIER%2C%20Ving%C3%A5rdens%20Essi%20von%20Richards%20(23995273800).2.jpg"
+    },
+    "104": {
+      "label": "Mixed Breed Large: 60+ lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog",
+      "thumbnailUrl": "https://placehold.co/600x400?text=Mixed%20Breed%20Large"
+    },
+    "1040": {
+      "label": "Bouviers des Flandres",
+      "pageUrl": "https://fr.wikipedia.org/wiki/Bouvier_des_Flandres",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/63/Bouvier_des_Flandres.jpg"
+    },
+    "1041": {
+      "label": "Boxer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Boxer%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Male_fawn_Boxer_undocked.jpg/960px-Male_fawn_Boxer_undocked.jpg"
+    },
+    "1042": {
+      "label": "Boykin Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/Boykin%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Boykin_Spaniel_April_Jet.jpg/960px-Boykin_Spaniel_April_Jet.jpg"
+    },
+    "1043": {
+      "label": "Bracco Italiano",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38255",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/BIR%20Grupp%207-%20BRACCO%20ITALIANO%2C%20Nuits%20Di%20Montemassi%20(23866391829).jpg"
+    },
+    "1044": {
+      "label": "Briard",
+      "pageUrl": "https://en.wikipedia.org/wiki/Briard",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Briard_fauve.JPG/960px-Briard_fauve.JPG"
+    },
+    "1045": {
+      "label": "Brittany Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38156",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/American%20Brittany%20standing.jpg"
+    },
+    "1046": {
+      "label": "Brussels Griffon",
+      "pageUrl": "https://en.wikipedia.org/wiki/Griffon%20Bruxellois",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Monkey_Bizniz_Drama_Queen.jpg"
+    },
+    "1047": {
+      "label": "Bull Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38322",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bullterier%20089%20LM.jpg"
+    },
+    "1048": {
+      "label": "Bulldog (American)",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/American_Bulldog_600.jpg/600px-American_Bulldog_600.jpg"
+    },
+    "1049": {
+      "label": "Bullmastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38080",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dog%20Bullmastiff%20600.jpg"
+    },
+    "1050": {
+      "label": "Cairn Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37888",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cairn-Terrier-Garten1.jpg"
+    },
+    "1051": {
+      "label": "Canaan Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38602",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Canaan%20Dog.jpg"
+    },
+    "1052": {
+      "label": "Canary Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37750",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Presacanariobody.jpg"
+    },
+    "1053": {
+      "label": "Cane Corso",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21082",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/FINLEY%20DE%20LA%20MIRAGE%20DE%20TORRELLAS%2001.jpg"
+    },
+    "1054": {
+      "label": "Cardigan Welsh Corgi",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29072",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cardigan%20Welsh%20Corgi%20600.jpg"
+    },
+    "1055": {
+      "label": "Catahoula Leopard Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q11294205",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/SasquatchCatahoulaCurDog.jpg"
+    },
+    "1056": {
+      "label": "Caucasian Mountain Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Caucasian%20Shepherd%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Owczarek_kaukaski_65556.jpg/960px-Owczarek_kaukaski_65556.jpg"
+    },
+    "1057": {
+      "label": "Cavalier King Charles Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38072",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/CavalierKgChas2%20wb.jpg"
+    },
+    "1058": {
+      "label": "Cesky Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38642",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cesky-Terier.jpg"
+    },
+    "1059": {
+      "label": "Chesapeake Bay Retriever",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29084",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Chesapeakebayretriever01-l.jpg"
+    },
+    "1060": {
+      "label": "Chihuahua",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chihuahua%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Chihuahua1_bvdb.jpg"
+    },
+    "1061": {
+      "label": "Chinese Crested",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chinese%20Crested%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/IndyStands.jpg/960px-IndyStands.jpg"
+    },
+    "1062": {
+      "label": "Chinook",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chinook%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/84/Mountan_Laurel_Ajax_the_Chinook_dog.jpg"
+    },
+    "1063": {
+      "label": "Chow Chow",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chow%20Chow",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Chow-chow_in_Tallinn.JPG/960px-Chow-chow_in_Tallinn.JPG"
+    },
+    "1064": {
+      "label": "Clumber Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/Clumber%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Clumber_spaniel_rybnik_kamien_pppl.jpg/960px-Clumber_spaniel_rybnik_kamien_pppl.jpg"
+    },
+    "1065": {
+      "label": "Collie",
+      "pageUrl": "https://en.wikipedia.org/wiki/Border%20Collie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Border_Collie_600.jpg/600px-Border_Collie_600.jpg"
+    },
+    "1066": {
+      "label": "Coonhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Coonhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/A_female_redbone-coonhound-1.jpg/960px-A_female_redbone-coonhound-1.jpg"
+    },
+    "1067": {
+      "label": "Coton de Tulear",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38295",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Coton%20de%20Tular%202.jpg"
+    },
+    "1068": {
+      "label": "Curly-Coated Retriever",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38375",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Curley%20coated%20retriever5.jpg"
+    },
+    "1069": {
+      "label": "Dachshund",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dachshund",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg/960px-%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg"
+    },
+    "1070": {
+      "label": "Dalmatian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dalmatian_dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Sun_Dog_Dalmatian.jpg/330px-Sun_Dog_Dalmatian.jpg"
+    },
+    "1071": {
+      "label": "Dandie Dinmont Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38336",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dandie%20Dinmont%20Terrier%20600.jpg"
+    },
+    "1072": {
+      "label": "Doberman Pinscher",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dobermann",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Dobermann_handling.jpg/960px-Dobermann_handling.jpg"
+    },
+    "1073": {
+      "label": "Dogue de Bordeaux",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37878",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/DJT%200086.jpg"
+    },
+    "1074": {
+      "label": "English Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bulldog_inglese.jpg/960px-Bulldog_inglese.jpg"
+    },
+    "1075": {
+      "label": "English Cocker Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Cocker%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%22Bill%22_-_Cocker_spaniel_anglais_2.JPG/960px-%22Bill%22_-_Cocker_spaniel_anglais_2.JPG"
+    },
+    "1076": {
+      "label": "English Coonhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20English%20Coonhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/English_Coonhound.jpg"
+    },
+    "1077": {
+      "label": "English Foxhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37789",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/English%20Foxhound.jpg"
+    },
+    "1078": {
+      "label": "English Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Westgort_Anticipation_17_months.JPG/960px-Westgort_Anticipation_17_months.JPG"
+    },
+    "1079": {
+      "label": "English Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/EnglishSetter9_fx_wb.jpg"
+    },
+    "1080": {
+      "label": "English Springer Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29022",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Englishspringerspaniel%20Winston.jpg"
+    },
+    "1081": {
+      "label": "English Toy Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38132",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/King%20Charles%20Spaniel%20200.jpg"
+    },
+    "1082": {
+      "label": "Field Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/Field%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Field_spaniel_581.jpg/960px-Field_spaniel_581.jpg"
+    },
+    "1083": {
+      "label": "Finnish Hound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Finnish%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Finnish_Hound.jpg/960px-Finnish_Hound.jpg"
+    },
+    "1084": {
+      "label": "Finnish Lapphund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29188",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Finselappenhond%20louhi-no%20watermark.jpg"
+    },
+    "1085": {
+      "label": "Flat-Coated Retriever",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29200",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Flat%20Coated%20Retriever%20-%20black.jpg"
+    },
+    "1086": {
+      "label": "Fox Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Wire%20Fox%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Elias1%C4%8Derven2006.jpg"
+    },
+    "1087": {
+      "label": "French Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/French%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2008-07-28_Dog_at_Frolick_Field.jpg/960px-2008-07-28_Dog_at_Frolick_Field.jpg"
+    },
+    "1088": {
+      "label": "French Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Westgort_Anticipation_17_months.JPG/960px-Westgort_Anticipation_17_months.JPG"
+    },
+    "1089": {
+      "label": "French Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/French%20Spaniel",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/04031137_Epagneul_Francais.jpg/960px-04031137_Epagneul_Francais.jpg"
+    },
+    "1090": {
+      "label": "German Pinscher",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pinscher",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Bungartz-Pinscher.jpg"
+    },
+    "1091": {
+      "label": "German Shepherd Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sheep%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Old_English_Sheepdog_%28side%29.jpg/960px-Old_English_Sheepdog_%28side%29.jpg"
+    },
+    "1092": {
+      "label": "German Shorthaired Pointer",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Shorthaired%20Pointer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/38/Duitse_staande_korthaar_10-10-2.jpg"
+    },
+    "1093": {
+      "label": "German Wirehaired Pointer",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Wirehaired%20Pointer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2b/GermanWirehrPtr1_wb.jpg"
+    },
+    "1094": {
+      "label": "Giant Schnauzer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Giant%20Schnauzer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Nev_Lemar_Barbara1.jpg/960px-Nev_Lemar_Barbara1.jpg"
+    },
+    "1095": {
+      "label": "Glen of Imaal Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38189",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Adult%20Glen%20of%20Imaal%20terrier.jpg"
+    },
+    "1096": {
+      "label": "Golden Retriever",
+      "pageUrl": "https://en.wikipedia.org/wiki/Golden_Retriever",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Golden_Retriever_Dukedestiny01_drvd.jpg"
+    },
+    "1097": {
+      "label": "Gordon Setter",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38301",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Orrvilas%20enska%20w800px.jpg"
+    },
+    "1098": {
+      "label": "Great Dane",
+      "pageUrl": "https://en.wikipedia.org/wiki/Great%20Dane",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg/960px-Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg"
+    },
+    "1099": {
+      "label": "Great Pyrenees",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37803",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pyrenean%20Mountain%20Dog%20600.jpg"
+    },
+    "1100": {
+      "label": "Greater Swiss Mountain Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38121",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Testagrandebovaro.jpg"
+    },
+    "1101": {
+      "label": "Greyhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Greyhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/GraceTheGreyhound.jpg/960px-GraceTheGreyhound.jpg"
+    },
+    "1102": {
+      "label": "Harrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Harrier%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Harrier_Hound_-Pedigree_Harrier.jpg/960px-Harrier_Hound_-Pedigree_Harrier.jpg"
+    },
+    "1103": {
+      "label": "Havanese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Havanese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/A_Havanese_judging.jpg/960px-A_Havanese_judging.jpg"
+    },
+    "1104": {
+      "label": "Hovawart",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38368",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dog%20Hovavart.jpg"
+    },
+    "1105": {
+      "label": "Ibizan Hound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37755",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Podenco%20z%20ibizy%20645.jpg"
+    },
+    "1106": {
+      "label": "Icelandic Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38710",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ulfur.jpg"
+    },
+    "1107": {
+      "label": "Inca Hairless Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Peruvian%20Hairless%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/PHDStandardStanding_-_Perro_Sin_Pelo_del_Per%C3%BA.jpg"
+    },
+    "1108": {
+      "label": "Irish Red and White Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/Irish%20Red%20and%20White%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/Irish_Red_And_White_Setter_2005.jpg"
+    },
+    "1109": {
+      "label": "Irish Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/Irish%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Can_Setter_dog_GFDL.jpg/960px-Can_Setter_dog_GFDL.jpg"
+    },
+    "1110": {
+      "label": "Irish Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38644",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Irish%20Terrier%20P1060074.jpg"
+    },
+    "1111": {
+      "label": "Irish Water Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/Irish%20Water%20Spaniel",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Ierse_Water_Spaniel.jpg/960px-Ierse_Water_Spaniel.jpg"
+    },
+    "1112": {
+      "label": "Irish Wolfhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38668",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Irish%20wolfhound%20giaccomo.JPG"
+    },
+    "1113": {
+      "label": "Italian Greyhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Italian%20Greyhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Italian_Greyhound_standing_gray_%28cropped%29.jpg/960px-Italian_Greyhound_standing_gray_%28cropped%29.jpg"
+    },
+    "1114": {
+      "label": "Jack Russell Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Jack%20Russell%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Jack_Russell_Terrier_1.jpg/960px-Jack_Russell_Terrier_1.jpg"
+    },
+    "1115": {
+      "label": "Japanese Chin",
+      "pageUrl": "https://en.wikipedia.org/wiki/Japanese%20Chin",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Chin_posing.jpg/960px-Chin_posing.jpg"
+    },
+    "1116": {
+      "label": "Japanese Spitz",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38126",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/JapaneseSpitzPhoto1%20-%20hiro.jpg"
+    },
+    "1117": {
+      "label": "Japanese Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37976",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Japanese%20Terrier%2022.04.2012%202pl.jpg"
+    },
+    "1118": {
+      "label": "Kai Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20breeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Johnson%27s_household_book_of_nature_%287268642682%29.jpg/960px-Johnson%27s_household_book_of_nature_%287268642682%29.jpg"
+    },
+    "1119": {
+      "label": "Karelian Bear Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Karelian%20Bear%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Karelski_pies_na_nied%C5%BAwiedzie_sylwetka.JPG/960px-Karelski_pies_na_nied%C5%BAwiedzie_sylwetka.JPG"
+    },
+    "1120": {
+      "label": "Keeshonden (Keeshond)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Keeshond",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Keeshond_Majic_standing_cropped.jpg/500px-Keeshond_Majic_standing_cropped.jpg"
+    },
+    "1121": {
+      "label": "Kerry Blue Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38025",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kerry%20Blue%20Terrier.jpg"
+    },
+    "1122": {
+      "label": "King Charles & Ruby English Toy Spaniel",
+      "pageUrl": "https://www.pinterest.com/search/pins/?q=english%20toy%20spaniel",
+      "source": "manual",
+      "thumbnailUrl": "https://i.pinimg.com/736x/87/8d/74/878d74387eeb0a13a09ccff9cb9e67e4.jpg"
+    },
+    "1123": {
+      "label": "King Shepherd",
+      "pageUrl": "https://ckcusa.com/breeds/king-shepherd/",
+      "source": "manual",
+      "thumbnailUrl": "https://ckcusa.com/breedImages/2337/king-shepherd.jpg"
+    },
+    "1124": {
+      "label": "Komondor",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38675",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Komondor%20Westminster%20Dog%20Show%20crop.jpg"
+    },
+    "1125": {
+      "label": "Kuvasz",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38467",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/2-kuvasz.jpg"
+    },
+    "1126": {
+      "label": "Labrador Retriever",
+      "pageUrl": "https://en.wikipedia.org/wiki/Labrador%20Retriever",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Labrador_on_Quantock_%282175262184%29.jpg/960px-Labrador_on_Quantock_%282175262184%29.jpg"
+    },
+    "1127": {
+      "label": "Lagotto Romagnolo",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38910",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lagotto%20Romagnolo.jpg"
+    },
+    "1128": {
+      "label": "Lakeland Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38110",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lakeland%20Terrier.jpg"
+    },
+    "1129": {
+      "label": "Lancashire Heeler",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37972",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Grupp%201%2C%20LANCASHIRE%20HEELER%2C%20NO%20UCH%20NO%20V-14%20NO%20V-15%20SE%20UCH%20St%C3%A5hlskyttens%20Longed%20For%20Antony%20(24284065606).jpg"
+    },
+    "1131": {
+      "label": "Landseer",
+      "pageUrl": "https://www.wikidata.org/wiki/Q328369",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Watkins%20-%20Edwin%20Landseer.jpg"
+    },
+    "1132": {
+      "label": "Large Munsterlander",
+      "pageUrl": "https://en.wikipedia.org/wiki/Large%20M%C3%BCnsterl%C3%A4nder",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/61/GrosserMuensterlaender.jpg"
+    },
+    "1133": {
+      "label": "Leonberger",
+      "pageUrl": "https://en.wikipedia.org/wiki/Leonberger",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/76/Leonberger_male.jpg"
+    },
+    "1134": {
+      "label": "Lhasa Apso",
+      "pageUrl": "https://en.wikipedia.org/wiki/Lhasa%20Apso",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/Aishia.jpg"
+    },
+    "1135": {
+      "label": "Lowchen",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38027",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/LowchenFemale.jpg"
+    },
+    "1136": {
+      "label": "Maltese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Maltese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Maltese_600.jpg/600px-Maltese_600.jpg"
+    },
+    "1137": {
+      "label": "Manchester Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38387",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Manchesterterrier.jpg"
+    },
+    "1138": {
+      "label": "Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/Tibetan%20Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg/960px-BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg"
+    },
+    "1139": {
+      "label": "Mexican Hairless",
+      "pageUrl": "https://en.wikipedia.org/wiki/Xoloitzcuintle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/BIR_Grupp_5-_MEXIKANSK_NAKENHUND%2C_Lokal_Hero%E2%80%99s_King_Og_Hart%E2%80%99s_Istas_%2823607403303%29.jpg/960px-BIR_Grupp_5-_MEXIKANSK_NAKENHUND%2C_Lokal_Hero%E2%80%99s_King_Og_Hart%E2%80%99s_Istas_%2823607403303%29.jpg"
+    },
+    "1140": {
+      "label": "Miniature Australian Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38004",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Miniature%20Australian%20Shepherd%20red%20tricolour.jpg"
+    },
+    "1141": {
+      "label": "Miniature Bull Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37967",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bull%20Terrier%20Miniature.jpg"
+    },
+    "1142": {
+      "label": "Miniature Pinscher",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38990",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Grupp%202%20DV%C3%84RGPINCHER%2C%20Pincerella%E2%80%99s%20Rinaldo%20Rosso%20(24260846206).jpg"
+    },
+    "1143": {
+      "label": "Miniature Poodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "1144": {
+      "label": "Miniature Schnauzer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Miniature%20Schnauzer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/%D0%A6%D0%B2%D0%B5%D1%80%D0%B3%D1%88%D0%BD%D0%B0%D1%83%D1%86%D0%B5%D1%80_%D0%BE%D0%BA%D1%80%D0%B0%D1%81_%D1%87%D0%B5%D1%80%D0%BD%D1%8B%D0%B9_%D1%81_%D1%81%D0%B5%D1%80%D0%B5%D0%B1%D1%80%D0%BE%D0%BC.JPG"
+    },
+    "1145": {
+      "label": "Mountain Cur",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38892",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mtncur.png"
+    },
+    "1146": {
+      "label": "Mudi",
+      "pageUrl": "https://en.wikipedia.org/wiki/Mudi",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Hondenras_Mudi.jpg"
+    },
+    "1147": {
+      "label": "Munsterlander",
+      "pageUrl": "https://www.wikidata.org/wiki/Q1959163",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Haltern%20am%20See%20Bahnhof%20Kunstwerk%20Kiep.jpg"
+    },
+    "1148": {
+      "label": "Neapolitan Mastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38529",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mastino%20sylwetka.jpg"
+    },
+    "1149": {
+      "label": "New Guinea Singing Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38884",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/New%20Guinea%20Singing%20Dog%20on%20trail-Cropped.jpg"
+    },
+    "1150": {
+      "label": "Newfoundland",
+      "pageUrl": "https://en.wikipedia.org/wiki/Newfoundland%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Newfoundland_dog_Smoky.jpg/960px-Newfoundland_dog_Smoky.jpg"
+    },
+    "1151": {
+      "label": "Norfolk Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norfolk%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/be/Norfolk_terrier_CAC.jpg"
+    },
+    "1152": {
+      "label": "Northern Inuit Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Canadian%20Eskimo%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/79/Spoonsced.jpg"
+    },
+    "1153": {
+      "label": "Norwegian Elkhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norwegian%20Elkhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Elkhound2020_%28cropped%29.jpg/960px-Elkhound2020_%28cropped%29.jpg"
+    },
+    "1154": {
+      "label": "Norwich Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norfolk%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/be/Norfolk_terrier_CAC.jpg"
+    },
+    "1155": {
+      "label": "Nova Scotia Duck Tolling Retriever",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38824",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Duck%20Toller.jpg"
+    },
+    "1156": {
+      "label": "Old English Sheepdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Old%20English%20Sheepdog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Old_English_Sheepdog_%28side%29.jpg/960px-Old_English_Sheepdog_%28side%29.jpg"
+    },
+    "1157": {
+      "label": "Olde English Bulldogge",
+      "pageUrl": "https://en.wikipedia.org/wiki/Olde%20English%20Bulldogge",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/17/UKC_Olde_English_Bulldogge_Male.jpg"
+    },
+    "1158": {
+      "label": "Otterhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38922",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Two%20otterhounds.jpg"
+    },
+    "1159": {
+      "label": "Papillon",
+      "pageUrl": "https://en.wikipedia.org/wiki/Papillon%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f7/RileyPapillon.JPG"
+    },
+    "1160": {
+      "label": "Parson Russell Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38880",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Parson%20Russell%20Terrier.jpg"
+    },
+    "1161": {
+      "label": "Pekingese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pekingese",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/1AKC_Pekingese_Dog_Show_2011.jpg/960px-1AKC_Pekingese_Dog_Show_2011.jpg"
+    },
+    "1162": {
+      "label": "Pembroke Welsh Corgi",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38783",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Welsh%20Pembroke%20Corgi.jpg"
+    },
+    "1163": {
+      "label": "Petit Basset Griffon Vendeen",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39080",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/P%20Basset%20Griffon%20Vendeen%20600.jpg"
+    },
+    "1164": {
+      "label": "Pharaoh Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog%20breed",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Dog_morphological_variation.png/960px-Dog_morphological_variation.png"
+    },
+    "1165": {
+      "label": "Plott Hound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Plott%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Plotthund_Kynnagardens_Ziggy_Lundamo.JPG/960px-Plotthund_Kynnagardens_Ziggy_Lundamo.JPG"
+    },
+    "1166": {
+      "label": "Pointer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pointer%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/English_Pointer_orange-white.jpg"
+    },
+    "1167": {
+      "label": "Polish Lowland Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38836",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Polski%20owczarek%20nizinny.jpg"
+    },
+    "1168": {
+      "label": "Pomeranian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pomeranian_dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Pomeranian.JPG/330px-Pomeranian.JPG"
+    },
+    "1169": {
+      "label": "Poodle (Standard)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "1170": {
+      "label": "Portuguese Water Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Portuguese%20Water%20Dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/C%C3%A3o_de_agua_Portugu%C3%AAs_2.jpg/960px-C%C3%A3o_de_agua_Portugu%C3%AAs_2.jpg"
+    },
+    "1171": {
+      "label": "Pug",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pug",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Mops-duke-mopszucht-vom-maegdebrunnen.jpg/960px-Mops-duke-mopszucht-vom-maegdebrunnen.jpg"
+    },
+    "1172": {
+      "label": "Puli",
+      "pageUrl": "https://en.wikipedia.org/wiki/Puli%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ab/PuliBlack_wb.jpg"
+    },
+    "1173": {
+      "label": "Pumi",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pomeranian_dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Pomeranian.JPG/330px-Pomeranian.JPG"
+    },
+    "1174": {
+      "label": "Pyrenean Mastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38766",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/MasPiri-Lula-ESP.jpg"
+    },
+    "1175": {
+      "label": "Pyrenean Mountain Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37803",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pyrenean%20Mountain%20Dog%20600.jpg"
+    },
+    "1176": {
+      "label": "Pyrenean Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37786",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Berger-des-Pyrenees%20Adeux%200302x0214.jpg"
+    },
+    "1177": {
+      "label": "Rat Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Teddy%20Roosevelt%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Teddyterrier.jpg"
+    },
+    "1178": {
+      "label": "Redbone Coonhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38820",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Memphis%20the%20Redbone%20Coonhound%20(7%20Nov%202004).jpg"
+    },
+    "1179": {
+      "label": "Rhodesian Ridgeback",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rhodesian%20Ridgeback",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/01/Rhodesian_ridgeback.jpg"
+    },
+    "1180": {
+      "label": "Rottweiler",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rottweiler",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Rottweiler_standing_facing_left.jpg/960px-Rottweiler_standing_facing_left.jpg"
+    },
+    "1181": {
+      "label": "Rough Collie",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rough%20Collie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Rough-Collie-japan08_%28cropped%29.jpg/960px-Rough-Collie-japan08_%28cropped%29.jpg"
+    },
+    "1182": {
+      "label": "Saint Bernard",
+      "pageUrl": "https://en.wikipedia.org/wiki/St.%20Bernard%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Hummel_Vedor_vd_Robandahoeve.jpg/960px-Hummel_Vedor_vd_Robandahoeve.jpg"
+    },
+    "1183": {
+      "label": "Saluki",
+      "pageUrl": "https://en.wikipedia.org/wiki/Saluki",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Red_Smooth_Saluki.jpg/960px-Red_Smooth_Saluki.jpg"
+    },
+    "1184": {
+      "label": "Samoyed",
+      "pageUrl": "https://en.wikipedia.org/wiki/Samoyed%20dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Samojed00.jpg/960px-Samojed00.jpg"
+    },
+    "1185": {
+      "label": "Schipperke",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39010",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Schipperke1.jpg"
+    },
+    "1186": {
+      "label": "Scottish Deerhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Scottish%20Deerhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Karrie.JPG/960px-Karrie.JPG"
+    },
+    "1187": {
+      "label": "Scottish Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Scottish%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Scottish_Terrier_Photo_of_Face.jpg/960px-Scottish_Terrier_Photo_of_Face.jpg"
+    },
+    "1188": {
+      "label": "Sealyham Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sealyham%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/SealyhamTerrier01.jpg/960px-SealyhamTerrier01.jpg"
+    },
+    "1189": {
+      "label": "Segugio Italiano",
+      "pageUrl": "https://www.wikidata.org/wiki/Q17521154",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Segugioitalianopelorasofulvo.JPG"
+    },
+    "1190": {
+      "label": "Shar-Pei",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shar%20Pei",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/Adult_sharpei.jpg"
+    },
+    "1191": {
+      "label": "Shetland Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39058",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/ShetlandShpdogBlue2%20wb.jpg"
+    },
+    "1192": {
+      "label": "Shiba Inu",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shiba%20Inu",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Taka_Shiba.jpg/960px-Taka_Shiba.jpg"
+    },
+    "1193": {
+      "label": "Shih Tzu",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shih%20Tzu",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/d/df/Shihtzu_%28cropped%29.jpg"
+    },
+    "1194": {
+      "label": "Siberian Husky",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39295",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Siberian%20Husky%20-%20Mika.jpg"
+    },
+    "1195": {
+      "label": "Silky Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian_Silky_Terrier",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/02_Australian_Silky_Terrier%2C_Zack%2C_spring_2012.jpg/500px-02_Australian_Silky_Terrier%2C_Zack%2C_spring_2012.jpg"
+    },
+    "1196": {
+      "label": "Skye Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Skye%20Terrier",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Skye_terrier_800.jpg/960px-Skye_terrier_800.jpg"
+    },
+    "1197": {
+      "label": "Smooth Collie",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38790",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Smooth%20Collie%20600.jpg"
+    },
+    "1198": {
+      "label": "Smooth Fox Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Smooth%20Fox%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/47/Patrick_the_Smooth_Fox_Terrier.jpg"
+    },
+    "1199": {
+      "label": "Soft-Coated Wheaten Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38047",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Soft%20Coated%20Wheaten%20Terrier%20600.jpg"
+    },
+    "1200": {
+      "label": "Spanish Mastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37939",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mast%C3%ADn%20espa%C3%B1ol%2C%20l%C3%ADnea%20original%20de%20trabajo.%2004.jpg"
+    },
+    "1201": {
+      "label": "Spanish Water Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39200",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Perro%20agua.jpg"
+    },
+    "1202": {
+      "label": "Spinoni Italian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Spinone_Italiano",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/05042336_Spinone_orange.jpg"
+    },
+    "1203": {
+      "label": "Spitz",
+      "pageUrl": "https://en.wikipedia.org/wiki/Spitz",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Un_chien_Spitz_allemand.jpg/500px-Un_chien_Spitz_allemand.jpg"
+    },
+    "1204": {
+      "label": "Springer Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Cocker%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%22Bill%22_-_Cocker_spaniel_anglais_2.JPG/960px-%22Bill%22_-_Cocker_spaniel_anglais_2.JPG"
+    },
+    "1205": {
+      "label": "Staffordshire Bull Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Staffordshire%20Bull%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/d/de/%D7%A1%D7%90%D7%98%D7%A3_%D7%90%D7%A0%D7%92%D7%9C%D7%99.jpg"
+    },
+    "1206": {
+      "label": "Standard Manchester Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Manchester_Terrier",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Mancherster_Terrier.jpg/500px-Mancherster_Terrier.jpg"
+    },
+    "1207": {
+      "label": "Standard Poodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "1208": {
+      "label": "Standard Schnauzer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Schnauzer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Schnauzer_Size_Montage.png"
+    },
+    "1209": {
+      "label": "Sussex Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39138",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sussex%20spaniel%20t43.jpg"
+    },
+    "1210": {
+      "label": "Swedish Vallhund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39075",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/SwedishVallhundAgility%20wb.jpg"
+    },
+    "1211": {
+      "label": "Thai Ridgeback",
+      "pageUrl": "https://en.wikipedia.org/wiki/Thai_Ridgeback",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Thai-Ridgeback.jpg/500px-Thai-Ridgeback.jpg"
+    },
+    "1212": {
+      "label": "Tibetan Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/Tibetan%20Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg/960px-BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg"
+    },
+    "1213": {
+      "label": "Tibetan Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39181",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tibetansk%20spaniel.jpg"
+    },
+    "1214": {
+      "label": "Tibetan Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38796",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tibetan%20Terrier%20Image%20001.jpg"
+    },
+    "1215": {
+      "label": "Toy Fox Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Toy%20Fox%20Terrier",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Toy_Fox_Terrier_2.jpg/960px-Toy_Fox_Terrier_2.jpg"
+    },
+    "1216": {
+      "label": "Toy Manchester Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39407",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Toy-manchester-terrier-weave.png"
+    },
+    "1217": {
+      "label": "Toy Poodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "1218": {
+      "label": "Treeing Tennessee Brindle",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38443",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sienna%20TTBD.jpg"
+    },
+    "1219": {
+      "label": "Treeing Walker Coonhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39244",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Treeing-walker-coonhound-standing.jpg"
+    },
+    "1220": {
+      "label": "Victorian Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bull%20and%20terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/03/Philippe_Rousseau_-_Best_Of_Friends_-_Bulldog_%26_Bull_Terrier.jpg"
+    },
+    "1221": {
+      "label": "Vizsla",
+      "pageUrl": "https://en.wikipedia.org/wiki/Vizsla",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg/960px-Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg"
+    },
+    "1222": {
+      "label": "Weimaraner",
+      "pageUrl": "https://en.wikipedia.org/wiki/Weimaraner",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Weimaraner_Freika-2.jpg/960px-Weimaraner_Freika-2.jpg"
+    },
+    "1223": {
+      "label": "Welsh Springer Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39047",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Welsh%20Springer%20Spaniel%201.jpg"
+    },
+    "1224": {
+      "label": "Welsh Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sealyham%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/SealyhamTerrier01.jpg/960px-SealyhamTerrier01.jpg"
+    },
+    "1225": {
+      "label": "West Highland White Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q17510",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/West%20Highland%20White%20Terrier%20Krakow.jpg"
+    },
+    "1226": {
+      "label": "Whippet",
+      "pageUrl": "https://en.wikipedia.org/wiki/Whippet",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Whippet_2018_6.jpg/960px-Whippet_2018_6.jpg"
+    },
+    "1227": {
+      "label": "Wire Fox Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Wire%20Fox%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Elias1%C4%8Derven2006.jpg"
+    },
+    "1228": {
+      "label": "Wirehaired Pointing Griffon",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38869",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Korthalsgriffon.jpg"
+    },
+    "1229": {
+      "label": "Yorkshire Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39330",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Imageyorkie.png"
+    },
+    "1230": {
+      "label": "Appenzeller Sennenhund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37697",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Abora%20z%20Velk%C3%A9ho%20%C3%9Ajezda5.jpg"
+    },
+    "1231": {
+      "label": "Silken Windhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39207",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Fallon%20the%20Silken%20Windhound.jpg"
+    },
+    "1232": {
+      "label": "African Boerboel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37589",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Boerboel.jpg"
+    },
+    "1233": {
+      "label": "Ainu Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Hokkaido%20(dog%20breed)",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Hokkaidou_inu.jpg"
+    },
+    "1234": {
+      "label": "Alapaha Blue Blood Bulldog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37489",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Alapaha%20blue%20blood%20bulldog2.jpg"
+    },
+    "1235": {
+      "label": "Alaskan Klee Kai",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38152",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Standard%20Alaskan%20Klee%20Kai.jpg"
+    },
+    "1236": {
+      "label": "American Bandogge Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/The_dog_book_-_a_popular_history_of_the_dog%2C_with_practical_information_as_to_care_and_management_of_house%2C_kennel%2C_and_exhibition_dogs%3B_and_descriptions_of_all_the_important_breeds_%281906%29_%2820800295488%29.jpg/960px-thumbnail.jpg"
+    },
+    "1237": {
+      "label": "American Bully",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Bully",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Champion_Charlie_Muscles_%282%29.jpg/960px-Champion_Charlie_Muscles_%282%29.jpg"
+    },
+    "1238": {
+      "label": "American Hairless Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37508",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/American%20Hairless%20Terrier%20Adelor.jpg"
+    },
+    "1239": {
+      "label": "American Mastiff",
+      "pageUrl": "https://en.wikipedia.org/wiki/Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/The_dog_book_-_a_popular_history_of_the_dog%2C_with_practical_information_as_to_care_and_management_of_house%2C_kennel%2C_and_exhibition_dogs%3B_and_descriptions_of_all_the_important_breeds_%281906%29_%2820800295488%29.jpg/960px-thumbnail.jpg"
+    },
+    "1240": {
+      "label": "Appenzell Mountain Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Appenzeller_Sennenhund",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Eisa_Kessy_v_Br%C3%BCnggberg.jpg/500px-Eisa_Kessy_v_Br%C3%BCnggberg.jpg"
+    },
+    "1242": {
+      "label": "Ariegeois",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37487",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ariegeois.jpg"
+    },
+    "1243": {
+      "label": "Australian Kelpie",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37520",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bashyr.jpg"
+    },
+    "1244": {
+      "label": "Australian Silky Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37524",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/02%20Australian%20Silky%20Terrier%2C%20Zack%2C%20spring%202012.jpg"
+    },
+    "1245": {
+      "label": "Austrian\u00a0Short Haired Pinscher",
+      "pageUrl": "https://www.carealotpets.com/dog-breeds-UKC-AustrianShorthairedPinscher.aspx",
+      "source": "manual",
+      "thumbnailUrl": "https://www.carealotpets.com/images/breeding/dog-breeds/AustrianShorthairedPinscher.jpg"
+    },
+    "1246": {
+      "label": "Auvergne Setter",
+      "pageUrl": "https://www.royalkennelclub.com/search/breeds-a-to-z/breeds/gundog/braque-d-auvergne-imp/",
+      "source": "manual",
+      "thumbnailUrl": "https://www.royalkennelclub.com/media/1264/braque-d-auvergne-1.jpg?rmode=pad&width=1000&v=1d575038f1d2020"
+    },
+    "1247": {
+      "label": "Bagel",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bagel%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/Bageldog.jpg"
+    },
+    "1248": {
+      "label": "Banjara Greyhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20breeds",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Johnson%27s_household_book_of_nature_%287268642682%29.jpg/960px-Johnson%27s_household_book_of_nature_%287268642682%29.jpg"
+    },
+    "1249": {
+      "label": "Barbet",
+      "pageUrl": "https://en.wikipedia.org/wiki/Barbet%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Chien_de_race_Barbet.jpg"
+    },
+    "1250": {
+      "label": "Basset Artesian Normand",
+      "pageUrl": "https://en.wikipedia.org/wiki/Basset_Art%C3%A9sien_Normand",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Grupp_6_BASSET_ART%C3%89SIEN_NORMAND%2C_Skogvaktarens_Queen_Sally_%2824180074612%29.jpg/500px-Grupp_6_BASSET_ART%C3%89SIEN_NORMAND%2C_Skogvaktarens_Queen_Sally_%2824180074612%29.jpg"
+    },
+    "1251": {
+      "label": "Basset\u00a0Griffon Vandeen",
+      "pageUrl": "https://pbgv.org/international-standards/",
+      "source": "manual",
+      "thumbnailUrl": "https://pbgv.org/new/wp-content/uploads/2022/11/International-2.jpg"
+    },
+    "1252": {
+      "label": "Beabull",
+      "pageUrl": "https://en.wikipedia.org/wiki/Beabull",
+      "source": "image-search",
+      "thumbnailUrl": "https://www.dogpackapp.com/blog/wp-content/uploads/2024/10/beabull-dog-breed-full-body.webp"
+    },
+    "1253": {
+      "label": "Beagle Harrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37478",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Beagle%20harrier.JPG"
+    },
+    "1254": {
+      "label": "Beauce Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Beauceron",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/31/BeauceronStand.jpg"
+    },
+    "1255": {
+      "label": "Belgian Laekenois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1256": {
+      "label": "Belgian Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1257": {
+      "label": "Belgian Shepherd Malinois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1258": {
+      "label": "Belgian Shepherd Tervuren",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1259": {
+      "label": "Bichon Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Havanese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/A_Havanese_judging.jpg/960px-A_Havanese_judging.jpg"
+    },
+    "1260": {
+      "label": "Bichpoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://hillcountrypaws.net/wp-content/uploads/2026/01/Chase1-300x300.jpg"
+    },
+    "1261": {
+      "label": "Black Mouth Cur",
+      "pageUrl": "https://en.wikipedia.org/wiki/Black%20Mouth%20Cur",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Black_mouth_cur-10.jpg/960px-Black_mouth_cur-10.jpg"
+    },
+    "1262": {
+      "label": "Bluetick Coonhound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37568",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/BluetickCoonhound.jpg"
+    },
+    "1263": {
+      "label": "Border Collie Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Border%20Collie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Border_Collie_600.jpg/600px-Border_Collie_600.jpg"
+    },
+    "1264": {
+      "label": "Bourbonnais Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/Gun%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Man_walking_spaniel_gun_dog_in_tweed_waistcoat_after_shooting.jpg/960px-Man_walking_spaniel_gun_dog_in_tweed_waistcoat_after_shooting.jpg"
+    },
+    "1265": {
+      "label": "Braque Du Bourbonnais",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37632",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Braque%20du%20Bourbonnais.jpg"
+    },
+    "1266": {
+      "label": "Braque Francais",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37728",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Wy%C5%BCe%C5%82%20pirenejski%20308.jpg"
+    },
+    "1267": {
+      "label": "Brazilian Guard Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Guard%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Obrona.jpg/960px-Obrona.jpg"
+    },
+    "1269": {
+      "label": "Broholmer",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37737",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Broholmer%20634.jpg"
+    },
+    "1270": {
+      "label": "Bugg",
+      "pageUrl": "https://en.wikipedia.org/wiki/We%20Are%20the%20In%20Crowd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/WeAreTheInCrowd_FYE_Signing.jpg/960px-WeAreTheInCrowd_FYE_Signing.jpg"
+    },
+    "1271": {
+      "label": "Bulloxer",
+      "pageUrl": "https://www.dogbreedinfo.com/b/bulloxer.htm",
+      "source": "manual",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images15/BullBoxerTysonP9220010.JPG"
+    },
+    "1272": {
+      "label": "Canadian Husky",
+      "pageUrl": "https://en.wikipedia.org/wiki/Husky",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/960px-Huskiesatrest.jpg"
+    },
+    "1273": {
+      "label": "Cavachon",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/styles/square_medium_440x440/public/2024-03/Chiweenie%20%281%29.jpg?itok=UWzS80wv"
+    },
+    "1274": {
+      "label": "Central Asian Shepherd Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38570",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/%D0%A1%D1%80%D0%B5%D0%B4%D0%BD%D0%B5%D0%B0%D0%B7%D0%B8%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BE%D0%B2%D1%87%D0%B0%D1%80%D0%BA%D0%B0%2C%20%D0%BC%D0%BE%D0%BB%D0%BE%D0%B4%D0%BE%D0%B9%20%D0%BA%D0%BE%D0%B1%D0%B5%D0%BB%D1%8C.jpg"
+    },
+    "1275": {
+      "label": "Chiweenie",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/en/d/db/Labradoodle_Assistance_Dogs.jpg"
+    },
+    "1276": {
+      "label": "Chorkie",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/2022-09/Chorkie1_3.png?itok=rEnmEJDR"
+    },
+    "1277": {
+      "label": "Chug",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/2022-07/Chug.jpg?itok=C_ctOIaz"
+    },
+    "1278": {
+      "label": "Cocker Spaniel",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Cocker%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%22Bill%22_-_Cocker_spaniel_anglais_2.JPG/960px-%22Bill%22_-_Cocker_spaniel_anglais_2.JPG"
+    },
+    "1279": {
+      "label": "Czechoslovakian Wolfdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Czechoslovakian%20Wolfdog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Czechoslovakian-wolfdog-profile_big.jpg/960px-Czechoslovakian-wolfdog-profile_big.jpg"
+    },
+    "1280": {
+      "label": "Dalmatian Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dalmatian%20dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Sun_Dog_Dalmatian.jpg/768px-Sun_Dog_Dalmatian.jpg"
+    },
+    "1281": {
+      "label": "Deerhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Scottish%20Deerhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Karrie.JPG/960px-Karrie.JPG"
+    },
+    "1282": {
+      "label": "Dorgie",
+      "pageUrl": "https://a-z-animals.com/animals/dorgi/",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn.greenfieldpuppies.com/wp-content/uploads/2016/07/Dorgi-puppy-800x800.jpg"
+    },
+    "1283": {
+      "label": "Elkhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norwegian%20Elkhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Elkhound2020_%28cropped%29.jpg/960px-Elkhound2020_%28cropped%29.jpg"
+    },
+    "1284": {
+      "label": "English Bull Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38322",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bullterier%20089%20LM.jpg"
+    },
+    "1285": {
+      "label": "English Pointer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pointer%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/English_Pointer_orange-white.jpg"
+    },
+    "1286": {
+      "label": "English Retriever",
+      "pageUrl": "https://thecaninechasm.com/the-truth-about-english-cream-golden-retrievers/",
+      "source": "manual",
+      "thumbnailUrl": "https://i0.wp.com/thecaninechasm.com/wp-content/uploads/2022/03/IMG_0615-2.jpg?w=2044&ssl=1"
+    },
+    "1287": {
+      "label": "English Toy Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37782",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/English%20Toy%20Terrier%20600%2001.jpg"
+    },
+    "1288": {
+      "label": "Entlebucher Mountain Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37986",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Entlebucher.jpg"
+    },
+    "1289": {
+      "label": "Eskimo Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog%20breed",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Dog_morphological_variation.png/960px-Dog_morphological_variation.png"
+    },
+    "1290": {
+      "label": "Eurasier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Eurasier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Eurasier_BailyWtatze.jpg"
+    },
+    "1291": {
+      "label": "Fell Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q5442433",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Male%20dog%20Red%20Fell%20Terrier.jpg"
+    },
+    "1292": {
+      "label": "Fila Brasileiro",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37808",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Yacare%20De%20El%20Siledin.JPG"
+    },
+    "1293": {
+      "label": "Finnish Spitz",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29195",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Finnish%20Spitz%20600.jpg"
+    },
+    "1294": {
+      "label": "Frenchie Pug",
+      "pageUrl": "https://en.wikipedia.org/wiki/French%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2008-07-28_Dog_at_Frolick_Field.jpg/960px-2008-07-28_Dog_at_Frolick_Field.jpg"
+    },
+    "1295": {
+      "label": "Frenchton",
+      "pageUrl": "https://dogacademy.org/breeds/frenchton-breed",
+      "source": "manual",
+      "thumbnailUrl": "https://www.prodograw.com/wp-content/uploads/2025/09/Frenchton-1.jpg"
+    },
+    "1296": {
+      "label": "German Spitz",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Spitz",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Goldilocks.gif"
+    },
+    "1297": {
+      "label": "Grand Basset Griffon Vendeen",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38000",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/G%20Basset%20Griffon%20Vendeen%20600.jpg"
+    },
+    "1298": {
+      "label": "Great Bernese",
+      "pageUrl": "https://thebernese.org/the-great-bernese/",
+      "source": "manual",
+      "thumbnailUrl": "https://thebernese.org/wp-content/uploads/2025/06/Bernese-Mountain-Dog-and-Great-Bernese.jpg"
+    },
+    "1299": {
+      "label": "Greenland Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Canadian%20Eskimo%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/79/Spoonsced.jpg"
+    },
+    "1300": {
+      "label": "Hamiltonstovare",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37978",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hamiltonstovare%20600.jpg"
+    },
+    "1301": {
+      "label": "Harlequin Pinscher",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pinscher",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Bungartz-Pinscher.jpg"
+    },
+    "1302": {
+      "label": "Havashu",
+      "pageUrl": "https://wagwalking.com/breed/havashu",
+      "source": "manual",
+      "thumbnailUrl": "https://photos.puppyspot.com/8/listing/805868/photo/504496512_hd.jpg"
+    },
+    "1303": {
+      "label": "Hungarian Coarse-Haired Vizsla",
+      "pageUrl": "https://www.akc.org/dog-breeds/wirehaired-vizsla/",
+      "source": "manual",
+      "thumbnailUrl": "https://i.pinimg.com/564x/93/cd/b5/93cdb5c71015e15b93bdd09bb2f9c7f0.jpg"
+    },
+    "1304": {
+      "label": "Hungarian Greyhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Magyar_Ag%C3%A1r",
+      "source": "manual",
+      "thumbnailUrl": "https://www.hundeo.com/wp-content/uploads/2019/10/Magyar-Aga%CC%81r-Profilbild.jpg"
+    },
+    "1305": {
+      "label": "Hungarian Kuvasz",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kuvasz",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/76/Kuvasz_named_Kan.jpg"
+    },
+    "1306": {
+      "label": "Hungarian Puli",
+      "pageUrl": "https://en.wikipedia.org/wiki/Puli%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ab/PuliBlack_wb.jpg"
+    },
+    "1307": {
+      "label": "Hungarian Vizsla",
+      "pageUrl": "https://en.wikipedia.org/wiki/Vizsla",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg/960px-Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg"
+    },
+    "1308": {
+      "label": "Husky",
+      "pageUrl": "https://en.wikipedia.org/wiki/Husky",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/960px-Huskiesatrest.jpg"
+    },
+    "1309": {
+      "label": "Ibizian Wolfhound",
+      "pageUrl": "https://www.petfinder.com/dogs-and-puppies/breeds/ibizan-hound/",
+      "source": "manual",
+      "thumbnailUrl": "https://consumer-cms.petfinder.com/sites/default/files/images/content/Ibizan%20Hound%203.jpg"
+    },
+    "1310": {
+      "label": "Irish Red Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/Irish%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Can_Setter_dog_GFDL.jpg/960px-Can_Setter_dog_GFDL.jpg"
+    },
+    "1311": {
+      "label": "Italian Mastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21082",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/FINLEY%20DE%20LA%20MIRAGE%20DE%20TORRELLAS%2001.jpg"
+    },
+    "1312": {
+      "label": "Italian Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/EnglishSetter9_fx_wb.jpg"
+    },
+    "1313": {
+      "label": "Italian Spinone",
+      "pageUrl": "https://scrumbles.co.uk/blogs/dog/italian-spinone-breed-guide",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn.shopify.com/s/files/1/0568/0450/7691/files/iStock-531550882_600x600.jpg?v=1732903835"
+    },
+    "1314": {
+      "label": "Italian Spitz",
+      "pageUrl": "https://en.wikipedia.org/wiki/Volpino_Italiano",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Szpic_miniaturowy_Volpino_MWPR_Katowice_2008_%28cropped%29.JPG/500px-Szpic_miniaturowy_Volpino_MWPR_Katowice_2008_%28cropped%29.JPG"
+    },
+    "1315": {
+      "label": "Jamthund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38105",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Jamthlnd.jpg"
+    },
+    "1316": {
+      "label": "Japanese Akita",
+      "pageUrl": "https://en.wikipedia.org/wiki/Akita%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Akita_Collage.png"
+    },
+    "1317": {
+      "label": "Japanese Fighting Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog%20fighting",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Dog_baiting.jpg/960px-Dog_baiting.jpg"
+    },
+    "1318": {
+      "label": "Japanese Kishu",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kishu",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Kishu.jpg"
+    },
+    "1319": {
+      "label": "Jindo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Korean%20Jindo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/38/ARIRANG.jpg"
+    },
+    "1320": {
+      "label": "Jug",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images19/JugJackRussellPugHybridDollop.JPG"
+    },
+    "1321": {
+      "label": "Kai Ken",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38223",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Image%20of%20Kai%20(dog).jpg"
+    },
+    "1322": {
+      "label": "Kangal Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kangal%20Shepherd%20Dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Kangal_front_on.jpg/960px-Kangal_front_on.jpg"
+    },
+    "1323": {
+      "label": "King Charles Spaniel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38132",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/King%20Charles%20Spaniel%20200.jpg"
+    },
+    "1324": {
+      "label": "Koolie",
+      "pageUrl": "https://en.wikipedia.org/wiki/Koolie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Pete_may01_web.JPG"
+    },
+    "1325": {
+      "label": "Laikas",
+      "pageUrl": "https://en.wikipedia.org/wiki/Laika_(dog_type)",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/East_Siberian_Laika_03.jpg/330px-East_Siberian_Laika_03.jpg"
+    },
+    "1326": {
+      "label": "Lapland Spitz",
+      "pageUrl": "https://www.britannica.com/animal/Finnish-spitz",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn.britannica.com/75/123275-050-5166538F/Finnish-spitz.jpg"
+    },
+    "1327": {
+      "label": "Lapponian Herder",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38362",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lapskvallhund.jpg"
+    },
+    "1328": {
+      "label": "Lhasa Apso Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Lhasa%20Apso",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/Aishia.jpg"
+    },
+    "1329": {
+      "label": "Llewellin Setter",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/EnglishSetter9_fx_wb.jpg"
+    },
+    "1330": {
+      "label": "Lundehund",
+      "pageUrl": "https://en.wikipedia.org/wiki/Norwegian_Lundehund",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Lundehund-2003.jpg"
+    },
+    "1331": {
+      "label": "Mal-Shi",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://animalkingdomaz.com/wp-content/uploads/malshi-adult-300x225.jpg"
+    },
+    "1332": {
+      "label": "Miniature American Eskimo",
+      "pageUrl": "https://www.akc.org/dog-breeds/american-eskimo-dog/",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn05.zipify.com/lSm3lvXtBY52-3nxiadLBoR5FBw=/fit-in/3840x0/8160ebb3e83544d2b1f107dcbec4abf7/01.jpeg"
+    },
+    "1333": {
+      "label": "Miniature Dachshund",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dachshund",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg/960px-%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg"
+    },
+    "1334": {
+      "label": "Miniature Yorkie",
+      "pageUrl": "https://southernyorkies.com/how-teacup-tinies-micro-yorkies-came-to-be/",
+      "source": "manual",
+      "thumbnailUrl": "https://i0.wp.com/southernyorkies.com/wp-content/uploads/2016/07/Pickle-Peen.jpg?resize=768%2C576&ssl=1"
+    },
+    "1336": {
+      "label": "Morkie",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/2022-07/Morkie.jpg?itok=D6c6AdEA"
+    },
+    "1337": {
+      "label": "Norrbottenspets",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38925",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Nordic%20Spitz.jpg"
+    },
+    "1338": {
+      "label": "Norwegian Buhund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38478",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Norwegian%20Buhund%20600.jpg"
+    },
+    "1339": {
+      "label": "Peekapoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://cdn-ilbfemn.nitrocdn.com/SMbNqQVgokVBOKPHqgPbhvowhPKWFJah/assets/images/optimized/rev-1acef9d/canna-pet.com/wp-content/uploads/2016/01/peekapoo.jpg"
+    },
+    "1340": {
+      "label": "Pomapoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cassey%20Ho",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/250308_The_Female_Quotient_SXSW_March_2025_Austin_Texas_Emily_Quirk_002908.jpg/960px-250308_The_Female_Quotient_SXSW_March_2025_Austin_Texas_Emily_Quirk_002908.jpg"
+    },
+    "1341": {
+      "label": "Redtick Coonhound",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20English%20Coonhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/English_Coonhound.jpg"
+    },
+    "1342": {
+      "label": "Russian Hounds",
+      "pageUrl": "https://en.wikipedia.org/wiki/Afghan%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Afghan_dog_-_cropped.jpg"
+    },
+    "1343": {
+      "label": "Sharpoo",
+      "pageUrl": "https://www.petguide.com/breeds/dog/shar-poo/",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn-fastly.petguide.com/media/2022/02/16/8231293/shar-poo.jpg?size=720x845&nocrop=1"
+    },
+    "1344": {
+      "label": "Shih-poo",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.hillspet.com/content/dam/cp-sites-aem/hills/hills-pet/breed/breed-hero-images/shihpoo-dog-lying-in-grass-SW.jpg"
+    },
+    "1345": {
+      "label": "Siberian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Siberian_Husky",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Husky_L.jpg"
+    },
+    "1346": {
+      "label": "Staffordshire Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Staffordshire%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg/599px-AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg"
+    },
+    "1347": {
+      "label": "Teacup Poodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "1348": {
+      "label": "Teacup Yorkie",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://cdn.prod.website-files.com/6634a8f8dd9b2a63c9e6be83/669e2e275ab817749e4e694b_139531.image0.jpeg"
+    },
+    "1349": {
+      "label": "Toy Maltese",
+      "pageUrl": "https://en.wikipedia.org/wiki/Maltese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Maltese_600.jpg/600px-Maltese_600.jpg"
+    },
+    "1350": {
+      "label": "Toy Schnauzer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Schnauzer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Schnauzer_Size_Montage.png"
+    },
+    "1351": {
+      "label": "Wheaten Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38047",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Soft%20Coated%20Wheaten%20Terrier%20600.jpg"
+    },
+    "1352": {
+      "label": "American Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/American_Bulldog_600.jpg/600px-American_Bulldog_600.jpg"
+    },
+    "1353": {
+      "label": "Aidi",
+      "pageUrl": "https://en.wikipedia.org/wiki/Aidi",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Aidi_Atlas.jpg/960px-Aidi_Atlas.jpg"
+    },
+    "1354": {
+      "label": "Airedale Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Airedale%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/52/Airedale_Terrier.jpg"
+    },
+    "1355": {
+      "label": "Akbash",
+      "pageUrl": "https://en.wikipedia.org/wiki/Akbash",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Akba%C5%9F_cinsi_k%C3%B6pek.jpg/960px-Akba%C5%9F_cinsi_k%C3%B6pek.jpg"
+    },
+    "1356": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Spanishalanoblacktan1.jpg/960px-Spanishalanoblacktan1.jpg",
+      "label": "Alano Espanol",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "1357": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Alpejski_go%C5%84czy_kr%C3%B3tkono%C5%BCny_g99.jpg/960px-Alpejski_go%C5%84czy_kr%C3%B3tkono%C5%BCny_g99.jpg",
+      "label": "Alpine Dachsbracke",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "1358": {
+      "label": "Alsatian",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Shepherd",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/German_Shepherd_-_DSC_0346_%2810096362833%29.jpg/583px-German_Shepherd_-_DSC_0346_%2810096362833%29.jpg"
+    },
+    "1359": {
+      "label": "American\u00a0Bullnese",
+      "pageUrl": "https://ckcusa.com/breeds/american-bullnese/",
+      "source": "manual",
+      "thumbnailUrl": "https://ckcusa.com/breedImages/13/american-bullnese.jpg"
+    },
+    "1360": {
+      "label": "American Eskimo Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Eskimo%20Dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/American_Eskimo_Dog_1.jpg/960px-American_Eskimo_Dog_1.jpg"
+    },
+    "1361": {
+      "label": "American Indian Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Indian%20pariah%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Dog_00154.JPG/960px-Dog_00154.JPG"
+    },
+    "1362": {
+      "label": "American Lo-Sze Pugg",
+      "pageUrl": "https://tvaryny.com/us/breed-american-lo-sze-pug",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn.tvaryny.com/wp-content/uploads/2016/09/logo-220126.jpg"
+    },
+    "1363": {
+      "label": "American Staffordshire Terrier Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Staffordshire%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg/599px-AMERICAN_STAFFORDSHIRE_TERRIER%2C_Zican%E2%80%99s_Bz_Ez_Dragon_%2824208348891%29.2.jpg"
+    },
+    "1364": {
+      "label": "American Staghound",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Staghound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Staghound.jpg"
+    },
+    "1365": {
+      "label": "American Tundra Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Hudson%20%26%20Rex",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Hudson_%26_Rex_Mark_Poster.jpg/640px-Hudson_%26_Rex_Mark_Poster.jpg"
+    },
+    "1366": {
+      "label": "American White Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Australian_Shepherd_red_bi.JPG/960px-Australian_Shepherd_red_bi.JPG"
+    },
+    "1367": {
+      "label": "Appenzeller Sennenhunde",
+      "pageUrl": "https://en.wikipedia.org/wiki/Appenzeller%20Sennenhund",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Eisa_Kessy_v_Br%C3%BCnggberg.jpg/960px-Eisa_Kessy_v_Br%C3%BCnggberg.jpg"
+    },
+    "1368": {
+      "label": "Argentine Dogo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dogo%20Argentino",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Argentine_Dogo_%28535032632%29_%28cropped%29.jpg/960px-Argentine_Dogo_%28535032632%29_%28cropped%29.jpg"
+    },
+    "1369": {
+      "label": "Aussiedoodle/Aussiepoo",
+      "pageUrl": "https://www.petmd.com/dog/breeds/aussiedoodle",
+      "source": "manual",
+      "thumbnailUrl": "https://image.petmd.com/files/styles/978x550/public/2023-01/aussiedoodle-dog.jpg?w=2048&q=75"
+    },
+    "1370": {
+      "label": "Australian Shepherd Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Australian_Shepherd_red_bi.JPG/960px-Australian_Shepherd_red_bi.JPG"
+    },
+    "1371": {
+      "label": "Austrian Brandlbracke",
+      "pageUrl": "https://en.wikipedia.org/wiki/Austrian%20Black%20and%20Tan%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Brandlbracke.JPG/960px-Brandlbracke.JPG"
+    },
+    "1372": {
+      "label": "Azawakh",
+      "pageUrl": "https://en.wikipedia.org/wiki/Azawakh",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Bistrita_2015_%2822%29.jpg/960px-Bistrita_2015_%2822%29.jpg"
+    },
+    "1373": {
+      "label": "Bagel (Bagle Hound)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bagel%20dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/41/Bageldog.jpg"
+    },
+    "1375": {
+      "label": "Basset Bleu De Gascogne",
+      "pageUrl": "https://en.wikipedia.org/wiki/Basset%20Bleu%20de%20Gascogne",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Basset_bleu_de_Gascogne.jpg/921px-Basset_bleu_de_Gascogne.jpg"
+    },
+    "1376": {
+      "label": "Basset Fauve De Bretagne",
+      "pageUrl": "https://en.wikipedia.org/wiki/Basset%20Fauve%20de%20Bretagne",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Basset_Fauve_de_Bretagne_600.jpg/600px-Basset_Fauve_de_Bretagne_600.jpg"
+    },
+    "1377": {
+      "label": "Bavarian Mountain Hunting Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bavarian%20Mountain%20Hound",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Zoran_Spod_Ruskiej_Granicy_the_Bavarian_Mountain_Hound.jpg/902px-Zoran_Spod_Ruskiej_Granicy_the_Bavarian_Mountain_Hound.jpg"
+    },
+    "1378": {
+      "label": "Belgian Shepherd Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1379": {
+      "label": "Bergamasco",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bergamasco%20Shepherd",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Ortensia_di_Valle_Scrivia.jpg/960px-Ortensia_di_Valle_Scrivia.jpg"
+    },
+    "1380": {
+      "label": "Berger Blanc Suisse",
+      "pageUrl": "https://en.wikipedia.org/wiki/White%20Swiss%20Shepherd%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/White_Swiss_Shepherd_Dog_Djinn_%28cropped%29.JPG/960px-White_Swiss_Shepherd_Dog_Djinn_%28cropped%29.JPG"
+    },
+    "1381": {
+      "label": "Berger des Pyrenees",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pyrenean%20Sheepdog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Berger-des-Pyrenees_Ellea_800x600.jpg/800px-Berger-des-Pyrenees_Ellea_800x600.jpg"
+    },
+    "1382": {
+      "label": "Berger Picard",
+      "pageUrl": "https://en.wikipedia.org/wiki/Berger%20Picard",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Picard_Delice_Stacked.jpg/960px-Picard_Delice_Stacked.jpg"
+    },
+    "1383": {
+      "label": "Bernadoodle",
+      "pageUrl": "https://www.petmd.com/dog/breeds/bernedoodle",
+      "source": "manual",
+      "thumbnailUrl": "https://centralillinoisdoodles.com/wp-content/uploads/bernedoodle-laying-on-a-sofa.png"
+    },
+    "1384": {
+      "label": "Bernese Mountain Dog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bernese%20Mountain%20Dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/3-BerneseMountainDogInGrass.jpg/960px-3-BerneseMountainDogInGrass.jpg"
+    },
+    "1385": {
+      "label": "Bichon Frise Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bichon%20Fris%C3%A9",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Bichon_Fris%C3%A9_-_studdogbichon.jpg/960px-Bichon_Fris%C3%A9_-_studdogbichon.jpg"
+    },
+    "1386": {
+      "label": "Biewer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Biewer%20Terrier",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/BiewerH%C3%BCndin.jpg/960px-BiewerH%C3%BCndin.jpg"
+    },
+    "1387": {
+      "label": "Blue Lacy",
+      "pageUrl": "https://en.wikipedia.org/wiki/Blue%20Lacy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/BlueLacyInBluebonnets.jpg/960px-BlueLacyInBluebonnets.jpg"
+    },
+    "1388": {
+      "label": "Bohemian Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bohemian%20Shepherd",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/OREADY_KROSANDRA_%2814%29.JPG/960px-OREADY_KROSANDRA_%2814%29.JPG"
+    },
+    "1389": {
+      "label": "Bolonka",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bolonka",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/RUSSKAYA_TSVETNAYA_BOLONKA%2C_Rayskoe_Sotsvetie_Tsevtik_%2824264726856%29.jpg/960px-RUSSKAYA_TSVETNAYA_BOLONKA%2C_Rayskoe_Sotsvetie_Tsevtik_%2824264726856%29.jpg"
+    },
+    "1390": {
+      "label": "Bosnian Coarse Haired Hound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Barak%20hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/BIR_Grupp_6-_BOSANSKI_OSTRODLAKI_GONIC-BARAK%2C_Sandy_%2823866392689%29.jpg/960px-BIR_Grupp_6-_BOSANSKI_OSTRODLAKI_GONIC-BARAK%2C_Sandy_%2823866392689%29.jpg"
+    },
+    "1391": {
+      "label": "Boston Terrier Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Boston%20Terrier",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Boston-terrier-carlos-de.JPG/960px-Boston-terrier-carlos-de.JPG"
+    },
+    "1392": {
+      "label": "Bouvier Des Flandres Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37896",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bouvier.JPG"
+    },
+    "1393": {
+      "label": "Braque d Auvergne",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37727",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Braque%20d%20Auvergne.jpg"
+    },
+    "1394": {
+      "label": "Brazilian\u00a0Fila",
+      "pageUrl": "https://en.wikipedia.org/wiki/Fila_Brasileiro",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Anabel_orla_do_fila.jpg/500px-Anabel_orla_do_fila.jpg"
+    },
+    "1395": {
+      "label": "Brazilian Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38621",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/TERRIER%20BRASILEIRO%2C%20DK%20JV-15%20DK%20V-15%20Jyv%C3%A4m%C3%A4en%20Zircon%20Zr%20(24265479706).2.jpg"
+    },
+    "1396": {
+      "label": "Brittany\u00a0Mix",
+      "pageUrl": "https://www.k9ofmine.com/brittany-mixes/",
+      "source": "manual",
+      "thumbnailUrl": "https://www.k9ofmine.com/wp-content/uploads/2023/06/Brittany-Mixes.jpg"
+    },
+    "1397": {
+      "label": "Brussels Griffon Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Griffon%20Bruxellois",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Monkey_Bizniz_Drama_Queen.jpg"
+    },
+    "1398": {
+      "label": "Bull Boxer",
+      "pageUrl": "https://en.wikipedia.org/wiki/.44%20Bull%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/442_Webley.JPG/960px-442_Webley.JPG"
+    },
+    "1399": {
+      "label": "Bull Terrier - miniature",
+      "pageUrl": "https://en.wikipedia.org/wiki/Miniature_Bull_Terrier",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Minibull_2_Moletai_May_2014.jpg/500px-Minibull_2_Moletai_May_2014.jpg"
+    },
+    "1400": {
+      "label": "BullBoxer",
+      "pageUrl": "https://www.wikidata.org/wiki/Q1780869",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Doguebrasileiro.jpg"
+    },
+    "1401": {
+      "label": "Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bulldog_inglese.jpg/960px-Bulldog_inglese.jpg"
+    },
+    "1402": {
+      "label": "Bullmastiff Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38080",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dog%20Bullmastiff%20600.jpg"
+    },
+    "1403": {
+      "label": "Ca de Bou",
+      "pageUrl": "https://en.wikipedia.org/wiki/Ca%20de%20Bou",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/ZarcoBruno2015.jpg/960px-ZarcoBruno2015.jpg"
+    },
+    "1404": {
+      "label": "Cairn Terrier Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37888",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cairn-Terrier-Garten1.jpg"
+    },
+    "1405": {
+      "label": "Canadian Eskimo Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Canadian%20Eskimo%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/79/Spoonsced.jpg"
+    },
+    "1406": {
+      "label": "Cao de Fila de Sao Miguel",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37730",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Caofila.jpg"
+    },
+    "1407": {
+      "label": "Carolina Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Carolina%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/64/Dakota%2C_the_Dixie_Dingo_%28or_Carolina_Dog%29.jpg"
+    },
+    "1408": {
+      "label": "Catalan Sheepdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Catalan%20Sheepdog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Gos-d%27Atura-Catala.jpg/960px-Gos-d%27Atura-Catala.jpg"
+    },
+    "1409": {
+      "label": "Caucasian Ovcharka",
+      "pageUrl": "https://en.wikipedia.org/wiki/Caucasian%20Shepherd%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Owczarek_kaukaski_65556.jpg/960px-Owczarek_kaukaski_65556.jpg"
+    },
+    "1410": {
+      "label": "Cavalier King Charles Spaniel Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38072",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/CavalierKgChas2%20wb.jpg"
+    },
+    "1411": {
+      "label": "Central Asian Ovtcharka",
+      "pageUrl": "https://en.wikipedia.org/wiki/Central_Asian_Shepherd_Dog",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/2.CAO_in_Hungary.jpg/500px-2.CAO_in_Hungary.jpg"
+    },
+    "1412": {
+      "label": "Cesky Fousek",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37666",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Czeski%20fousek%20777.jpg"
+    },
+    "1413": {
+      "label": "Chasa Apso",
+      "pageUrl": "https://www.akc.org/dog-breeds/lhasa-apso/",
+      "source": "manual",
+      "thumbnailUrl": "https://www.akc.org/wp-content/uploads/2017/11/Lhasa-Apso-On-White-01.jpg"
+    },
+    "1414": {
+      "label": "Chien D Artois",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20breeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Johnson%27s_household_book_of_nature_%287268642682%29.jpg/960px-Johnson%27s_household_book_of_nature_%287268642682%29.jpg"
+    },
+    "1415": {
+      "label": "Chinese Chongqing Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37673",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Chinese%20Chongqing%20Dog%20H%C3%BCndin.jpg"
+    },
+    "1416": {
+      "label": "Chinese Foo",
+      "pageUrl": "https://www.wikidata.org/wiki/Q10876842",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/6931543972128%20.pic%20hd.jpg"
+    },
+    "1417": {
+      "label": "Chinese Imperial",
+      "pageUrl": "https://www.wikidata.org/wiki/Q5021778",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20China%20(1889%E2%80%931912).svg"
+    },
+    "1418": {
+      "label": "Chodsky Pes",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37746",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/OREADY%20KROSANDRA%20(14).JPG"
+    },
+    "1419": {
+      "label": "Cirneco dell Etna",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38262",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cirneco%20dell%20Etna%20611.jpg"
+    },
+    "1420": {
+      "label": "Comfort Retriever",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dog%20crossbreed",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Rusty.jpg/960px-Rusty.jpg"
+    },
+    "1421": {
+      "label": "Corgi",
+      "pageUrl": "https://en.wikipedia.org/wiki/Welsh%20Corgi",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Pembroke_and_Cardigan_Welsh_Corgi.jpg/960px-Pembroke_and_Cardigan_Welsh_Corgi.jpg"
+    },
+    "1422": {
+      "label": "Coton De Tulear Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38295",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Coton%20de%20Tular%202.jpg"
+    },
+    "1423": {
+      "label": "Danish-Swedish Farmdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29127",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Danish%20Swedish%20Farmdog%20cropped.jpg"
+    },
+    "1424": {
+      "label": "Deutsch Drahthaar",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Wirehaired%20Pointer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2b/GermanWirehrPtr1_wb.jpg"
+    },
+    "1425": {
+      "label": "Deutscher Wachtelhund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37824",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Deutscher%20Wachtel%202.jpg"
+    },
+    "1426": {
+      "label": "Dingo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dingo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Dingo_%28Canis_lupus_dingo%29_Kakadu_2.jpg/960px-Dingo_%28Canis_lupus_dingo%29_Kakadu_2.jpg"
+    },
+    "1427": {
+      "label": "Dogo Argentino",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dogo%20Argentino",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Argentine_Dogo_%28535032632%29_%28cropped%29.jpg/960px-Argentine_Dogo_%28535032632%29_%28cropped%29.jpg"
+    },
+    "1428": {
+      "label": "Double\u00a0Doodle",
+      "pageUrl": "https://www.petguide.com/breeds/dog/double-doodle/",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn-fastly.petguide.com/media/2022/02/16/8259007/double-doodle.jpg?size=720x845&nocrop=1"
+    },
+    "1429": {
+      "label": "Drentsche Patrijshond/Dutch\u00a0Partridge Dog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Drentse_Patrijshond",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Drentse_Patrijshond.jpg/500px-Drentse_Patrijshond.jpg"
+    },
+    "1430": {
+      "label": "Drever",
+      "pageUrl": "https://en.wikipedia.org/wiki/Drever",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Drever_NUCh_Tanjo.jpg/960px-Drever_NUCh_Tanjo.jpg"
+    },
+    "1431": {
+      "label": "Dunker",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dunker",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/48/Dunker.jpg"
+    },
+    "1432": {
+      "label": "Dutch Sheepdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20breeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Johnson%27s_household_book_of_nature_%287268642682%29.jpg/960px-Johnson%27s_household_book_of_nature_%287268642682%29.jpg"
+    },
+    "1433": {
+      "label": "Dutch Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29114",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hollandse%20herder%20korthaar.jpg"
+    },
+    "1434": {
+      "label": "Dutch Smoushond",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37969",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hollandsche%20smoushonden%202.JPG"
+    },
+    "1435": {
+      "label": "East European Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38504",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Vostochno%20Evropeiskaya%20Ovcharka.jpg"
+    },
+    "1436": {
+      "label": "English Labrador",
+      "pageUrl": "https://en.wikipedia.org/wiki/Labrador%20Retriever",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Labrador_on_Quantock_%282175262184%29.jpg/960px-Labrador_on_Quantock_%282175262184%29.jpg"
+    },
+    "1437": {
+      "label": "English Setter Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/1/15/EnglishSetter9_fx_wb.jpg"
+    },
+    "1438": {
+      "label": "English Shepherd",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/54/TricolorEnglishShepherdDog.jpg"
+    },
+    "1439": {
+      "label": "English Springer Spaniel Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29022",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Englishspringerspaniel%20Winston.jpg"
+    },
+    "1440": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Go%C5%84czy_esto%C5%84ski_MB_01.jpg/960px-Go%C5%84czy_esto%C5%84ski_MB_01.jpg",
+      "label": "Estonian Hound",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "1441": {
+      "label": "Estrela Mountain Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38096",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Estrela%20Mountain%20Dog%206%20month%20old%20male.jpg"
+    },
+    "1442": {
+      "label": "Feist Dog\u00a0Large: 60+ lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Feist_(dog_breed)",
+      "source": "manual",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images17/TreeingMountainFeistKentuckyJody.JPG"
+    },
+    "1443": {
+      "label": "Feist\u00a0Dog Medium: 31\u00a0- 59 lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Feist_(dog_breed)",
+      "source": "manual",
+      "thumbnailUrl": "https://cdn.shopify.com/s/files/1/0765/3946/1913/files/DenMark-Feist-dog.webp?v=1737950487"
+    },
+    "1444": {
+      "label": "Feist Dog Small:\u00a011 - 30 lbs",
+      "pageUrl": "https://en.wikipedia.org/wiki/Feist_(dog_breed)",
+      "source": "manual",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images12/Kemmer%20FeisSnow%20Days.JPG"
+    },
+    "1445": {
+      "label": "French Bulldog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/French%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/2008-07-28_Dog_at_Frolick_Field.jpg/960px-2008-07-28_Dog_at_Frolick_Field.jpg"
+    },
+    "1446": {
+      "label": "Galgos (Spanish Greyhound)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Galgo%20Espa%C3%B1ol",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Galgo_espagnol_006_%28lightened%29.jpg/960px-Galgo_espagnol_006_%28lightened%29.jpg"
+    },
+    "1447": {
+      "label": "Gazelle Hound",
+      "pageUrl": "https://en.wikipedia.org/wiki/Afghan%20Hound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Afghan_dog_-_cropped.jpg"
+    },
+    "1448": {
+      "label": "Gran Mastin de Borinquen",
+      "pageUrl": "https://wagwalking.com/breed/gran-mastin-de-borinquen",
+      "source": "manual",
+      "thumbnailUrl": "https://cinoclubebivar.wordpress.com/wp-content/uploads/2010/10/jibaro1.jpg"
+    },
+    "1449": {
+      "label": "Grand Bleu de Gascogne",
+      "pageUrl": "https://en.wikipedia.org/wiki/Grand%20Bleu%20de%20Gascogne",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Grand_Bleu_de_Gascogne_in_a_blue_dogcollar.jpg/960px-Grand_Bleu_de_Gascogne_in_a_blue_dogcollar.jpg"
+    },
+    "1450": {
+      "label": "Great Pyrenees Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37803",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pyrenean%20Mountain%20Dog%20600.jpg"
+    },
+    "1451": {
+      "label": "Greater Swiss Mountain Dog Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38121",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Testagrandebovaro.jpg"
+    },
+    "1452": {
+      "label": "Greyhound Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Greyhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/GraceTheGreyhound.jpg/960px-GraceTheGreyhound.jpg"
+    },
+    "1453": {
+      "label": "Griffon\u00a0Brusellois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Griffon_Bruxellois",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Monkey_Bizniz_Drama_Queen.jpg"
+    },
+    "1454": {
+      "label": "Groenendael",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1455": {
+      "label": "Havanese Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Havanese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/A_Havanese_judging.jpg/960px-A_Havanese_judging.jpg"
+    },
+    "1456": {
+      "label": "Hungarian Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38675",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Komondor%20Westminster%20Dog%20Show%20crop.jpg"
+    },
+    "1457": {
+      "label": "Inca Orchid",
+      "pageUrl": "https://en.wikipedia.org/wiki/Peruvian%20Hairless%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/PHDStandardStanding_-_Perro_Sin_Pelo_del_Per%C3%BA.jpg"
+    },
+    "1458": {
+      "label": "Irish Setter Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Irish%20Setter",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Can_Setter_dog_GFDL.jpg/960px-Can_Setter_dog_GFDL.jpg"
+    },
+    "1459": {
+      "label": "Italian Bulldogge",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20breeds",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Johnson%27s_household_book_of_nature_%287268642682%29.jpg/960px-Johnson%27s_household_book_of_nature_%287268642682%29.jpg"
+    },
+    "1460": {
+      "label": "Italian Greyhound Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Italian%20Greyhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Italian_Greyhound_standing_gray_%28cropped%29.jpg/960px-Italian_Greyhound_standing_gray_%28cropped%29.jpg"
+    },
+    "1461": {
+      "label": "Jack Russell Terrier Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Jack%20Russell%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Jack_Russell_Terrier_1.jpg/960px-Jack_Russell_Terrier_1.jpg"
+    },
+    "1462": {
+      "label": "Jagdterrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37899",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Terier%20niemiecki%20my%C5%9Bliwski%20721.jpg"
+    },
+    "1463": {
+      "label": "Japanese Chin Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Japanese%20Chin",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Chin_posing.jpg/960px-Chin_posing.jpg"
+    },
+    "1464": {
+      "label": "Karabash",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kangal%20Shepherd%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Kangal_front_on.jpg/960px-Kangal_front_on.jpg"
+    },
+    "1465": {
+      "label": "Karakachan",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38452",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Karakatschan.jpg"
+    },
+    "1466": {
+      "label": "Kishu Inu",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kishu",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Kishu.jpg"
+    },
+    "1467": {
+      "label": "Kooikerhondje",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38716",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kooiker03.jpg"
+    },
+    "1468": {
+      "label": "Korean Jindo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Korean%20Jindo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/38/ARIRANG.jpg"
+    },
+    "1469": {
+      "label": "Kyi-Leo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Saffron%20Revolution",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/2007_Myanmar_protests_7.jpg/960px-2007_Myanmar_protests_7.jpg"
+    },
+    "1470": {
+      "label": "Labrador Husky",
+      "pageUrl": "https://en.wikipedia.org/wiki/Husky",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/960px-Huskiesatrest.jpg"
+    },
+    "1471": {
+      "label": "Laekenois",
+      "pageUrl": "https://en.wikipedia.org/wiki/Belgian%20Shepherd",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg/960px-04_-_Belgian_shepherd_dog_varieties_-_Groenendael%2CTervuren%2C_Malinois%2C_Laekenois.jpg"
+    },
+    "1472": {
+      "label": "Lapinporokoira",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38362",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lapskvallhund.jpg"
+    },
+    "1473": {
+      "label": "Louisiana Catahoula Leopard Dog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q11294205",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/SasquatchCatahoulaCurDog.jpg"
+    },
+    "1474": {
+      "label": "Lucas Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q15618573",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lucas%20Terrier.jpg"
+    },
+    "1475": {
+      "label": "Lurcher",
+      "pageUrl": "https://en.wikipedia.org/wiki/Lurcher",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Lurcher_on_Mountain.jpg/960px-Lurcher_on_Mountain.jpg"
+    },
+    "1476": {
+      "label": "Malamute\u00a0Husky",
+      "pageUrl": "https://en.wikipedia.org/wiki/Alaskan_Malamute",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Alaskan_Malamute.jpg/500px-Alaskan_Malamute.jpg"
+    },
+    "1477": {
+      "label": "Malamute Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21206",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Alaskan%20Malamute.jpg"
+    },
+    "1478": {
+      "label": "Maltese Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Maltese%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Maltese_600.jpg/600px-Maltese_600.jpg"
+    },
+    "1479": {
+      "label": "Maremma Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q21074",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cane%20Pastore%20Abruzzese%20Abruzzo.jpg"
+    },
+    "1480": {
+      "label": "McNab",
+      "pageUrl": "https://en.wikipedia.org/wiki/McNab_dog",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Red_and_White_McNab_Shepherds_Kye_Aila.jpg/500px-Red_and_White_McNab_Shepherds_Kye_Aila.jpg"
+    },
+    "1481": {
+      "label": "Miniature American Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q6865130",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Miniature-american-shepherd-energies.jpg"
+    },
+    "1482": {
+      "label": "Miniature Goldendoodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Goldendoodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Golden_Doodle_Standing_%28HD%29.jpg/960px-Golden_Doodle_Standing_%28HD%29.jpg"
+    },
+    "1483": {
+      "label": "Miniature Pinscher Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38990",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Grupp%202%20DV%C3%84RGPINCHER%2C%20Pincerella%E2%80%99s%20Rinaldo%20Rosso%20(24260846206).jpg"
+    },
+    "1484": {
+      "label": "Mioritic Sheepdog",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sheep%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Old_English_Sheepdog_%28side%29.jpg/960px-Old_English_Sheepdog_%28side%29.jpg"
+    },
+    "1485": {
+      "label": "Mountian Feist",
+      "pageUrl": "https://projectupland.com/dogs/mountain-feist-treeing-feist-a-look-at-squirrel-hunting-dogs/",
+      "source": "manual",
+      "thumbnailUrl": "https://projectupland.com/wp-content/uploads/2025/07/A-Look-at-Squirrel-Hunting-Dogs-3.jpg"
+    },
+    "1486": {
+      "label": "Native American Indian Dog",
+      "pageUrl": "https://www.wisdompanel.com/en-us/dog-breeds/american-indian-dog",
+      "thumbnailUrl": "https://breed-assets.wisdompanel.com/dog/american-indian-dog/American_Indian_Dog_Color.pngG"
+    },
+    "1487": {
+      "label": "Nebolish Mastiff",
+      "pageUrl": "https://www.dogbreedinfo.com/nebolishmastiff.ht",
+      "source": "manual",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images7/Nebolish_Mastiffs_Two_Adults.jpg"
+    },
+    "1488": {
+      "label": "Nederlands Kooikerhondje",
+      "pageUrl": "https://en.wikipedia.org/wiki/Markiesje",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/51/Us_babbe.jpg"
+    },
+    "1489": {
+      "label": "New Zealand Huntaway (Sheepdog)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Huntaway",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Huntaway.JPG/500px-Huntaway.JPG"
+    },
+    "1490": {
+      "label": "Newfoundland Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Newfoundland%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Newfoundland_dog_Smoky.jpg/960px-Newfoundland_dog_Smoky.jpg"
+    },
+    "1491": {
+      "label": "Nippon Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Hachik%C5%8D",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Hachiko.JPG"
+    },
+    "1492": {
+      "label": "Norwegian Lundehund",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38895",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lundehund-2003.jpg"
+    },
+    "1493": {
+      "label": "Old English Sheepdog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Old%20English%20Sheepdog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Old_English_Sheepdog_%28side%29.jpg/960px-Old_English_Sheepdog_%28side%29.jpg"
+    },
+    "1494": {
+      "label": "Ori Pei",
+      "pageUrl": "https://wagwalking.com/breed/ori-pei",
+      "source": "manual",
+      "thumbnailUrl": "https://www.dogbreedinfo.com/images9/OriPeiPorter1.jpg"
+    },
+    "1495": {
+      "label": "Pakistani Bully Kutta",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bully_Kutta",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/PakistaniMastiffPunjab.jpg/500px-PakistaniMastiffPunjab.jpg"
+    },
+    "1496": {
+      "label": "Pakistani Mastiff",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37680",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bully%20kutta%20naulakhia.tif"
+    },
+    "1497": {
+      "label": "Patterdale Terrier",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38800",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/05078045%20Patterdale%20Terrier.jpg"
+    },
+    "1498": {
+      "label": "Perro de Presa Canario",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37750",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Presacanariobody.jpg"
+    },
+    "1499": {
+      "label": "Perro de Presa Mallorquin",
+      "pageUrl": "https://en.wikipedia.org/wiki/Ca%20de%20Bou",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/ZarcoBruno2015.jpg/960px-ZarcoBruno2015.jpg"
+    },
+    "1500": {
+      "label": "Peruvian Inca Orchid",
+      "pageUrl": "https://en.wikipedia.org/wiki/Peruvian%20Hairless%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/PHDStandardStanding_-_Perro_Sin_Pelo_del_Per%C3%BA.jpg"
+    },
+    "1501": {
+      "label": "Petit Brabancon",
+      "pageUrl": "https://en.wikipedia.org/wiki/Griffon%20Bruxellois",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Monkey_Bizniz_Drama_Queen.jpg"
+    },
+    "1502": {
+      "label": "Polish Tatra Sheepdog",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39096",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Polski%20Owczarek%20Podhalanski.jpg"
+    },
+    "1503": {
+      "label": "Pomeranian Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pomeranian_dog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Pomeranian.JPG/330px-Pomeranian.JPG"
+    },
+    "1504": {
+      "label": "Porcelaine",
+      "pageUrl": "https://en.wikipedia.org/wiki/Porcelaine",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Porcelaine_2009_pl4.jpg/960px-Porcelaine_2009_pl4.jpg"
+    },
+    "1505": {
+      "label": "Portuguese Mastiff (Rafeiro Do Alentejo)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Mastiff",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/The_dog_book_-_a_popular_history_of_the_dog%2C_with_practical_information_as_to_care_and_management_of_house%2C_kennel%2C_and_exhibition_dogs%3B_and_descriptions_of_all_the_important_breeds_%281906%29_%2820800295488%29.jpg/960px-thumbnail.jpg"
+    },
+    "1506": {
+      "label": "Portuguese Podengo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Portuguese%20Podengo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Evitarocks_%28cropped%29.jpg/960px-Evitarocks_%28cropped%29.jpg"
+    },
+    "1507": {
+      "label": "Portuguese Podengo Pequeno",
+      "pageUrl": "https://en.wikipedia.org/wiki/Portuguese%20Podengo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Evitarocks_%28cropped%29.jpg/960px-Evitarocks_%28cropped%29.jpg"
+    },
+    "1508": {
+      "label": "Portuguese Pointer",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38165",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Portuguese%20pointer%2011yo.jpg"
+    },
+    "1509": {
+      "label": "Portuguese Water Dog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Portuguese%20Water%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/C%C3%A3o_de_agua_Portugu%C3%AAs_2.jpg/960px-C%C3%A3o_de_agua_Portugu%C3%AAs_2.jpg"
+    },
+    "1510": {
+      "label": "Prague Ratter",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38906",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ex%20perla%20moravy%201.jpg"
+    },
+    "1511": {
+      "label": "Presa Canario",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37750",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Presacanariobody.jpg"
+    },
+    "1512": {
+      "label": "Pudelpointer",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pudelpointer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/Pudelpointer_on_point.jpg"
+    },
+    "1513": {
+      "label": "Pug Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pug",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Mops-duke-mopszucht-vom-maegdebrunnen.jpg/960px-Mops-duke-mopszucht-vom-maegdebrunnen.jpg"
+    },
+    "1514": {
+      "label": "Pungsan or\u00a0Poongsan",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pungsan_dog",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Poongsandogs.JPG/500px-Poongsandogs.JPG"
+    },
+    "1515": {
+      "label": "Queensland Heeler",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Cattle%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/ACD-blue-spud.jpg/800px-ACD-blue-spud.jpg"
+    },
+    "1516": {
+      "label": "Rafeiro do Alentejo",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39073",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Rafeiro%20male.jpg"
+    },
+    "1517": {
+      "label": "Rhodesian Ridgeback Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rhodesian%20Ridgeback",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/01/Rhodesian_ridgeback.jpg"
+    },
+    "1518": {
+      "label": "Russian Toy",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39176",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/RusskiyToyWelpe9Mon.JPG"
+    },
+    "1519": {
+      "label": "Saarlooswolfhond",
+      "pageUrl": "https://en.wikipedia.org/wiki/Saarloos%20wolfdog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Oishani_Othari_van_Koekie%27s_Ranch.jpg/960px-Oishani_Othari_van_Koekie%27s_Ranch.jpg"
+    },
+    "1520": {
+      "label": "Sapsali",
+      "pageUrl": "https://www.wikidata.org/wiki/Q29178",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Korea-Jeonju-Sapsal%20dog%20in%20front%20of%20a%20Hanok%20Village-01.jpg"
+    },
+    "1521": {
+      "label": "Sapsaree",
+      "pageUrl": "https://en.wikipedia.org/wiki/Sapsali",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Korean_sapsali.jpg/500px-Korean_sapsali.jpg"
+    },
+    "1522": {
+      "label": "Sarplaninac",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39408",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sarplaninac%20Urok1007.jpg"
+    },
+    "1523": {
+      "label": "Schapendoes",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39157",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Schapendoes.jpg"
+    },
+    "1524": {
+      "label": "Sheepadoodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/2022-08/Sheepadoodle.jpg?itok=Budf_I7z"
+    },
+    "1525": {
+      "label": "Shetland Sheepdog Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39058",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/ShetlandShpdogBlue2%20wb.jpg"
+    },
+    "1526": {
+      "label": "Shiba Inu Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shiba%20Inu",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Taka_Shiba.jpg/960px-Taka_Shiba.jpg"
+    },
+    "1527": {
+      "label": "Shih Tzu Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shih%20Tzu",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/d/df/Shihtzu_%28cropped%29.jpg"
+    },
+    "1528": {
+      "label": "Shikoku",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shikoku%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/69/Shikokuken.jpg"
+    },
+    "1529": {
+      "label": "Shiloh Shepherd",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39229",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/SirHarley%20of%20Shenandoah%20Kennel.JPG"
+    },
+    "1530": {
+      "label": "Shiloh Shepherd Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39229",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/SirHarley%20of%20Shenandoah%20Kennel.JPG"
+    },
+    "1531": {
+      "label": "Shorkie",
+      "pageUrl": "https://www.petmd.com/dog/breeds/shorkie",
+      "source": "manual",
+      "thumbnailUrl": "https://image.petmd.com/files/styles/978x550/public/2024-02/shorkie-dog.jpg?w=2048&q=75"
+    },
+    "1532": {
+      "label": "Sloughi",
+      "pageUrl": "https://www.wikidata.org/wiki/Q37925",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sloughi.jpg"
+    },
+    "1533": {
+      "label": "Slovakian Rough Haired Pointer",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39210",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bella%20z%20Milhostovskych%20poli.jpg"
+    },
+    "1534": {
+      "label": "Spanish Bulldog",
+      "pageUrl": "https://en.wikipedia.org/wiki/American%20Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/American_Bulldog_600.jpg/600px-American_Bulldog_600.jpg"
+    },
+    "1535": {
+      "label": "Stabyhoun (Stabij)",
+      "pageUrl": "https://en.wikipedia.org/wiki/Stabyhoun",
+      "source": "manual",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Frisianstaby.jpg/500px-Frisianstaby.jpg"
+    },
+    "1536": {
+      "label": "Teddy Roosevelt Terrier",
+      "pageUrl": "https://en.wikipedia.org/wiki/Teddy%20Roosevelt%20Terrier",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Teddyterrier.jpg"
+    },
+    "1537": {
+      "label": "Texas Blue Lacey",
+      "pageUrl": "https://en.wikipedia.org/wiki/Blue%20Lacy",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/BlueLacyInBluebonnets.jpg/960px-BlueLacyInBluebonnets.jpg"
+    },
+    "1538": {
+      "label": "Tibetan KyiApso",
+      "pageUrl": "https://en.wikipedia.org/wiki/Tibetan%20Mastiff",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg/960px-BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg"
+    },
+    "1539": {
+      "label": "Tornjak",
+      "pageUrl": "https://en.wikipedia.org/wiki/Tornjak",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Bosniantornjak.jpg"
+    },
+    "1540": {
+      "label": "Tosa Inu",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38991",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bukadai.jpg"
+    },
+    "1541": {
+      "label": "Toy Terrier",
+      "pageUrl": "https://www.royalkennelclub.com/search/breeds-a-to-z/breeds/toy/english-toy-terrier-black-tan/",
+      "source": "manual",
+      "thumbnailUrl": "https://www.royalkennelclub.com/media/1626/english-toy-terrier-standing.jpg?rmode=pad&width=1000&v=1d5781721b52c00"
+    },
+    "1542": {
+      "label": "Transylvanian Hound",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38394",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Erdelyi%20kopo%20VadaszNimrodSzeder01.jpg"
+    },
+    "1543": {
+      "label": "Volpino Italiano",
+      "pageUrl": "https://www.wikidata.org/wiki/Q38196",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Volpino04.jpg"
+    },
+    "1544": {
+      "label": "Weimaraner Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Weimaraner",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Weimaraner_Freika-2.jpg/960px-Weimaraner_Freika-2.jpg"
+    },
+    "1545": {
+      "label": "Whippet Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Whippet",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Whippet_2018_6.jpg/960px-Whippet_2018_6.jpg"
+    },
+    "1546": {
+      "label": "Wirehaired Vizsla",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39608",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Anka%20vom%20Rudolfsforst.jpg"
+    },
+    "1547": {
+      "label": "Yakutian Laika",
+      "pageUrl": "https://en.wikipedia.org/wiki/Yakutian%20Laika",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Yl01.jpg"
+    },
+    "1548": {
+      "label": "Yorkshire Terrier Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q39330",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Imageyorkie.png"
+    },
+    "1549": {
+      "label": "Miniature Bernadoodle",
+      "pageUrl": "https://dogacademy.org/breeds/mini-bernedoodle",
+      "source": "manual",
+      "thumbnailUrl": "https://premierpups.com/azure/premierphotos/pups/mini-bernedoodle-puppies-637637536840448865.jpg?preset=detail"
+    },
+    "1550": {
+      "label": "Hound Mix",
+      "pageUrl": "https://www.wikidata.org/wiki/Q2796971",
+      "source": "wikidata",
+      "thumbnailUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hound%20Church%20-%20geograph.org.uk%20-%20815668.jpg"
+    },
+    "162": {
+      "label": "Akita Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Akita%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Akita_Collage.png"
+    },
+    "163": {
+      "label": "American Indian",
+      "pageUrl": "https://en.wikipedia.org/wiki/Indian%20pariah%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Dog_00154.JPG/960px-Dog_00154.JPG"
+    },
+    "164": {
+      "label": "Australian Cattle Dog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Australian%20Cattle%20Dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/ACD-blue-spud.jpg/800px-ACD-blue-spud.jpg"
+    },
+    "165": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Basset_Hound_600.jpg/600px-Basset_Hound_600.jpg",
+      "label": "Basset Hound Mix",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "166": {
+      "label": "Beagle Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Beagle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Beagle_600.jpg/600px-Beagle_600.jpg"
+    },
+    "167": {
+      "label": "Boxer Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Boxer%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Male_fawn_Boxer_undocked.jpg/960px-Male_fawn_Boxer_undocked.jpg"
+    },
+    "168": {
+      "label": "Bulldog Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Bulldog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Bulldog_inglese.jpg/960px-Bulldog_inglese.jpg"
+    },
+    "169": {
+      "label": "Cavapoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cavapoo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1_Red_Toy_Cavoodle_Puppy.jpg/960px-F1_Red_Toy_Cavoodle_Puppy.jpg"
+    },
+    "170": {
+      "label": "Chihuahua Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chihuahua%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Chihuahua1_bvdb.jpg"
+    },
+    "171": {
+      "label": "Chow Chow Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Chow%20Chow",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Chow-chow_in_Tallinn.JPG/960px-Chow-chow_in_Tallinn.JPG"
+    },
+    "172": {
+      "label": "Cockapoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/Cockapoo",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Cockapoo_apricot_standing.jpg"
+    },
+    "173": {
+      "label": "Cocker Spaniel Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Cocker%20Spaniel",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/%22Bill%22_-_Cocker_spaniel_anglais_2.JPG/960px-%22Bill%22_-_Cocker_spaniel_anglais_2.JPG"
+    },
+    "174": {
+      "label": "Collie Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Border%20Collie",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Border_Collie_600.jpg/600px-Border_Collie_600.jpg"
+    },
+    "175": {
+      "label": "Coon Hound Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Coonhound",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/A_female_redbone-coonhound-1.jpg/960px-A_female_redbone-coonhound-1.jpg"
+    },
+    "176": {
+      "label": "Corgi Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Welsh%20Corgi",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Pembroke_and_Cardigan_Welsh_Corgi.jpg/960px-Pembroke_and_Cardigan_Welsh_Corgi.jpg"
+    },
+    "178": {
+      "label": "Dachshund Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dachshund",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg/960px-%EB%8B%A5%EC%8A%A4%ED%9B%88%ED%8A%B8%28%EB%8B%A8%EB%AA%A8%EC%A2%85%29_%28Dachshund_%28Short%29%29.jpg"
+    },
+    "179": {
+      "label": "Doberman Pinscher Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Dobermann",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Dobermann_handling.jpg/960px-Dobermann_handling.jpg"
+    },
+    "180": {
+      "label": "Goldendoodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Goldendoodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Golden_Doodle_Standing_%28HD%29.jpg/960px-Golden_Doodle_Standing_%28HD%29.jpg"
+    },
+    "181": {
+      "label": "Great Dane Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Great%20Dane",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg/960px-Dog_niemiecki_%C5%BC%C3%B3%C5%82ty_LM980.jpg"
+    },
+    "182": {
+      "label": "Husky Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Husky",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/960px-Huskiesatrest.jpg"
+    },
+    "183": {
+      "label": "Labradoodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/Labradoodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Labradoodle-Brown-Male-SideFace.jpg/960px-Labradoodle-Brown-Male-SideFace.jpg"
+    },
+    "184": {
+      "label": "Labrador Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Labrador%20Retriever",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Labrador_on_Quantock_%282175262184%29.jpg/960px-Labrador_on_Quantock_%282175262184%29.jpg"
+    },
+    "185": {
+      "label": "Maltipoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/styles/square_medium_440x440/public/2022-07/Maltipoo.jpg?itok=ajFe9r5r"
+    },
+    "186": {
+      "label": "Mastiff Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Tibetan%20Mastiff",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg/960px-BIR_Grupp_2-_TIBETANSK_MASTIFF%2C_Legenda_Tibeta_Temudzhin_%2823938629470%29.jpg"
+    },
+    "187": {
+      "label": "Mi Ki",
+      "pageUrl": "https://en.wikipedia.org/wiki/Kang%20Ki-young",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/%EA%B0%95%EA%B8%B0%EC%98%81_%28Kang_Ki-young%29_JTBC_%27Queen_of_Divorce%27_in_January_2024.png/839px-%EA%B0%95%EA%B8%B0%EC%98%81_%28Kang_Ki-young%29_JTBC_%27Queen_of_Divorce%27_in_January_2024.png"
+    },
+    "188": {
+      "label": "Pekingese Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pekingese",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/1AKC_Pekingese_Dog_Show_2011.jpg/960px-1AKC_Pekingese_Dog_Show_2011.jpg"
+    },
+    "189": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/American_Pitbull_001.jpg/960px-American_Pitbull_001.jpg",
+      "label": "Pit Bull Mix",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "190": {
+      "label": "Pointer Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Pointer%20(dog%20breed)",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/8/85/English_Pointer_orange-white.jpg"
+    },
+    "191": {
+      "label": "Poodle Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Poodle",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Full_attention_%288067543690%29.jpg/960px-Full_attention_%288067543690%29.jpg"
+    },
+    "192": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Paroisse_de_la_Protection_de_la_M%C3%A8re_U%CE%91OC.jpg/960px-Paroisse_de_la_Protection_de_la_M%C3%A8re_U%CE%91OC.jpg",
+      "label": "Porkie",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "193": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/BraxtonPuggle-edit1.jpg/960px-BraxtonPuggle-edit1.jpg",
+      "label": "Puggle",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "194": {
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/A_retriever_NLW3363265.jpg",
+      "label": "Retriever Mix",
+      "source": "wikidata",
+      "thumbnailUrl": null
+    },
+    "195": {
+      "label": "Rottweiler Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Rottweiler",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Rottweiler_standing_facing_left.jpg/960px-Rottweiler_standing_facing_left.jpg"
+    },
+    "196": {
+      "label": "Samoyed Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Samoyed%20dog",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Samojed00.jpg/960px-Samojed00.jpg"
+    },
+    "197": {
+      "label": "Schnauzer Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Schnauzer",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Schnauzer_Size_Montage.png"
+    },
+    "198": {
+      "label": "Schnoodle",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/styles/square_medium_440x440/public/2022-08/Schnoodle.jpg?itok=SzuAvxIf"
+    },
+    "199": {
+      "label": "Shar Pei Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Shar%20Pei",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/Adult_sharpei.jpg"
+    },
+    "200": {
+      "label": "Shepherd Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/German%20Shepherd",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/German_Shepherd_-_DSC_0346_%2810096362833%29.jpg/583px-German_Shepherd_-_DSC_0346_%2810096362833%29.jpg"
+    },
+    "201": {
+      "label": "Siberian Husky Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Siberian%20Husky",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Husky_L.jpg/800px-Husky_L.jpg"
+    },
+    "202": {
+      "label": "Spaniel Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/English%20Springer%20Spaniel",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Springer_Spaniel_Wide_Shot.jpg/761px-Springer_Spaniel_Wide_Shot.jpg"
+    },
+    "203": {
+      "label": "Terrier Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Yorkshire%20Terrier",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/%282_version%29_Grupp_3%2C_YORKSHIRETERRIER%2C_NO_UCH_SE_UCH_Oxzar_Amazing_Bel%E2%80%99s_Toffy_%2824310212305%29.jpg/575px-%282_version%29_Grupp_3%2C_YORKSHIRETERRIER%2C_NO_UCH_SE_UCH_Oxzar_Amazing_Bel%E2%80%99s_Toffy_%2824310212305%29.jpg"
+    },
+    "204": {
+      "label": "Vizsla Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Vizsla",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg/960px-Wy%C5%BCe%C5%82_w%C4%99gierski_g%C5%82adkow%C5%82osy_500.jpg"
+    },
+    "205": {
+      "label": "Wolf Mix",
+      "pageUrl": "https://en.wikipedia.org/wiki/Wolfdog",
+      "source": "wikipedia",
+      "thumbnailUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Llop.jpg/960px-Llop.jpg"
+    },
+    "206": {
+      "label": "Yorkiepoo",
+      "pageUrl": "https://en.wikipedia.org/wiki/List%20of%20dog%20crossbreeds",
+      "source": "manual_override",
+      "thumbnailUrl": "https://www.purina.co.uk/sites/default/files/2022-08/Yorkie-Poo-Yorkipoo.jpg?itok=EsHlkqjB"
+    }
+  }
+}

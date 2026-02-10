@@ -74,7 +74,7 @@ function getEnrollmentAdapter(): EnrollmentAdapter {
 
 export function CardAndQuoteFlow() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { state, refetch } = useSession()
+  const { state, refetch, setSession } = useSession()
   const mockStep = getMockStep()
   const enrollmentAdapter = React.useMemo(() => getEnrollmentAdapter(), [])
   const [selectedPlanId, setSelectedPlanId] = React.useState<"signature" | "value">("signature")
@@ -87,17 +87,6 @@ export function CardAndQuoteFlow() {
   const [isTimeoutError, setIsTimeoutError] = React.useState(false)
   const [walletModalOpen, setWalletModalOpen] = React.useState(false)
   const [zipLookup, setZipLookup] = React.useState<{ city: string; state: string } | null>(null)
-  // Store form data from DetailsStep
-  const [detailsFormData, setDetailsFormData] = React.useState<{
-    firstName: string
-    lastName: string
-    email: string
-    phone: string
-    mailingStreet: string
-    city: string
-    state: string
-    zip: string
-  } | null>(null)
   // Store payment result from OneInc modal
   const [paymentResult, setPaymentResult] = React.useState<{
     paymentToken: string
@@ -132,11 +121,18 @@ export function CardAndQuoteFlow() {
     [products]
   )
 
+  // Hydrate quote from DB when session has plan (source of truth). Fallback to default policy when no plan saved yet.
+  const sessionPlan = (session as Record<string, unknown>)?.plan as { plan_id?: string; reimbursement?: string; deductible?: string; is_high_deductible?: boolean } | undefined
   React.useEffect(() => {
+    if (sessionPlan?.plan_id != null) {
+      setSelectedPlanIdFromHP(sessionPlan.plan_id)
+      if (sessionPlan.reimbursement != null) setSelectedReimbursement(String(sessionPlan.reimbursement))
+      if (sessionPlan.deductible != null) setSelectedDeductible(String(sessionPlan.deductible))
+      setSelectedPlanId(sessionPlan.is_high_deductible ? "value" : "signature")
+      return
+    }
     if (processedPlans.defaultPolicy) {
       const d = processedPlans.defaultPolicy
-      // Use isHighDeductible from HP to determine Signature vs Value
-      // isHighDeductible: true = Value plan, false = Signature plan
       const isHighDeductible = (d.isHighDeductible as boolean) ?? false
       const isSignature = !isHighDeductible
       setSelectedPlanId(isSignature ? "signature" : "value")
@@ -144,10 +140,9 @@ export function CardAndQuoteFlow() {
       const deductibleStr = String(d.deductible ?? (isSignature ? "500" : "1500"))
       setSelectedReimbursement(reimbursement)
       setSelectedDeductible(deductibleStr)
-      // Store the actual plan_id from HP
       setSelectedPlanIdFromHP((d.plan_id as string) ?? null)
     }
-  }, [processedPlans.defaultPolicy])
+  }, [sessionPlan?.plan_id, sessionPlan?.reimbursement, sessionPlan?.deductible, sessionPlan?.is_high_deductible, processedPlans.defaultPolicy])
 
   const effectiveStep = (mockStep ?? session.current_step ?? "quote").toLowerCase()
 
@@ -155,8 +150,21 @@ export function CardAndQuoteFlow() {
   const sessionAny = session as Record<string, unknown>
   const sessionLeadId = sessionAny.lead_id as string | undefined
   const sessionQuoteDetailId = sessionAny.quote_detail_id as string | undefined
-  const sessionPlan = sessionAny.plan as Record<string, unknown> | undefined
-  // Use selectedPlanIdFromHP as source of truth (set when user selects), fallback to default
+
+  // Skip one refetch when step changed from our own Continue (we already have the returned session).
+  const stepJustSetByContinueRef = React.useRef<string | null>(null)
+  // DB is source of truth: refetch session when entering any step (including via Edit) so form/quote hydrate from backend.
+  // On quote step when lead_id/quote_detail_id are missing, do NOT refetch — LeadLoadingProvider will call /lead and populate session; a refetch here would race and overwrite with empty insurance_products.
+  React.useEffect(() => {
+    if (mockStep || state.status !== "ready") return
+    if (stepJustSetByContinueRef.current === effectiveStep) {
+      stepJustSetByContinueRef.current = null
+      return
+    }
+    if (effectiveStep === "quote" && !sessionLeadId && !sessionQuoteDetailId) return
+    refetch()
+  }, [effectiveStep, mockStep, state.status, refetch, sessionLeadId, sessionQuoteDetailId])
+  // Use selectedPlanIdFromHP as source of truth (set when user selects), fallback to session.plan or default
   const effectivePlanId = selectedPlanIdFromHP ?? (sessionPlan?.plan_id ?? processedPlans.defaultPolicy?.plan_id ?? null) as string | null
 
   const handlePlanChange = (planId: "signature" | "value") => {
@@ -199,11 +207,14 @@ export function CardAndQuoteFlow() {
     return undefined
   })()
 
+  const sessionOwner = session.owner as Record<string, unknown> | undefined
   const detailsZip = (() => {
     const pet = session.pet as Record<string, unknown> | undefined
-    const owner = session.owner as Record<string, unknown> | undefined
-    return (pet?.zip_code ?? owner?.zip_code ?? "") as string
+    return (pet?.zip_code ?? sessionOwner?.zip ?? "") as string
   })()
+  const detailsCity = (sessionOwner?.city as string) ?? zipLookup?.city ?? ""
+  const detailsState = (sessionOwner?.state as string) ?? zipLookup?.state ?? ""
+  const detailsStreet = (sessionOwner?.mailing_street as string) ?? ""
 
   React.useEffect(() => {
     if (!detailsZip || detailsZip.length < 5) {
@@ -255,8 +266,18 @@ export function CardAndQuoteFlow() {
     setTransitionError(null)
     setIsTimeoutError(false)
     
-    // Use formDataOverride if provided (from DetailsStep onContinue), otherwise use state
-    const activeFormData = formDataOverride || detailsFormData
+    // Use formDataOverride from DetailsStep onContinue; fallback to session.owner (DB source of truth)
+    const ownerForForm = session.owner as Record<string, unknown> | undefined
+    const activeFormData = formDataOverride ?? (ownerForForm ? {
+      firstName: (ownerForForm.first_name as string) ?? "",
+      lastName: (ownerForForm.last_name as string) ?? "",
+      email: (ownerForForm.email as string) ?? "",
+      phone: (ownerForForm.phone as string) ?? "",
+      mailingStreet: (ownerForForm.mailing_street as string) ?? "",
+      city: (ownerForForm.city as string) ?? "",
+      state: (ownerForForm.state as string) ?? "",
+      zip: (ownerForForm.zip as string) ?? "",
+    } : null)
     
     // Mock mode: use query param navigation (preserves existing mock behavior)
     if (mockStep && cta.nextMock) {
@@ -357,14 +378,17 @@ export function CardAndQuoteFlow() {
           return
         }
         
-        // Single PATCH: update step + plan (no duplicate session calls)
-        await updateSessionStep(session.session_id, "details", {
+        // Single PATCH: update step + full plan; replace in-memory session with returned session (no optimistic merge).
+        const returned = await updateSessionStep(session.session_id, "details", {
           plan: {
+            plan_id: planId,
             reimbursement: selectedReimbursement,
             deductible: selectedDeductible,
+            is_high_deductible: selectedPlanId === "value",
           },
         })
-        await refetch()
+        stepJustSetByContinueRef.current = "details"
+        setSession(returned)
         setTransitioning(false)
         return
       } else if (effectiveStep === "details") {
@@ -452,9 +476,6 @@ export function CardAndQuoteFlow() {
           return
         }
 
-        // Update state with form data for future use
-        setDetailsFormData(activeFormData)
-
         result = await enrollmentAdapter.setupPending({
           lead: {
             emailAddress: activeFormData.email.trim(),
@@ -504,9 +525,23 @@ export function CardAndQuoteFlow() {
         if (result && typeof (result as { accountId?: string }).accountId === "string") {
           setSessionAccountId((result as { accountId: string }).accountId)
         }
-        
-        await updateSessionStep(session.session_id, "payment")
-        await refetch()
+
+        // Persist details step: full owner + consent; replace session with PATCH response.
+        const returned = await updateSessionStep(session.session_id, "payment", {
+          owner: {
+            first_name: activeFormData.firstName.trim(),
+            last_name: activeFormData.lastName.trim(),
+            email: activeFormData.email.trim(),
+            phone: normalizedPhone,
+            mailing_street: activeFormData.mailingStreet.trim(),
+            city: activeFormData.city?.trim() ?? "",
+            state: stateCode,
+            zip: activeFormData.zip?.trim() ?? "",
+          },
+          accept_electronic_consent: true,
+        })
+        stepJustSetByContinueRef.current = "payment"
+        setSession(returned)
         setTransitioning(false)
         return
       } else if (effectiveStep === "payment") {
@@ -527,12 +562,12 @@ export function CardAndQuoteFlow() {
         }
         
         // Use form data for billing details, fallback to session data
-        const billingFirstName = detailsFormData?.firstName || (owner.first_name || "") as string
-        const billingLastName = detailsFormData?.lastName || (owner.last_name || "") as string
-        const billingStreet = detailsFormData?.mailingStreet || (owner.mailing_street || owner.street || "") as string
-        const billingCity = detailsFormData?.city || (owner.city || "") as string
-        const billingState = detailsFormData?.state || zipLookup?.state || (pet.state_code || owner.state_code || "") as string
-        const billingPostalCode = detailsFormData?.zip || (pet.zip_code || owner.zip_code || "") as string
+        const billingFirstName = (owner.first_name || "") as string
+        const billingLastName = (owner.last_name || "") as string
+        const billingStreet = (owner.mailing_street ?? owner.street ?? "") as string
+        const billingCity = (owner.city || "") as string
+        const billingState = (zipLookup?.state ?? pet.state_code ?? owner.state_code ?? "") as string
+        const billingPostalCode = (pet.zip_code ?? owner.zip ?? "") as string
         
         if (!billingFirstName || !billingLastName || !billingStreet || !billingCity || !billingState || !billingPostalCode) {
           setTransitionError("Missing billing information. Please check your details.")
@@ -588,15 +623,13 @@ export function CardAndQuoteFlow() {
           setTransitionError(result.error)
           return
         }
-        
-        await updateSessionStep(session.session_id, "confirm")
-        await refetch()
+
+        const returned = await updateSessionStep(session.session_id, "confirm")
+        stepJustSetByContinueRef.current = "confirm"
+        setSession(returned)
         setTransitioning(false)
         return
       }
-      
-      // Fallback: refetch if we didn't return early
-      await refetch()
     } catch (error) {
       setTransitionError(error instanceof Error ? error.message : "Something went wrong. Please try again.")
     } finally {
@@ -622,14 +655,15 @@ export function CardAndQuoteFlow() {
       case "details":
         return (
           <DetailsStep
-            key={`details-${detailsZip}-${zipLookup?.state ?? ""}`}
-            ownerFirstName={(session.owner as Record<string, unknown>)?.first_name as string}
-            ownerLastName={(session.owner as Record<string, unknown>)?.last_name as string}
-            ownerEmail={(session.owner as Record<string, unknown>)?.email as string}
-            ownerPhone={(session.owner as Record<string, unknown>)?.phone as string}
+            key={`details-${detailsZip}-${detailsCity}-${detailsState}`}
+            ownerFirstName={(sessionOwner?.first_name as string) ?? ""}
+            ownerLastName={(sessionOwner?.last_name as string) ?? ""}
+            ownerEmail={(sessionOwner?.email as string) ?? ""}
+            ownerPhone={(sessionOwner?.phone as string) ?? ""}
+            addressStreet={detailsStreet}
             addressZip={detailsZip}
-            addressCity={zipLookup?.city ?? ""}
-            addressState={zipLookup?.state ?? ""}
+            addressCity={detailsCity}
+            addressState={detailsState}
             onBack={mockStep ? () => {
               const next = new URLSearchParams(searchParams)
               next.set("mock", "quote")
@@ -796,9 +830,9 @@ export function CardAndQuoteFlow() {
               reimbursement={selectedReimbursement}
               deductible={selectedDeductible}
               monthlyPrice={monthlyPrice}
-              ownerFirstName={detailsFormData?.firstName || ((session.owner as Record<string, unknown>)?.first_name as string)}
-              ownerLastName={detailsFormData?.lastName || ((session.owner as Record<string, unknown>)?.last_name as string)}
-              ownerEmail={detailsFormData?.email || ((session.owner as Record<string, unknown>)?.email as string)}
+              ownerFirstName={((session.owner as Record<string, unknown>)?.first_name as string) ?? ""}
+              ownerLastName={((session.owner as Record<string, unknown>)?.last_name as string) ?? ""}
+              ownerEmail={((session.owner as Record<string, unknown>)?.email as string) ?? ""}
               onEdit={handleEdit}
             />
           )}

@@ -22,17 +22,14 @@ export type OneIncModalLauncherProps = {
 }
 
 /**
- * OneInc Modal Launcher Component
- * 
- * Opens OneInc hosted payment modal in an iframe dialog overlay.
- * The modal handles all PCI-sensitive card data collection.
- * 
- * Based on HAR analysis: OneInc uses hosted modal URL that establishes
- * session/auth via cookies. Modal makes calls to:
- * - /gm2card/getconveniencefeeslist (calculates fee)
- * - /gm2card/charge (processes payment)
- * 
- * On success, returns paymentToken, transactionId, convenienceFee, and paymentMethod.
+ * OneInc Payment Launcher Component
+ *
+ * Opens OneInc hosted modal in an iframe overlay (same pattern as HP dev site).
+ * Backend /api/oneinc/init returns the GenericModalV2 URL; we load it in the iframe.
+ *
+ * If the modal renders blank: OneInc staging may require additional integration details
+ * (SDK, params, whitelisting, or config) from their dev docs. Our URL/params are based
+ * on HAR from enroll.hptest.info; confirm with OneInc/HP documentation.
  */
 export function OneIncModalLauncher({
   onPaymentSuccess,
@@ -68,7 +65,7 @@ export function OneIncModalLauncher({
     }
   }, [])
 
-  // Initialize OneInc hosted modal
+  // Initialize OneInc hosted modal (iframe), same pattern as HP dev site
   const initializeModal = React.useCallback(async () => {
     if (disabled || isLoading || isModalOpen) return
 
@@ -126,24 +123,18 @@ export function OneIncModalLauncher({
       // Clean up any existing listener
       cleanup()
 
-      // Set up postMessage listener for returnUrl callback
+      // Set up postMessage listener for returnUrl callback (API return page sends to parent)
       const allowedOrigin = getAllowedOrigin()
       const messageHandler = (event: MessageEvent) => {
-        // Validate origin - only accept from API_BASE (returnUrl handler)
         if (!allowedOrigin || event.origin !== allowedOrigin) {
-          console.warn("[OneIncModalLauncher] Rejected message from unauthorized origin:", event.origin, "expected:", allowedOrigin)
           return
         }
 
-        // Handle success message from returnUrl handler
         if (event.data?.type === "ONEINC_SUCCESS") {
           const { paymentToken, transactionId, paymentMethod, convenienceFee } = event.data
           if (!paymentToken || !transactionId) {
-            console.error("[OneIncModalLauncher] Invalid success message:", event.data)
             setError("Invalid payment response")
-            if (onPaymentError) {
-              onPaymentError("Invalid payment response")
-            }
+            if (onPaymentError) onPaymentError("Invalid payment response")
             cleanup()
             setIsModalOpen(false)
             setIsLoading(false)
@@ -165,13 +156,10 @@ export function OneIncModalLauncher({
           return
         }
 
-        // Handle error message
         if (event.data?.type === "ONEINC_ERROR") {
           const errorMsg = event.data.error || "Payment processing failed"
           setError(errorMsg)
-          if (onPaymentError) {
-            onPaymentError(errorMsg)
-          }
+          if (onPaymentError) onPaymentError(errorMsg)
           cleanup()
           setIsModalOpen(false)
           setIsLoading(false)
@@ -182,7 +170,7 @@ export function OneIncModalLauncher({
       messageHandlerRef.current = messageHandler
       window.addEventListener("message", messageHandler)
 
-      // Open modal with iframe
+      // Open modal with iframe (HP dev site uses same pattern)
       setModalUrl(url)
       setIsModalOpen(true)
       setIsLoading(false)
@@ -198,7 +186,6 @@ export function OneIncModalLauncher({
     }
   }, [leadId, accountId, amount, disabled, isLoading, isModalOpen, onPaymentSuccess, onPaymentError, cleanup, getAllowedOrigin])
 
-  // Close modal handler
   const closeModal = React.useCallback(() => {
     setIsModalOpen(false)
     setModalUrl(null)
@@ -271,7 +258,6 @@ export function OneIncModalLauncher({
         </p>
       </div>
 
-      {/* Modal overlay with iframe */}
       {isModalOpen && modalUrl && (
         <div
           className="oneinc-modal-overlay"
@@ -288,10 +274,7 @@ export function OneIncModalLauncher({
             zIndex: 10000,
           }}
           onClick={(e) => {
-            // Close on backdrop click
-            if (e.target === e.currentTarget) {
-              closeModal()
-            }
+            if (e.target === e.currentTarget) closeModal()
           }}
         >
           <div
@@ -336,11 +319,7 @@ export function OneIncModalLauncher({
             <iframe
               ref={iframeRef}
               src={modalUrl}
-              style={{
-                width: "100%",
-                height: "100%",
-                border: "none",
-              }}
+              style={{ width: "100%", height: "100%", border: "none" }}
               title="OneInc Payment Modal"
               allow="payment"
             />

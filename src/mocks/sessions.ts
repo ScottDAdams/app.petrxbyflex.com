@@ -11,6 +11,12 @@ const QR_ANDROID = "https://api.petrxbyflex.com/api/qr-code/android/FRX001000261
 const baseSession = {
   member_id: MOCK_MEMBER,
   funnel_type: "card_plus_quote",
+  pet_name: "Fluffy",
+  pet: {
+    type: "Dog",
+    breed: "Mixed",
+    age: "3 years",
+  },
   card_image_url: CARD_IMAGE,
   wallet_url: WALLET_PASS,
   wallet_pass_url: WALLET_PASS,
@@ -18,21 +24,24 @@ const baseSession = {
   qr_code_url_android: QR_ANDROID,
 }
 
+/* Reimbursement stored as decimal (0.8 = 80%); UI multiplies by 100 for display */
 const insurancePlans = [
   {
     plan_id: "hp_basic",
     plan_name: "Basic",
     deductible: 500,
-    reimbursement: 80,
+    reimbursement: 0.8,
     monthly_price: 34.99,
+    monthly_premium: "34.99",
     coverage_summary: "Accidents & illnesses",
   },
   {
     plan_id: "hp_plus",
     plan_name: "Plus",
     deductible: 250,
-    reimbursement: 90,
+    reimbursement: 0.9,
     monthly_price: 52.99,
+    monthly_premium: "52.99",
     coverage_summary: "Accidents & illnesses + extras",
   },
 ]

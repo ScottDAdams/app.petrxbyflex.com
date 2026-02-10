@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom"
 import { getMockStep } from "../mocks/mockMode"
 import { SessionProvider } from "./SessionContext"
+import { LeadLoadingProvider } from "./LeadLoadingContext"
 
 /**
  * Provides session when URL is /start?session_id=... or when mock mode is enabled (?mock=... or PETRX_MOCK_FLOW).
@@ -20,7 +21,9 @@ export function SessionProviderFromUrl({
 
   return (
     <SessionProvider sessionId={sessionId} mockStep={mockStep}>
-      {children}
+      <LeadLoadingProvider>
+        {children}
+      </LeadLoadingProvider>
     </SessionProvider>
   )
 }
