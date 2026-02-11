@@ -18,6 +18,12 @@ export type QuoteStepProps = {
   onContinue?: () => void
   continueLabel?: string
   continueDisabled?: boolean
+  /** Override main title (e.g. card-first: "Bonus: Protect ...") */
+  title?: string
+  /** Override subtitle (e.g. card-first: "Healthy Paws coverage options (optional)") */
+  subtitle?: string
+  /** "secondary" = reduced visual dominance (smaller header, price not hero) */
+  variant?: "default" | "secondary"
 }
 
 export function QuoteStep({
@@ -34,8 +40,13 @@ export function QuoteStep({
   onContinue,
   continueLabel = "Review Your Details",
   continueDisabled = false,
+  title: titleOverride,
+  subtitle: subtitleOverride,
+  variant = "default",
 }: QuoteStepProps) {
   const isSignature = selectedPlanId === "signature"
+  const displayTitle = titleOverride ?? (petName && petName.trim().length > 0 ? petName.trim() : "Your Pet") + "'s Custom Pet Insurance Quote"
+  const displaySubtitle = subtitleOverride ?? "Protect your pet from unexpected vet bills while saving on prescriptions"
   
   // Pet avatar logic (same as ReceiptSidebar)
   const species = (petType ?? "dog").toLowerCase()
@@ -120,21 +131,23 @@ export function QuoteStep({
     : null // No mock pricing - show "Not available" if no match
 
   return (
-    <div className="quote-step">
+    <div className={`quote-step ${variant === "secondary" ? "quote-step--secondary" : ""}`}>
       <PartnerBar />
       <div className="quote-step__header">
         <div className="quote-step__header-content">
           <div className="quote-step__header-text">
             <h2 className="quote-step__title">
-              {petName && petName.trim().length > 0 ? petName.trim() : "Your Pet"}&apos;s Custom Pet Insurance Quote
+              {displayTitle}
             </h2>
             <p className="quote-step__subtitle">
-              Protect your pet from unexpected vet bills while saving on prescriptions
+              {displaySubtitle}
             </p>
           </div>
-          <div className="quote-step__pet-avatar">
-            <img src={imgSrc} alt={species} className="quote-step__pet-icon" onError={handleImgError} />
-          </div>
+          {variant !== "secondary" && (
+            <div className="quote-step__pet-avatar">
+              <img src={imgSrc} alt={species} className="quote-step__pet-icon" onError={handleImgError} />
+            </div>
+          )}
         </div>
       </div>
       <div className="plan-selector">

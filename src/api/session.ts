@@ -135,6 +135,24 @@ export async function updateSessionStep(
 }
 
 /**
+ * Persist card overlay dismissed so the desktop guided overlay is never shown again for this session.
+ */
+export async function updateSessionCardOverlayDismissed(sessionId: string): Promise<SessionData> {
+  const url = `${API_BASE}/enroll/session`
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: sessionId, card_overlay_dismissed: true }),
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(text || `Session update failed: ${res.status}`)
+  }
+  const data = (await res.json()) as Record<string, unknown>
+  return normalizeSession(data ?? {}, (data?.session_id as string) ?? sessionId)
+}
+
+/**
  * Update insurance_products in the session. Optionally persist lead_id and quote_detail_id
  * so "Continue to Details" can call only SetPlan (no second CreateLead).
  * PATCH payload includes session_id, insurance_products, and when provided lead_id and quote_detail_id

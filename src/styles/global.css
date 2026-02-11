@@ -20,6 +20,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -155,6 +160,7 @@ body {
 .card-and-quote-flow {
   max-width: 1100px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .stepper-container {
@@ -181,9 +187,372 @@ body {
   padding: 0 0 40px 0;
 }
 
+/* Default layout: single column below 1024px (card first, then quote) */
+@media (max-width: 1023px) {
+  .card-and-quote-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 767px) {
   .card-and-quote-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Card-first layout: hero the card, insurance secondary (layout=card-first) */
+.card-first-grid {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-unit) * 4);
+  padding: 0 0 40px 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.card-first-hero {
+  width: 100%;
+}
+
+.card-first-hero__title {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-brand);
+  line-height: 1.2;
+}
+
+.card-first-hero__subtitle {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  color: #5b6b79;
+  line-height: 1.45;
+}
+
+.card-first-hero__card-wrap {
+  display: inline-block;
+}
+
+.card-first-hero .cardPanel {
+  max-width: 380px;
+}
+
+.card-first-insurance {
+  width: 100%;
+}
+
+/* Insurance teaser (collapsed state in card-first layout) */
+.insurance-teaser {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+}
+
+.insurance-teaser__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.insurance-teaser__logo {
+  flex-shrink: 0;
+}
+
+.insurance-teaser__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.insurance-teaser__bullets {
+  margin: 0 0 12px 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.insurance-teaser__bullets li {
+  margin-bottom: 4px;
+}
+
+.insurance-teaser__post-save {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.insurance-teaser__price {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.insurance-teaser__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insurance-teaser__cta {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.insurance-teaser__dismiss {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #64748b;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.insurance-teaser__dismiss:hover {
+  color: #475569;
+}
+
+/* Expanded insurance (accordion) in card-first */
+.card-first-insurance-expanded {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.card-first-hero__saved-nudge {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #166534;
+}
+
+/* Desktop-only guided overlay (quote step) — 3 layers: backdrop (clickable), highlight + tooltip (pass-through) */
+.card-guided-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.25s ease-out;
+}
+
+.card-guided-overlay--exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card-guided-overlay__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.card-guided-overlay__highlight {
+  position: fixed;
+  z-index: 1001;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: 0 0 0 4px rgba(11, 122, 42, 0.4);
+  pointer-events: none;
+}
+
+.card-guided-overlay__speech {
+  position: fixed;
+  z-index: 1001;
+  max-width: 280px;
+  padding: 14px 18px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.card-guided-overlay__speech-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #1e293b;
+}
+
+.card-guided-overlay__speech-arrow {
+  position: absolute;
+  left: 24px;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #fff;
+}
+
+/* Mobile: no horizontal scroll, centered card, fit viewport (390–430px) */
+@media (max-width: 767px) {
+  .card-and-quote-flow {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 16px;
+  }
+
+  .card-and-quote-grid,
+  .card-first-grid {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .card-and-quote-flow .card-panel,
+  .card-first-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-and-quote-flow .card-panel .cardPanel,
+  .card-first-hero .cardPanel {
+    max-width: 420px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cardPanel__cardImg {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .card-first-hero__title,
+  .card-first-hero__subtitle {
+    text-align: center;
+  }
+
+  .card-and-quote-flow .card-panel .cardPanel__actions,
+  .card-first-hero .cardPanel__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .card-and-quote-flow .card-panel .cardPanel__actions .btn,
+  .card-first-hero .cardPanel__actions .btn {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .quote-panel {
+    width: 100%;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .plan-selector__grid {
+    grid-template-columns: 1fr 1fr;
+    min-width: 0;
+  }
+
+  .plan-selector__card {
+    min-width: 0;
+  }
+
+  .plan-options__grid {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .plan-options__btn {
+    min-width: 0;
+  }
+}
+
+/* Secondary variant: smaller header, price not hero-sized */
+.quote-step--secondary .quote-step__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.quote-step--secondary .quote-step__subtitle {
+  font-size: 14px;
+}
+
+.quote-step--secondary .plan-selector__title,
+.quote-step--secondary .plan-container__title {
+  font-size: 14px;
+}
+
+.quote-step--secondary .quote-summary-card__price-label {
+  font-size: 13px;
+}
+
+.quote-step--secondary .quote-summary-card__price-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.quote-step--secondary .quote-summary-card__price-period {
+  font-size: 0.5em;
+}
+
+/* Mobile: single column, full-width buttons, card CTA above fold */
+@media (max-width: 767px) {
+  .card-first-grid {
+    gap: calc(var(--spacing-unit) * 3);
+    padding: 0 0 32px 0;
+  }
+
+  .card-first-hero__title {
+    font-size: 22px;
+  }
+
+  .card-first-hero__subtitle {
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+
+  .card-first-hero .cardPanel {
+    max-width: 100%;
+  }
+
+  .card-first-hero .cardPanel__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card-first-hero .cardPanel__actions .btn {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card-first-insurance .plan-container__cta .btn,
+  .card-first-insurance .btn--primary {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 

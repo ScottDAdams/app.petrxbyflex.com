@@ -3,8 +3,12 @@ import { useSearchParams } from "react-router-dom"
 import { getMockStep, isMockModeEnabled } from "../mocks/mockMode"
 import { useSession } from "../context/SessionContext"
 import { useLeadLoading } from "../context/LeadLoadingContext"
-import { updateSessionStep } from "../api/session"
+import { updateSessionStep, updateSessionCardOverlayDismissed } from "../api/session"
+import { trackEnrollmentEvent } from "../api/analytics"
+import { useViewportDesktop } from "../hooks/useViewportDesktop"
 import { CardDisplayPanel } from "./CardDisplayPanel"
+import { CardGuidedOverlay } from "./CardGuidedOverlay"
+import { InsuranceOfferTeaser } from "./InsuranceOfferTeaser"
 import { ReceiptSidebar } from "./insurance/ReceiptSidebar"
 import { WalletModal } from "./WalletModal"
 import { QuoteStep } from "../app/steps/QuoteStep"
@@ -125,6 +129,14 @@ export function CardAndQuoteFlow() {
   const [authorizedAmount, setAuthorizedAmount] = React.useState<number | null>(null)
   // Store accountId from setupPending (maps to OneInc policyId)
   const [sessionAccountId, setSessionAccountId] = React.useState<string | null>(null)
+  // Card-first layout: insurance teaser (collapsed by default, expand on intent)
+  const [insuranceExpanded, setInsuranceExpanded] = React.useState(false)
+  const [teaserDismissed, setTeaserDismissed] = React.useState(false)
+  const [cardSavedSuccess, setCardSavedSuccess] = React.useState(false)
+  const isDesktop = useViewportDesktop()
+  const cardPanelRef = React.useRef<HTMLElement | null>(null)
+  const overlayShownTrackedRef = React.useRef(false)
+  const [overlayDismissedLocal, setOverlayDismissedLocal] = React.useState(false)
   useLeadLoading() // hook required; retryLead available if 11014 "Try again" is re-added
 
   if (state.status !== "ready") return null
@@ -274,6 +286,8 @@ export function CardAndQuoteFlow() {
     return () => { cancelled = true }
   }, [detailsZip])
 
+  const isCardFirstLayout = searchParams.get("layout") === "card-first"
+
   const ctaByStep: Record<string, { label: string; nextMock?: "details" | "payment" | "confirm" }> = {
     quote: { label: "Continue to Details", nextMock: "details" },
     details: { label: "Continue to Payment", nextMock: "payment" },
@@ -301,7 +315,10 @@ export function CardAndQuoteFlow() {
     if (state.status !== "ready" || transitioning) return
     setTransitionError(null)
     setIsTimeoutError(false)
-    
+    if (effectiveStep === "quote") {
+      trackEnrollmentEvent("insurance_cta_clicked", eventMetadata)
+    }
+
     // Use formDataOverride from DetailsStep onContinue; fallback to session.owner (DB source of truth)
     const ownerForForm = session.owner as Record<string, unknown> | undefined
     const activeFormData = formDataOverride ?? (ownerForForm ? {
@@ -973,38 +990,191 @@ export function CardAndQuoteFlow() {
     }
   }
 
+  const showCardFirstLayout =
+    effectiveStep === "quote" &&
+    isCardFirstLayout &&
+    processedPlans.allPolicies.length > 0 &&
+    (sessionAny.lead_request_last_error_code as string) !== "11014"
+
+  const eventMetadata = React.useMemo(
+    () => ({
+      session_id: session.session_id,
+      member_id: memberId ?? undefined,
+      current_step: effectiveStep,
+      layout: isCardFirstLayout ? "card-first" : "default",
+      viewport_bucket: (isDesktop ? "desktop" : "mobile") as "desktop" | "mobile",
+    }),
+    [session.session_id, memberId, effectiveStep, isCardFirstLayout, isDesktop]
+  )
+
+  const showOverlay =
+    effectiveStep === "quote" &&
+    processedPlans.allPolicies.length > 0 &&
+    !(session as Record<string, unknown>).card_overlay_dismissed &&
+    !overlayDismissedLocal &&
+    isDesktop &&
+    (sessionAny.lead_request_last_error_code as string) !== "11014"
+
+  React.useEffect(() => {
+    if (showOverlay && !overlayShownTrackedRef.current) {
+      overlayShownTrackedRef.current = true
+      trackEnrollmentEvent("card_overlay_shown", eventMetadata)
+    }
+    if (!showOverlay) overlayShownTrackedRef.current = false
+  }, [showOverlay, eventMetadata])
+
+  const handleOverlayDismiss = React.useCallback(
+    (reason: "click" | "esc" | "timeout") => {
+      setOverlayDismissedLocal(true)
+      trackEnrollmentEvent("card_overlay_dismissed", { ...eventMetadata, dismiss_reason: reason })
+      updateSessionCardOverlayDismissed(session.session_id)
+        .then(setSession)
+        .catch(() => {})
+    },
+    [session.session_id, eventMetadata, setSession]
+  )
+
+  const cardFirstStartingPriceMo = processedPlans.defaultPolicy
+    ? parseMonthlyPremium(processedPlans.defaultPolicy)
+    : NaN
+  const startingPriceMo = Number.isFinite(cardFirstStartingPriceMo) ? cardFirstStartingPriceMo : null
+
+  const doCardDownload = React.useCallback(() => {
+    trackEnrollmentEvent("card_image_download_clicked", eventMetadata)
+    if (!cardImageUrl) return
+    const link = document.createElement("a")
+    link.href = cardImageUrl
+    link.download = `${memberId ?? "card"}-card.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }, [cardImageUrl, memberId, eventMetadata])
+
+  const handleCardDownload = React.useCallback(() => {
+    setCardSavedSuccess(true)
+    doCardDownload()
+  }, [doCardDownload])
+
   return (
-    <div className="card-and-quote-flow">
-      <div className="card-and-quote-grid">
-        <section className="card-panel">
-          {effectiveStep === "quote" || effectiveStep === "confirm" ? (
-            <>
-              {cardImageUrl ? (
-                <CardDisplayPanel
-                  cardImageUrl={cardImageUrl}
-                  walletUrl={walletUrl}
-                  memberId={memberId}
+    <div className={`card-and-quote-flow${showCardFirstLayout ? " card-and-quote-flow--card-first" : ""}`}>
+      {showOverlay && (
+        <CardGuidedOverlay cardPanelRef={cardPanelRef} onDismiss={handleOverlayDismiss} />
+      )}
+      {showCardFirstLayout ? (
+        <div className="card-first-grid">
+          <section className="card-first-hero" aria-label="Your PetRx card">
+            <h1 className="card-first-hero__title">Your PetRx Prescription Savings Card is Ready</h1>
+            <p className="card-first-hero__subtitle">Save on your pet&apos;s medications at pharmacies nationwide.</p>
+            <div ref={cardPanelRef as React.RefObject<HTMLDivElement>} className="card-first-hero__card-wrap">
+            {cardImageUrl ? (
+              <CardDisplayPanel
+                cardImageUrl={cardImageUrl}
+                walletUrl={walletUrl}
+                memberId={memberId}
+                petName={displayPetName}
+                onAddToWallet={() => {
+                  trackEnrollmentEvent("wallet_add_clicked", eventMetadata)
+                  setCardSavedSuccess(true)
+                  setWalletModalOpen(true)
+                }}
+                onDownload={handleCardDownload}
+              />
+            ) : (
+              <div className="cardPanel card-display-panel-empty">
+                <div className="cardPanel__header">
+                  <h2>Your Digital Card</h2>
+                </div>
+                <p className="cardPanel__note">Card image will appear when available.</p>
+              </div>
+            )}
+            </div>
+            {cardSavedSuccess && (
+              <p className="card-first-hero__saved-nudge">Saved — you&apos;re all set.</p>
+            )}
+          </section>
+          {!teaserDismissed && (
+            <section className="card-first-insurance" aria-label="Insurance options">
+              {!insuranceExpanded ? (
+                <InsuranceOfferTeaser
                   petName={displayPetName}
-                  onAddToWallet={() => setWalletModalOpen(true)}
+                  startingPriceMo={startingPriceMo}
+                  onExpand={() => {
+                    trackEnrollmentEvent("insurance_teaser_expand_clicked", eventMetadata)
+                    setInsuranceExpanded(true)
+                  }}
+                  onDismiss={() => setTeaserDismissed(true)}
+                  postSaveCopy={cardSavedSuccess}
                 />
               ) : (
-                <div className="cardPanel card-display-panel-empty">
-                  <div className="cardPanel__header">
-                    <h2>Your Digital Card</h2>
-                  </div>
-                  <p className="cardPanel__note">Card image will appear when available.</p>
+                <div className="card-first-insurance-expanded">
+                  <QuoteStep
+                    processedPlans={processedPlans}
+                    selectedPlanId={selectedPlanId}
+                    selectedReimbursement={selectedReimbursement}
+                    selectedDeductible={selectedDeductible}
+                    onPlanChange={handlePlanChange}
+                    onSelectionChange={(r, d) => {
+                      setSelectedReimbursement(r)
+                      setSelectedDeductible(d)
+                      const matchingPolicy = processedPlans.allPolicies.find(
+                        (p) =>
+                          (p.isHighDeductible as boolean) === !isSignature &&
+                          Math.round(((p.reimbursement as number) || 0) * 100).toString() === r &&
+                          String(p.deductible) === d
+                      )
+                      if (matchingPolicy?.plan_id) {
+                        setSelectedPlanIdFromHP(matchingPolicy.plan_id as string)
+                      } else {
+                        setSelectedPlanIdFromHP(null)
+                      }
+                    }}
+                    petName={displayPetName}
+                    petType={(session.pet as Record<string, unknown>)?.type as string}
+                    petBreedId={(session.pet as Record<string, unknown>)?.breed_id as number | undefined}
+                    onContinue={() => handleCtaClick()}
+                    continueLabel="Continue to Details"
+                    continueDisabled={transitioning || !isSelectionValid}
+                    title={`Bonus: Protect ${displayPetName} from unexpected vet bills`}
+                    subtitle="Healthy Paws coverage options (optional)"
+                    variant="secondary"
+                  />
                 </div>
               )}
-              <WalletModal
-                open={walletModalOpen}
-                onClose={() => setWalletModalOpen(false)}
-                qrCodeUrl={session.qr_code_url}
-                qrCodeUrlAndroid={session.qr_code_url_android}
-                walletPassUrl={session.wallet_pass_url ?? walletUrl}
-                memberId={memberId}
-              />
-            </>
-          ) : (
+            </section>
+          )}
+          {transitionError && (
+            <p className="start-error" style={{ marginTop: 12, marginBottom: 0 }}>
+              {transitionError}
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="card-and-quote-grid">
+          <section ref={cardPanelRef} className="card-panel">
+            {effectiveStep === "quote" || effectiveStep === "confirm" ? (
+              <>
+                {cardImageUrl ? (
+                  <CardDisplayPanel
+                    cardImageUrl={cardImageUrl}
+                    walletUrl={walletUrl}
+                    memberId={memberId}
+                    petName={displayPetName}
+                    onAddToWallet={() => {
+                      trackEnrollmentEvent("wallet_add_clicked", eventMetadata)
+                      setWalletModalOpen(true)
+                    }}
+                    onDownload={doCardDownload}
+                  />
+                ) : (
+                  <div className="cardPanel card-display-panel-empty">
+                    <div className="cardPanel__header">
+                      <h2>Your Digital Card</h2>
+                    </div>
+                    <p className="cardPanel__note">Card image will appear when available.</p>
+                  </div>
+                )}
+              </>
+            ) : (
             <ReceiptSidebar
               currentStep={effectiveStep as "quote" | "details" | "payment" | "confirm"}
               petName={displayPetName}
@@ -1049,7 +1219,16 @@ export function CardAndQuoteFlow() {
             </div>
           )}
         </section>
-      </div>
+        </div>
+      )}
+      <WalletModal
+        open={walletModalOpen}
+        onClose={() => setWalletModalOpen(false)}
+        qrCodeUrl={session.qr_code_url}
+        qrCodeUrlAndroid={session.qr_code_url_android}
+        walletPassUrl={session.wallet_pass_url ?? walletUrl}
+        memberId={memberId}
+      />
     </div>
   )
 }
