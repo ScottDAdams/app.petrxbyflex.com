@@ -1,7 +1,7 @@
 /**
- * Lead loading: /api/enrollment/lead is called at most once per session when
- * session.lead_id and session.quote_detail_id are both missing. Overlay shows
- * until lead returns (success or handled failure). Source of truth is DB session.
+ * Lead loading: /api/enrollment/lead is called when session has no lead_id/quote_detail_id
+ * and required pet/owner fields. Overlay shows until lead returns (success or handled failure).
+ * Source of truth is DB; no browser persistence (no sessionStorage/localStorage) for lead gating.
  */
 import React, { createContext, useContext, useCallback, useRef, useState } from "react"
 import { useSession } from "./SessionContext"
@@ -12,30 +12,17 @@ import { API_BASE } from "../api"
 type LeadLoadingContextValue = {
   /** True while /lead is in flight; overlay should be visible. Dismisses only when lead returns. */
   leadLoading: boolean
+  /** Call to retry CreateLead (e.g. after 11014 "Try again"). No-op if already in flight or has lead data. */
+  retryLead: () => void
 }
 
 const LeadLoadingContext = createContext<LeadLoadingContextValue | null>(null)
 
 const DEV = typeof import.meta !== "undefined" && import.meta.env?.DEV
 
-const requestedLeadSessions = new Set<string>()
-
-function hasRequestedLead(sessionId: string) {
-  if (requestedLeadSessions.has(sessionId)) return true
-  try {
-    return window.sessionStorage.getItem(`lead_requested:${sessionId}`) === "1"
-  } catch {
-    return false
-  }
-}
-
-function markRequestedLead(sessionId: string) {
-  requestedLeadSessions.add(sessionId)
-  try {
-    window.sessionStorage.setItem(`lead_requested:${sessionId}`, "1")
-  } catch {
-    // ignore
-  }
+function isDebug(): boolean {
+  if (typeof window === "undefined") return false
+  return new URLSearchParams(window.location.search).get("debug") === "1"
 }
 
 export function LeadLoadingProvider({ children }: { children: React.ReactNode }) {
@@ -54,7 +41,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
     if (leadId && quoteDetailId) {
       if (DEV && !didLogSkipRef.current) {
         didLogSkipRef.current = true
-        console.log("[Lead] Skip: already has ids or lead already requested:", session.session_id)
+        console.log("[Lead] Skip: already has lead_id and quote_detail_id:", session.session_id)
       }
       return
     }
@@ -62,20 +49,20 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
     const sessionId = String(session.session_id ?? "")
     if (!sessionId) return
 
-    if (hasRequestedLead(sessionId)) {
+    const hasLeadData = leadId != null || (Array.isArray(session.insurance_products) && session.insurance_products.length > 0)
+    if (hasLeadData) {
       if (DEV && !didLogSkipRef.current) {
         didLogSkipRef.current = true
-        console.log("[Lead] Skip: already has ids or lead already requested:", sessionId)
+        console.log("[Lead] Skip: session already has lead data:", sessionId)
       }
       return
     }
 
     if (inFlightRef.current) return
 
-    // 2B) Validate required fields BEFORE latching (don't mark requested if payload is missing)
     const owner = session.owner as Record<string, unknown> | undefined
     const pet = session.pet as Record<string, unknown> | undefined
-    const zipCode = (pet?.zip_code ?? owner?.zip_code ?? "") as string
+    const zipCode = (pet?.zip_code ?? owner?.zip ?? "") as string
     const petName = (pet?.name ?? "") as string
     const birthMonth = pet?.birth_month as number | undefined
     const birthYear = pet?.birth_year as number | undefined
@@ -90,8 +77,6 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
       return
     }
 
-    // 2C) Latch first, then call
-    markRequestedLead(sessionId)
     inFlightRef.current = true
     setLeadLoading(true)
     if (DEV && !didLogCallRef.current) {
@@ -110,6 +95,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          session_id: sessionId,
           affiliateCode: "FLEXEMBD",
           zipCode,
           pets: [{
@@ -129,11 +115,21 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
         signal: controller.signal,
       })
 
+      const data = (await res.json()) as Record<string, unknown>
+
+      // Backend returns 200 with status=resume_available or lead_failed on HP error (e.g. 11014); session is hydrated
+      if (res.ok && (data.status === "resume_available" || data.status === "lead_failed") && data.session) {
+        if (isDebug()) {
+          console.log("[Lead]", data.status, "retrieve_quote_url:", !!data.retrieve_quote_url, "resume_session_id:", !!data.resume_session_id)
+        }
+        setSession(data.session as SessionData)
+        return
+      }
+
       if (!res.ok) {
         return
       }
 
-      const data = (await res.json()) as Record<string, unknown>
       const returnedLeadId = (data.leadId ?? data.lead_id) as string | undefined
       const quotes = (data.quotes ?? []) as Array<Record<string, unknown>>
       let quoteDetailId: string | undefined
@@ -163,8 +159,6 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
           : parseFloat(String(monthlyRaw || 0)).toFixed(2)
         const quotePlanId = (quote.planId ?? planId ?? "70_500") as string
         if (quote.planId) hpPlanIds.push(String(quote.planId))
-        // Extract isHighDeductible from pricing (HP determines Signature vs Value)
-        // HP returns it in pricing.isHighDeductible, not at quote level
         const isHighDeductible = (pricing.isHighDeductible ?? pricing.is_high_deductible ?? false) as boolean
         insuranceProducts.push({
           deductible,
@@ -182,29 +176,14 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
           monthly_premium: "34.99",
           plan_id: planId ?? "70_500",
           isDefaultPlan: false,
-          isHighDeductible: false, // Default to Signature plan
+          isHighDeductible: false,
         })
       }
 
-      // Log frontend transformation before PATCH
-      const computedPlanIds = insuranceProducts.map((p: any) => p?.plan_id).filter(Boolean)
-      const reimbursement70Products = insuranceProducts.filter(
-        (p: any) => p?.reimbursement === 0.7 || p?.reimbursement === 70
-      )
-      const deductiblePremiumPairs = reimbursement70Products
-        .map((p: any) => `${p.deductible}->${p.monthly_premium}`)
-        .sort()
-      
       if (DEV) {
         console.log(
           `[LeadLoadingContext] Transforming HP quotes to insurance_products:`,
-          {
-            hpPlanIds,
-            computedPlanIds,
-            productsCount: insuranceProducts.length,
-            reimbursement70Bucket: deductiblePremiumPairs,
-            synthesized: insuranceProducts.length === 0 || hpPlanIds.length === 0,
-          }
+          { hpPlanIds, productsCount: insuranceProducts.length }
         )
       }
 
@@ -213,7 +192,6 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
         insuranceProducts,
         { leadId: returnedLeadId, quoteDetailId }
       )
-      // Optimistic update so session.lead_id and session.quote_detail_id are available immediately
       setSession({
         ...session,
         lead_id: returnedLeadId ?? undefined,
@@ -221,8 +199,6 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
         insurance_products: insuranceProducts,
       } as SessionData)
       const fetched = await refetch()
-      // If GET doesn't return lead_id/quote_detail_id (e.g. backend not yet returning them),
-      // re-apply so we never lose them after refetch overwrites state
       if (fetched && (returnedLeadId != null || quoteDetailId != null)) {
         setSession({
           ...fetched,
@@ -238,7 +214,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
       setLeadLoading(false)
       inFlightRef.current = false
     }
-  }, [state.status, state.status === "ready" ? (state as { session: Record<string, unknown> }).session?.session_id : undefined, refetch])
+  }, [state.status, state.status === "ready" ? (state as { session: Record<string, unknown> }).session?.session_id : undefined, refetch, setSession])
 
   const session = state.status === "ready" ? (state as { session: Record<string, unknown> }).session : undefined
   React.useEffect(() => {
@@ -246,7 +222,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
     runLeadIfNeeded()
   }, [session?.session_id, runLeadIfNeeded])
 
-  const value: LeadLoadingContextValue = { leadLoading }
+  const value: LeadLoadingContextValue = { leadLoading, retryLead: runLeadIfNeeded }
 
   return (
     <LeadLoadingContext.Provider value={value}>
@@ -257,6 +233,6 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
 
 export function useLeadLoading(): LeadLoadingContextValue {
   const ctx = useContext(LeadLoadingContext)
-  if (!ctx) return { leadLoading: false }
+  if (!ctx) return { leadLoading: false, retryLead: () => {} }
   return ctx
 }

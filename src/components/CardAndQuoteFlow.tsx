@@ -2,6 +2,7 @@ import * as React from "react"
 import { useSearchParams } from "react-router-dom"
 import { getMockStep, isMockModeEnabled } from "../mocks/mockMode"
 import { useSession } from "../context/SessionContext"
+import { useLeadLoading } from "../context/LeadLoadingContext"
 import { updateSessionStep } from "../api/session"
 import { CardDisplayPanel } from "./CardDisplayPanel"
 import { ReceiptSidebar } from "./insurance/ReceiptSidebar"
@@ -14,6 +15,37 @@ import type { ProcessedPlans } from "./InsuranceQuoteSelector"
 import type { EnrollmentAdapter, EnrollmentResult } from "./insurance/EnrollmentAdapter"
 import { HpEnrollmentAdapter } from "./insurance/HpEnrollmentAdapter"
 import { MockEnrollmentAdapter } from "./insurance/MockEnrollmentAdapter"
+
+function parseMonthlyPremium(p: Record<string, unknown>): number {
+  const raw = p.monthly_premium ?? p.monthlyPremium ?? p.monthly_premium_usd
+  if (typeof raw === "number" && Number.isFinite(raw)) return raw
+  if (typeof raw === "string") {
+    const n = parseFloat(raw.replace(/[^0-9.-]/g, ""))
+    return Number.isFinite(n) ? n : NaN
+  }
+  return NaN
+}
+
+/** Default = lowest premium in Signature tier (or any tier if no Signature). Tie-break: higher reimbursement, then lower deductible. */
+function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<string, unknown> | null {
+  if (allPolicies.length === 0) return null
+  const signaturePolicies = allPolicies.filter((p) => (p.isHighDeductible as boolean) !== true)
+  const candidates = signaturePolicies.length > 0 ? signaturePolicies : allPolicies
+  const withPremium = candidates
+    .map((p) => ({ p, premium: parseMonthlyPremium(p) }))
+    .filter(({ premium }) => Number.isFinite(premium) && premium > 0)
+  if (withPremium.length === 0) return candidates[0] ?? null
+  withPremium.sort((a, b) => {
+    if (a.premium !== b.premium) return a.premium - b.premium
+    const reimA = (a.p.reimbursement as number) ?? 0
+    const reimB = (b.p.reimbursement as number) ?? 0
+    if (reimB !== reimA) return reimB - reimA
+    const dedA = Number(a.p.deductible) || 0
+    const dedB = Number(b.p.deductible) || 0
+    return dedA - dedB
+  })
+  return withPremium[0].p as Record<string, unknown>
+}
 
 function processInsuranceProducts(products: unknown[]): ProcessedPlans {
   if (!Array.isArray(products) || products.length === 0) {
@@ -35,13 +67,8 @@ function processInsuranceProducts(products: unknown[]): ProcessedPlans {
   const allDeductibles = [
     ...new Set(allPolicies.map((p) => String(p.deductible ?? "0"))),
   ].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-  
-  // Find default policy: first check for isDefaultPlan flag, then fallback to 70%/500, then first policy
-  const defaultPolicy =
-    allPolicies.find((p) => p.isDefaultPlan === true) ||
-    allPolicies.find((p) => (p.reimbursement as number) === 0.7 && p.deductible === 500) ||
-    allPolicies[0] ||
-    null
+
+  const defaultPolicy = computeDefaultPolicy(allPolicies)
   return {
     allReimbursements,
     allDeductibles,
@@ -98,6 +125,7 @@ export function CardAndQuoteFlow() {
   const [authorizedAmount, setAuthorizedAmount] = React.useState<number | null>(null)
   // Store accountId from setupPending (maps to OneInc policyId)
   const [sessionAccountId, setSessionAccountId] = React.useState<string | null>(null)
+  useLeadLoading() // hook required; retryLead available if 11014 "Try again" is re-added
 
   if (state.status !== "ready") return null
 
@@ -121,28 +149,36 @@ export function CardAndQuoteFlow() {
     [products]
   )
 
-  // Hydrate quote from DB when session has plan (source of truth). Fallback to default policy when no plan saved yet.
+  // Hydrate quote selection from DB when session has plan, else lowest-premium Signature default. Apply only when entering quote step or session plan changes so we don't override user changes.
   const sessionPlan = (session as Record<string, unknown>)?.plan as { plan_id?: string; reimbursement?: string; deductible?: string; is_high_deductible?: boolean } | undefined
+  const quoteStepActive = (mockStep ?? session.current_step ?? "quote").toLowerCase() === "quote"
+  const lastQuoteSelectionAppliedRef = React.useRef<{ sessionId: string; planId: string | null }>({ sessionId: "", planId: null })
   React.useEffect(() => {
-    if (sessionPlan?.plan_id != null) {
-      setSelectedPlanIdFromHP(sessionPlan.plan_id)
-      if (sessionPlan.reimbursement != null) setSelectedReimbursement(String(sessionPlan.reimbursement))
-      if (sessionPlan.deductible != null) setSelectedDeductible(String(sessionPlan.deductible))
-      setSelectedPlanId(sessionPlan.is_high_deductible ? "value" : "signature")
+    if (!quoteStepActive || processedPlans.allPolicies.length === 0) {
+      if (!quoteStepActive) lastQuoteSelectionAppliedRef.current = { sessionId: "", planId: null }
       return
     }
-    if (processedPlans.defaultPolicy) {
-      const d = processedPlans.defaultPolicy
-      const isHighDeductible = (d.isHighDeductible as boolean) ?? false
-      const isSignature = !isHighDeductible
-      setSelectedPlanId(isSignature ? "signature" : "value")
-      const reimbursement = Math.round(((d.reimbursement as number) || 0.8) * 100).toString()
-      const deductibleStr = String(d.deductible ?? (isSignature ? "500" : "1500"))
-      setSelectedReimbursement(reimbursement)
-      setSelectedDeductible(deductibleStr)
-      setSelectedPlanIdFromHP((d.plan_id as string) ?? null)
+    const sessionId = String((session as Record<string, unknown>)?.session_id ?? "")
+    const planId = sessionPlan?.plan_id ?? null
+    const applied = lastQuoteSelectionAppliedRef.current
+    if (applied.sessionId === sessionId && applied.planId === planId) return
+
+    const allPolicies = processedPlans.allPolicies as Record<string, unknown>[]
+    let policyToApply: Record<string, unknown> | null = null
+    if (sessionPlan?.plan_id != null) {
+      const inList = allPolicies.find((p) => String(p.plan_id) === String(sessionPlan.plan_id))
+      if (inList) policyToApply = inList
     }
-  }, [sessionPlan?.plan_id, sessionPlan?.reimbursement, sessionPlan?.deductible, sessionPlan?.is_high_deductible, processedPlans.defaultPolicy])
+    if (policyToApply == null) policyToApply = processedPlans.defaultPolicy as Record<string, unknown> | null
+    if (policyToApply) {
+      const isHighDeductible = (policyToApply.isHighDeductible as boolean) ?? false
+      setSelectedPlanId(isHighDeductible ? "value" : "signature")
+      setSelectedReimbursement(Math.round(((policyToApply.reimbursement as number) ?? 0.8) * 100).toString())
+      setSelectedDeductible(String(policyToApply.deductible ?? (isHighDeductible ? "1500" : "500")))
+      setSelectedPlanIdFromHP((policyToApply.plan_id as string) ?? null)
+    }
+    lastQuoteSelectionAppliedRef.current = { sessionId, planId }
+  }, [quoteStepActive, (session as Record<string, unknown>)?.session_id, sessionPlan?.plan_id, processedPlans.defaultPolicy, processedPlans.allPolicies.length])
 
   const effectiveStep = (mockStep ?? session.current_step ?? "quote").toLowerCase()
 
@@ -722,6 +758,8 @@ export function CardAndQuoteFlow() {
           productsCount: products.length,
           effectiveStep,
         })
+        const is11014 = (sessionAny.lead_request_last_error_code as string) === "11014"
+        const retrieveQuoteUrl = (sessionAny.last_hp_retrieve_quote_url as string) || undefined
         if (processedPlans.allPolicies.length > 0) {
           return (
             <QuoteStep
@@ -755,6 +793,154 @@ export function CardAndQuoteFlow() {
               continueLabel={cta.label}
               continueDisabled={transitioning || !isSelectionValid}
             />
+          )
+        }
+        if (is11014) {
+          const debug = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("debug") === "1"
+          if (debug) {
+            console.log("[CardAndQuoteFlow] 11014 recovery: resume_session_id =", !!sessionAny.resume_session_id, "retrieve_quote_url =", !!retrieveQuoteUrl)
+          }
+          const ownerEmail = (session.owner as Record<string, unknown>)?.email as string | undefined
+          const displayEmail = ownerEmail != null && String(ownerEmail).trim() ? String(ownerEmail).trim() : ""
+          const resumeSessionId = (sessionAny.resume_session_id as string) || undefined
+          const hasResume = !!resumeSessionId
+
+          const handleContinueWhereLeftOff = () => {
+            if (!resumeSessionId) return
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev)
+              next.set("session_id", resumeSessionId)
+              return next
+            }, { replace: true })
+          }
+
+          const handleStartNewQuote = async () => {
+            try {
+              const returned = await updateSessionStep(session.session_id, "details")
+              setSession(returned)
+              await refetch()
+            } catch (e) {
+              setTransitionError(e instanceof Error ? e.message : "Could not go to details.")
+            }
+          }
+
+          if (hasResume) {
+            return (
+              <>
+                <div className="quote-step__header" style={{ marginBottom: 0 }}>
+                  <div className="quote-step__header-content">
+                    <div className="quote-step__header-text" style={{ flex: 1 }}>
+                      <h2 className="quote-step__title">Continue your Healthy Paws quote</h2>
+                      <p className="quote-step__subtitle">
+                        We can&apos;t generate a new quote in-app right now. You can continue your quote on Healthy Paws or change your email and try again.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="resume-modal-overlay"
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    background: "rgba(0,0,0,0.4)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000,
+                    padding: 16,
+                  }}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="resume-modal-title"
+                >
+                  <div
+                    className="resume-modal"
+                    style={{
+                      background: "#fff",
+                      borderRadius: 12,
+                      padding: 24,
+                      maxWidth: 420,
+                      width: "100%",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h2 id="resume-modal-title" className="quote-step__title" style={{ marginTop: 0 }}>
+                      We&apos;ve found an existing quote for you.
+                    </h2>
+                    <p className="quote-step__subtitle" style={{ marginBottom: 20 }}>
+                      It looks like you previously started a quote. You can continue where you left off.
+                    </p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      <button type="button" className="btn btn--primary" onClick={handleContinueWhereLeftOff}>
+                        Continue where I left off
+                      </button>
+                      <button type="button" className="btn btn--secondary" onClick={handleStartNewQuote}>
+                        Start new quote
+                      </button>
+                      {retrieveQuoteUrl ? (
+                        <button
+                          type="button"
+                          className="btn btn--secondary"
+                          onClick={() => window.open(retrieveQuoteUrl, "_blank")}
+                        >
+                          Continue on Healthy Paws
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )
+          }
+
+          return (
+            <div className="quote-step__header" style={{ marginBottom: 0 }}>
+              <div className="quote-step__header-content">
+                <div className="quote-step__header-text" style={{ flex: 1 }}>
+                  <h2 className="quote-step__title">You&apos;ve already got an amazing quote from Healthy Paws</h2>
+                  <p className="quote-step__subtitle">
+                    You can continue your quote by clicking the Continue Quote button below.
+                  </p>
+                </div>
+              </div>
+              <div className="plan-container plan-container--signature">
+                <div className="plan-container__header">
+                  <h4 className="plan-container__title">Healthy Paws Pet Insurance</h4>
+                </div>
+                <div className="plan-container__options" style={{ paddingTop: 12 }}>
+                  <ul className="quote-11014-value-props" style={{ margin: "0 0 20px 0", paddingLeft: 20, color: "#555", fontSize: 14, lineHeight: 1.6 }}>
+                    <li>Unlimited lifetime benefits</li>
+                    <li>Fast, simple claims</li>
+                    <li>No network restrictions</li>
+                  </ul>
+                </div>
+                <div className="plan-container__summary">
+                  <div className="quote-summary-card">
+                    <div className="quote-summary-card__content" style={{ flexDirection: "column", gap: 16 }}>
+                      {displayEmail ? (
+                        <p style={{ margin: 0, fontSize: 13, color: "#5d6d7e" }}>
+                          Continue for <strong style={{ color: "#2c3e50" }}>{displayEmail}</strong>
+                        </p>
+                      ) : null}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {retrieveQuoteUrl ? (
+                          <a
+                            href={retrieveQuoteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn--primary"
+                            style={{ textAlign: "center", textDecoration: "none" }}
+                          >
+                            Continue Quote
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )
         }
         return (
