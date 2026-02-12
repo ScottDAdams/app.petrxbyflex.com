@@ -30,7 +30,7 @@ function parseMonthlyPremium(p: Record<string, unknown>): number {
   return NaN
 }
 
-/** Default = lowest premium in Signature tier (or any tier if no Signature). Tie-break: higher reimbursement, then lower deductible. */
+/** Default = lowest premium. Tie-break: higher reimbursement, then higher deductible (per spec). */
 function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<string, unknown> | null {
   if (allPolicies.length === 0) return null
   const signaturePolicies = allPolicies.filter((p) => (p.isHighDeductible as boolean) !== true)
@@ -46,7 +46,7 @@ function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<st
     if (reimB !== reimA) return reimB - reimA
     const dedA = Number(a.p.deductible) || 0
     const dedB = Number(b.p.deductible) || 0
-    return dedA - dedB
+    return dedB - dedA
   })
   return withPremium[0].p as Record<string, unknown>
 }
@@ -176,6 +176,15 @@ export function CardAndQuoteFlow() {
     if (applied.sessionId === sessionId && applied.planId === planId) return
 
     const allPolicies = processedPlans.allPolicies as Record<string, unknown>[]
+    const isHighDed = selectedPlanId === "value"
+    const currentMatchesPolicy = allPolicies.some(
+      (p) =>
+        (p.isHighDeductible as boolean) === isHighDed &&
+        Math.round(((p.reimbursement as number) ?? 0) * 100).toString() === selectedReimbursement &&
+        String(p.deductible) === selectedDeductible
+    )
+    if (currentMatchesPolicy) return
+
     let policyToApply: Record<string, unknown> | null = null
     if (sessionPlan?.plan_id != null) {
       const inList = allPolicies.find((p) => String(p.plan_id) === String(sessionPlan.plan_id))
@@ -190,7 +199,7 @@ export function CardAndQuoteFlow() {
       setSelectedPlanIdFromHP((policyToApply.plan_id as string) ?? null)
     }
     lastQuoteSelectionAppliedRef.current = { sessionId, planId }
-  }, [quoteStepActive, (session as Record<string, unknown>)?.session_id, sessionPlan?.plan_id, processedPlans.defaultPolicy, processedPlans.allPolicies.length])
+  }, [quoteStepActive, (session as Record<string, unknown>)?.session_id, sessionPlan?.plan_id, processedPlans.defaultPolicy, processedPlans.allPolicies.length, selectedPlanId, selectedReimbursement, selectedDeductible])
 
   const effectiveStep = (mockStep ?? session.current_step ?? "quote").toLowerCase()
 
@@ -806,6 +815,11 @@ export function CardAndQuoteFlow() {
               petName={displayPetName}
               petType={(session.pet as Record<string, unknown>)?.type as string}
               petBreedId={(session.pet as Record<string, unknown>)?.breed_id as number | undefined}
+              petBreedLabel={((session.pet as Record<string, unknown>)?.breed_label ?? (session.pet as Record<string, unknown>)?.breed) as string}
+              petAge={receiptPetAge}
+              petGender={(session.pet as Record<string, unknown>)?.sex as string | undefined}
+              analyticsMetadata={eventMetadata}
+              onBreedInsightsShown={onBreedInsightsShown}
               onContinue={() => handleCtaClick()}
               continueLabel={cta.label}
               continueDisabled={transitioning || !isSelectionValid}
@@ -1007,6 +1021,34 @@ export function CardAndQuoteFlow() {
     [session.session_id, memberId, effectiveStep, isCardFirstLayout, isDesktop]
   )
 
+  const breedInsightsShownKeyRef = React.useRef<string | null>(null)
+  const onBreedInsightsShown = React.useCallback(() => {
+    if (effectiveStep !== "quote" || processedPlans.allPolicies.length === 0) return
+    const layout = isCardFirstLayout ? "card-first" : "default"
+    const key = `${session.session_id}-${layout}-quote`
+    if (breedInsightsShownKeyRef.current === key) return
+    breedInsightsShownKeyRef.current = key
+    const pet = session.pet as Record<string, unknown> | undefined
+    trackEnrollmentEvent("breed_insights_card_shown", {
+      ...eventMetadata,
+      breed_type_id: (pet?.breed_id as number | undefined) ?? undefined,
+      speciesType: ((pet?.type as string) ?? "DOG").toUpperCase(),
+      selected_plan_id: selectedPlanIdFromHP ?? undefined,
+      reimbursement: selectedReimbursement,
+      deductible: selectedDeductible,
+    })
+  }, [
+    effectiveStep,
+    processedPlans.allPolicies.length,
+    isCardFirstLayout,
+    session.session_id,
+    session.pet,
+    eventMetadata,
+    selectedPlanIdFromHP,
+    selectedReimbursement,
+    selectedDeductible,
+  ])
+
   const showOverlay =
     effectiveStep === "quote" &&
     processedPlans.allPolicies.length > 0 &&
@@ -1131,6 +1173,11 @@ export function CardAndQuoteFlow() {
                     petName={displayPetName}
                     petType={(session.pet as Record<string, unknown>)?.type as string}
                     petBreedId={(session.pet as Record<string, unknown>)?.breed_id as number | undefined}
+                    petBreedLabel={((session.pet as Record<string, unknown>)?.breed_label ?? (session.pet as Record<string, unknown>)?.breed) as string}
+                    petAge={receiptPetAge}
+                    petGender={(session.pet as Record<string, unknown>)?.sex as string | undefined}
+                    analyticsMetadata={eventMetadata}
+                    onBreedInsightsShown={onBreedInsightsShown}
                     onContinue={() => handleCtaClick()}
                     continueLabel="Continue to Details"
                     continueDisabled={transitioning || !isSelectionValid}

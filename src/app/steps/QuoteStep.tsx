@@ -1,8 +1,10 @@
 import * as React from "react"
 import type { ProcessedPlans } from "../../components/InsuranceQuoteSelector"
-import { PartnerBar } from "../../components/insurance/PartnerBar"
+import { QuoteNarrativeHeader } from "../../components/quote/QuoteNarrativeHeader"
+import { QuoteBreedInsightsSection } from "../../components/quote/QuoteBreedInsightsSection"
 import { getBreedAvatarPath } from "../../lib/breedAvatar"
 import { PrimaryActionButton } from "../../components/ui/PrimaryActionButton"
+import type { EnrollmentEventMetadata } from "../../api/analytics"
 
 export type QuoteStepProps = {
   processedPlans: ProcessedPlans
@@ -14,10 +16,15 @@ export type QuoteStepProps = {
   petName: string
   petType?: string
   petBreedId?: number
+  petBreedLabel?: string
+  petAge?: string
+  petGender?: string
   disabled?: boolean
   onContinue?: () => void
   continueLabel?: string
   continueDisabled?: boolean
+  analyticsMetadata?: EnrollmentEventMetadata
+  onBreedInsightsShown?: () => void
   /** Override main title (e.g. card-first: "Bonus: Protect ...") */
   title?: string
   /** Override subtitle (e.g. card-first: "Healthy Paws coverage options (optional)") */
@@ -36,17 +43,21 @@ export function QuoteStep({
   petName,
   petType = "Dog",
   petBreedId,
+  petBreedLabel,
+  petAge,
+  petGender,
   disabled = false,
   onContinue,
   continueLabel = "Review Your Details",
   continueDisabled = false,
-  title: titleOverride,
-  subtitle: subtitleOverride,
+  analyticsMetadata,
+  onBreedInsightsShown,
+  title: _titleOverride,
+  subtitle: _subtitleOverride,
   variant = "default",
 }: QuoteStepProps) {
   const isSignature = selectedPlanId === "signature"
-  const displayTitle = titleOverride ?? (petName && petName.trim().length > 0 ? petName.trim() : "Your Pet") + "'s Custom Pet Insurance Quote"
-  const displaySubtitle = subtitleOverride ?? "Protect your pet from unexpected vet bills while saving on prescriptions"
+  const displayPetName = petName && petName.trim().length > 0 ? petName.trim() : "Your Pet"
   
   // Pet avatar logic (same as ReceiptSidebar)
   const species = (petType ?? "dog").toLowerCase()
@@ -132,25 +143,29 @@ export function QuoteStep({
 
   return (
     <div className={`quote-step ${variant === "secondary" ? "quote-step--secondary" : ""}`}>
-      <PartnerBar />
-      <div className="quote-step__header">
-        <div className="quote-step__header-content">
-          <div className="quote-step__header-text">
-            <h2 className="quote-step__title">
-              {displayTitle}
-            </h2>
-            <p className="quote-step__subtitle">
-              {displaySubtitle}
-            </p>
-          </div>
-          {variant !== "secondary" && (
-            <div className="quote-step__pet-avatar">
-              <img src={imgSrc} alt={species} className="quote-step__pet-icon" onError={handleImgError} />
-            </div>
-          )}
-        </div>
+      <QuoteNarrativeHeader
+        petName={displayPetName}
+        petBreedLabel={petBreedLabel}
+        petAge={petAge}
+        petGender={petGender}
+        avatarSrc={imgSrc}
+        avatarAlt={`${species} breed avatar`}
+        onAvatarError={handleImgError}
+      />
+      <QuoteBreedInsightsSection
+        petBreedLabel={petBreedLabel ?? "this breed"}
+        speciesType={(petType ?? "dog").toUpperCase()}
+        breedTypeId={petBreedId}
+        analyticsMetadata={analyticsMetadata}
+        onTrackShown={onBreedInsightsShown}
+      />
+      <div className="quote-insurance-offer">
+        <h3 className="quote-insurance-offer__headline">Help Protect {displayPetName} From the Unexpected</h3>
+        <p className="quote-insurance-offer__subtext">
+          Pet insurance from our trusted partner Healthy Paws can help manage unexpected veterinary costs.
+        </p>
       </div>
-      <div className="plan-selector">
+      <div className="plan-selector" id="plan-selector">
         <h4 className="plan-selector__title">Select a plan</h4>
         <div className="plan-selector__grid">
           <button
