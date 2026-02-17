@@ -160,9 +160,9 @@ export function QuoteStep({
         onTrackShown={onBreedInsightsShown}
       />
       <div className="quote-insurance-offer">
-        <h3 className="quote-insurance-offer__headline">Help Protect {displayPetName} From the Unexpected</h3>
+        <h3 className="quote-insurance-offer__headline">Pair Your Free PetRx Card with Pet Insurance</h3>
         <p className="quote-insurance-offer__subtext">
-          Pet insurance from our trusted partner Healthy Paws can help manage unexpected veterinary costs.
+          Pet insurance from Healthy Paws can help manage unexpected veterinary expenses while supporting {displayPetName}&apos;s ongoing care.
         </p>
       </div>
       <div className="plan-selector" id="plan-selector">

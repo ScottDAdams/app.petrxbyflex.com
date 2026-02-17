@@ -37,21 +37,24 @@ export function QuoteNarrativeHeader({
 
   return (
     <div className="quote-narrative-header">
-      <div className="quote-narrative-header__partner-badge" aria-label="Brought to you by Healthy Paws">
-        <span className="quote-narrative-header__partner-label">Partner</span>
+      <div className="quote-narrative-header__partner-banner" aria-label="Brought to you by our partner Healthy Paws">
+        <div className="quote-narrative-header__partner-banner-text">
+          <span className="quote-narrative-header__partner-banner-title">Brought to you by our partner Healthy Paws</span>
+          <span className="quote-narrative-header__partner-banner-tagline">Trusted by pet parents nationwide</span>
+        </div>
         <HealthyPawsLogo size="sm" />
       </div>
       <div className="quote-narrative-header__main">
+        <div className="quote-narrative-header__avatar">
+          <img src={avatarSrc} alt={avatarAlt} className="quote-narrative-header__avatar-img" onError={onAvatarError} />
+        </div>
         <div className="quote-narrative-header__text">
           <h2 className="quote-narrative-header__headline">
-            Because {displayName} Is Family
+            Complete Care for {displayName}
           </h2>
           {subtext && (
             <p className="quote-narrative-header__subtext">{subtext}</p>
           )}
-        </div>
-        <div className="quote-narrative-header__avatar">
-          <img src={avatarSrc} alt={avatarAlt} className="quote-narrative-header__avatar-img" onError={onAvatarError} />
         </div>
       </div>
     </div>

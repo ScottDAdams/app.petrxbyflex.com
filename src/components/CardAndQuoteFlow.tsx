@@ -30,7 +30,7 @@ function parseMonthlyPremium(p: Record<string, unknown>): number {
   return NaN
 }
 
-/** Default = lowest premium. Tie-break: higher reimbursement, then higher deductible (per spec). */
+/** Default = lowest-cost Signature plan. Tie-break: lower reimbursement, then higher deductible. */
 function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<string, unknown> | null {
   if (allPolicies.length === 0) return null
   const signaturePolicies = allPolicies.filter((p) => (p.isHighDeductible as boolean) !== true)
@@ -43,7 +43,7 @@ function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<st
     if (a.premium !== b.premium) return a.premium - b.premium
     const reimA = (a.p.reimbursement as number) ?? 0
     const reimB = (b.p.reimbursement as number) ?? 0
-    if (reimB !== reimA) return reimB - reimA
+    if (reimA !== reimB) return reimA - reimB
     const dedA = Number(a.p.deductible) || 0
     const dedB = Number(b.p.deductible) || 0
     return dedB - dedA
@@ -161,29 +161,44 @@ export function CardAndQuoteFlow() {
     [products]
   )
 
-  // Hydrate quote selection from DB when session has plan, else lowest-premium Signature default. Apply only when entering quote step or session plan changes so we don't override user changes.
+  // Hydrate quote selection from DB when session has plan, else lowest-premium Signature default.
   const sessionPlan = (session as Record<string, unknown>)?.plan as { plan_id?: string; reimbursement?: string; deductible?: string; is_high_deductible?: boolean } | undefined
   const quoteStepActive = (mockStep ?? session.current_step ?? "quote").toLowerCase() === "quote"
   const lastQuoteSelectionAppliedRef = React.useRef<{ sessionId: string; planId: string | null }>({ sessionId: "", planId: null })
+  const prevPoliciesLengthRef = React.useRef(0)
   React.useEffect(() => {
-    if (!quoteStepActive || processedPlans.allPolicies.length === 0) {
-      if (!quoteStepActive) lastQuoteSelectionAppliedRef.current = { sessionId: "", planId: null }
+    if (!quoteStepActive) {
+      lastQuoteSelectionAppliedRef.current = { sessionId: "", planId: null }
+      prevPoliciesLengthRef.current = 0
+      return
+    }
+    const policiesLength = processedPlans.allPolicies.length
+    if (policiesLength === 0) {
+      prevPoliciesLengthRef.current = 0
       return
     }
     const sessionId = String((session as Record<string, unknown>)?.session_id ?? "")
     const planId = sessionPlan?.plan_id ?? null
     const applied = lastQuoteSelectionAppliedRef.current
+    // When products first load (0 -> N), force re-apply so lowest-cost default is set
+    if (prevPoliciesLengthRef.current === 0 && policiesLength > 0) {
+      lastQuoteSelectionAppliedRef.current = { sessionId: "", planId: null }
+    }
+    prevPoliciesLengthRef.current = policiesLength
+
     if (applied.sessionId === sessionId && applied.planId === planId) return
 
     const allPolicies = processedPlans.allPolicies as Record<string, unknown>[]
-    const isHighDed = selectedPlanId === "value"
-    const currentMatchesPolicy = allPolicies.some(
-      (p) =>
-        (p.isHighDeductible as boolean) === isHighDed &&
-        Math.round(((p.reimbursement as number) ?? 0) * 100).toString() === selectedReimbursement &&
-        String(p.deductible) === selectedDeductible
-    )
-    if (currentMatchesPolicy) return
+    if (planId != null) {
+      const isHighDed = selectedPlanId === "value"
+      const currentMatchesPolicy = allPolicies.some(
+        (p) =>
+          (p.isHighDeductible as boolean) === isHighDed &&
+          Math.round(((p.reimbursement as number) ?? 0) * 100).toString() === selectedReimbursement &&
+          String(p.deductible) === selectedDeductible
+      )
+      if (currentMatchesPolicy) return
+    }
 
     let policyToApply: Record<string, unknown> | null = null
     if (sessionPlan?.plan_id != null) {
@@ -221,9 +236,6 @@ export function CardAndQuoteFlow() {
     if (effectiveStep === "quote" && !sessionLeadId && !sessionQuoteDetailId) return
     refetch()
   }, [effectiveStep, mockStep, state.status, refetch, sessionLeadId, sessionQuoteDetailId])
-  // Use selectedPlanIdFromHP as source of truth (set when user selects), fallback to session.plan or default
-  const effectivePlanId = selectedPlanIdFromHP ?? (sessionPlan?.plan_id ?? processedPlans.defaultPolicy?.plan_id ?? null) as string | null
-
   const handlePlanChange = (planId: "signature" | "value") => {
     setSelectedPlanId(planId)
     const isHighDeductible = planId === "value"
@@ -369,56 +381,23 @@ export function CardAndQuoteFlow() {
           return
         }
         
-        // VALIDATION GATE: Verify selected plan exists in HP-returned policies
-        if (!effectivePlanId) {
+        // Resolve selected policy by UI state (plan type + reimbursement + deductible), not by plan_id.
+        // This ensures we use the combination the user sees, and defaults are applied correctly.
+        const expectedIsHighDeductible = selectedPlanId === "value"
+        const selectedPolicy = processedPlans.allPolicies.find(
+          (p) =>
+            (p.isHighDeductible as boolean) === expectedIsHighDeductible &&
+            Math.round(((p.reimbursement as number) || 0) * 100).toString() === selectedReimbursement &&
+            String(p.deductible) === selectedDeductible
+        )
+
+        if (!selectedPolicy?.plan_id) {
           setTransitionError("Please select a plan option before continuing.")
           setTransitioning(false)
           return
         }
-        
-        const selectedPolicy = processedPlans.allPolicies.find(
-          (p) => (p.plan_id as string) === effectivePlanId
-        )
-        
-        if (!selectedPolicy) {
-          console.error("[CardAndQuoteFlow] Selected plan_id not found in HP policies:", {
-            selectedPlanId: effectivePlanId,
-            availablePlanIds: processedPlans.allPolicies.map((p) => p.plan_id),
-            selectedReimbursement,
-            selectedDeductible,
-            selectedPlanType: selectedPlanId,
-          })
-          setTransitionError("The selected plan is not available. Please select a different option.")
-          setTransitioning(false)
-          return
-        }
-        
-        // Triple-check: reimbursement, deductible, AND plan type (isHighDeductible) match
-        const policyReimbursement = Math.round(((selectedPolicy.reimbursement as number) || 0) * 100).toString()
-        const policyDeductible = String(selectedPolicy.deductible)
-        const policyIsHighDeductible = (selectedPolicy.isHighDeductible as boolean) ?? false
-        const expectedIsHighDeductible = selectedPlanId === "value"
-        if (
-          policyReimbursement !== selectedReimbursement ||
-          policyDeductible !== selectedDeductible ||
-          policyIsHighDeductible !== expectedIsHighDeductible
-        ) {
-          console.error("[CardAndQuoteFlow] Plan mismatch:", {
-            planId: effectivePlanId,
-            policyReimbursement,
-            selectedReimbursement,
-            policyDeductible,
-            selectedDeductible,
-            policyIsHighDeductible,
-            expectedIsHighDeductible,
-            selectedPlanType: selectedPlanId,
-          })
-          setTransitionError("Plan selection mismatch. Please refresh and try again.")
-          setTransitioning(false)
-          return
-        }
-        
-        const planId = effectivePlanId
+
+        const planId = selectedPolicy.plan_id as string
         const ownerEmail = (owner.email || "") as string
         const zipCode = (pet.zip_code || (owner as Record<string, unknown>).zip_code || "") as string
         if (!zipCode) {
@@ -1081,15 +1060,33 @@ export function CardAndQuoteFlow() {
     : NaN
   const startingPriceMo = Number.isFinite(cardFirstStartingPriceMo) ? cardFirstStartingPriceMo : null
 
-  const doCardDownload = React.useCallback(() => {
+  const doCardDownload = React.useCallback(async () => {
     trackEnrollmentEvent("card_image_download_clicked", eventMetadata)
     if (!cardImageUrl) return
-    const link = document.createElement("a")
-    link.href = cardImageUrl
-    link.download = `${memberId ?? "card"}-card.png`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const filename = `PetRxbyFlex-Card-${memberId ?? "card"}.png`
+    try {
+      const res = await fetch(cardImageUrl, { credentials: "include" })
+      if (!res.ok) throw new Error("Failed to fetch image")
+      const blob = await res.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = blobUrl
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(blobUrl)
+    } catch {
+      // Fallback: open in same tab (user can right-click save)
+      const link = document.createElement("a")
+      link.href = cardImageUrl
+      link.download = filename
+      link.target = "_blank"
+      link.rel = "noopener noreferrer"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }, [cardImageUrl, memberId, eventMetadata])
 
   const handleCardDownload = React.useCallback(() => {

@@ -578,6 +578,9 @@ body {
 
 .quote-panel {
   margin-top: 0;
+  background: #e8f4fc;
+  border-radius: 12px 12px 0 0;
+  padding: 24px 24px 32px;
 }
 
 /* Card panel — cohesive card with header, image wrap, actions, note */
@@ -1372,32 +1375,44 @@ body {
   padding-bottom: 32px;
 }
 
-/* Quote narrative header (Identity + Avatar block) */
+/* Quote narrative header (Partner banner + Identity + Avatar block) */
 .quote-narrative-header {
-  position: relative;
   margin-bottom: 24px;
 }
 
-.quote-narrative-header__partner-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
+.quote-narrative-header__partner-banner {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.quote-narrative-header__partner-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quote-narrative-header__partner-banner-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-brand, #2c5aa0);
+}
+
+.quote-narrative-header__partner-banner-tagline {
   font-size: 12px;
   color: #64748b;
 }
 
-.quote-narrative-header__partner-label {
-  font-weight: 500;
-}
-
 .quote-narrative-header__main {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
 }
 
 .quote-narrative-header__text {
@@ -1440,6 +1455,7 @@ body {
 /* Quote breed insights (light sections, no heavy card) */
 .quote-breed-insights {
   margin-bottom: 24px;
+  padding-left: 20px;
 }
 
 .quote-breed-insights--loading .quote-breed-insights__loading {
@@ -1484,7 +1500,7 @@ body {
 
 .quote-breed-insights__divider {
   border: none;
-  border-top: 1px solid var(--petrx-border, #e2e8f0);
+  border-top: 1px solid #6b728054;
   margin: 0;
 }
 
