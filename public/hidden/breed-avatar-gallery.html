@@ -46,6 +46,8 @@
             }
             select,
             input {
+                box-sizing: border-box;
+                height: 40px;
                 padding: 10px 12px;
                 border-radius: 10px;
                 border: 1px solid rgba(255, 255, 255, 0.12);
@@ -61,15 +63,22 @@
             option {
                 color: #111;
             }
-            .note {
-                font-size: 12px;
-                opacity: 0.75;
-                margin-top: 8px;
-            }
             .grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
                 gap: 12px;
+            }
+            .grid-empty {
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 24px;
+                opacity: 0.8;
+                font-size: 14px;
+            }
+            .grid-empty code {
+                background: rgba(255, 255, 255, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
             }
             .card {
                 background: rgba(255, 255, 255, 0.05);
@@ -197,9 +206,6 @@
                     />
                 </div>
             </div>
-            <div class="note">
-                Avatars from <code>/assets/breed-avatars/{species}/{value}.png</code>; missing ones show default.
-            </div>
             <div class="grid" id="grid"></div>
         </div>
 
@@ -216,10 +222,10 @@
             const BREED_META_URL = "./breedMeta.json";
 
             function defaultAvatarUrl(species) {
-                return `/assets/breed-avatars/${species}/default.png`;
+                return `../assets/breed-avatars/${species}/default.png`;
             }
             function avatarUrl(species, value) {
-                return `/assets/breed-avatars/${species}/${value}.png`;
+                return `../assets/breed-avatars/${species}/${value}.png`;
             }
 
             const speciesSel = document.getElementById("species");
@@ -233,6 +239,8 @@
             let breedData = null;
             let currentList = [];
             let overlayIndex = -1;
+            /** Incremented each render so late onload/onerror from a previous species are ignored */
+            let renderGeneration = 0;
 
             function escapeHtml(s) {
                 return (s || "").replace(
@@ -262,7 +270,6 @@
             }
 
             function openOverlay(index) {
-                currentList = buildList();
                 if (index < 0 || index >= currentList.length) return;
                 overlayIndex = index;
                 const species = speciesSel.value;
@@ -309,34 +316,41 @@
             }
 
             function renderGrid() {
+                renderGeneration++;
+                const thisGeneration = renderGeneration;
                 const species = speciesSel.value;
                 const list = buildList();
-                currentList = list;
+                currentList = [];
                 gridEl.innerHTML = "";
 
-                list.forEach((b, index) => {
+                if (list.length === 0) {
+                    gridEl.innerHTML =
+                        "<p class=\"grid-empty\">No breeds match the filter.</p>";
+                    return;
+                }
+
+                let pending = list.length;
+                function maybeShowEmpty() {
+                    if (pending === 0 && gridEl.children.length === 0) {
+                        gridEl.innerHTML =
+                            "<p class=\"grid-empty\">No breed avatars found. Add PNGs to <code>public/assets/breed-avatars/" +
+                            species +
+                            "/</code> or check the path.</p>";
+                    }
+                }
+
+                list.forEach((b) => {
                     const value = b.value;
                     const label = b.label || "";
                     const url = avatarUrl(species, value);
-                    const fallback = defaultAvatarUrl(species);
 
                     const card = document.createElement("div");
                     card.className = "card";
-                    card.addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        openOverlay(index);
-                    });
                     const imgwrap = document.createElement("div");
                     imgwrap.className = "imgwrap";
                     const img = document.createElement("img");
                     img.alt = label;
-                    img.loading = "lazy";
-                    const placeholder = document.createElement("div");
-                    placeholder.className = "placeholder";
-                    placeholder.style.display = "none";
-                    placeholder.textContent = "—";
                     imgwrap.appendChild(img);
-                    imgwrap.appendChild(placeholder);
 
                     const labelEl = document.createElement("div");
                     labelEl.className = "label";
@@ -346,26 +360,28 @@
                     valueEl.textContent = value;
 
                     img.onload = () => {
-                        placeholder.style.display = "none";
+                        if (thisGeneration !== renderGeneration) return;
                         img.style.display = "block";
+                        currentList.push(b);
+                        card.dataset.visibleIndex = String(currentList.length - 1);
+                        card.addEventListener("click", (e) => {
+                            e.stopPropagation();
+                            openOverlay(parseInt(card.dataset.visibleIndex, 10));
+                        });
+                        card.appendChild(imgwrap);
+                        card.appendChild(labelEl);
+                        card.appendChild(valueEl);
+                        gridEl.appendChild(card);
+                        pending--;
+                        maybeShowEmpty();
                     };
                     img.onerror = () => {
-                        if (img.dataset.fallback === "1") {
-                            placeholder.textContent = "Missing";
-                            placeholder.style.display = "flex";
-                            img.style.display = "none";
-                        } else {
-                            img.dataset.fallback = "1";
-                            img.src = fallback;
-                        }
+                        if (thisGeneration !== renderGeneration) return;
+                        pending--;
+                        maybeShowEmpty();
                     };
 
-                    img.dataset.fallback = "0";
                     img.src = url;
-                    card.appendChild(imgwrap);
-                    card.appendChild(labelEl);
-                    card.appendChild(valueEl);
-                    gridEl.appendChild(card);
                 });
             }
 

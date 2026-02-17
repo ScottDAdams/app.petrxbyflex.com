@@ -8,9 +8,11 @@ export type PaymentStepProps = {
   reviewLabel?: string
   reviewDisabled?: boolean
   onPaymentSuccess?: (result: { paymentToken: string; transactionId: string; paymentMethod?: "CreditCard" | "ECheck"; convenienceFee?: number }) => void
-  leadId?: string  // HP leadId (maps to OneInc customerId)
-  accountId?: string  // HP accountId from SetupPending (maps to OneInc policyId)
+  leadId?: string
+  accountId?: string
   amount?: number
+  /** Optional: pass through from SetupPending so OneInc init can use portalOneSessionKey without DB lookup */
+  oneincModalData?: Record<string, unknown> | null
 }
 
 export function PaymentStep({
@@ -22,6 +24,7 @@ export function PaymentStep({
   leadId,
   accountId,
   amount,
+  oneincModalData,
 }: PaymentStepProps) {
   return (
     <div className="step-body step-body--payment">
@@ -44,6 +47,7 @@ export function PaymentStep({
                 leadId={leadId}
                 accountId={accountId}
                 amount={amount}
+                oneincModalData={oneincModalData}
                 disabled={!leadId || !accountId || amount == null || amount <= 0}
               />
             </div>

@@ -1,9 +1,16 @@
 import * as React from "react"
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"
-// Version identifier for deployment verification
 const BUILD_VERSION = "oneinc-iframe-v1-" + Date.now()
+/** Seconds to wait before auto-fallback to popup if iframe shows no payment activity */
+const FALLBACK_DELAY_MS = 5000
 console.log("[OneIncModalLauncher] Loaded version:", BUILD_VERSION)
+
+/** Allowed origins for postMessage from returnUrl (our API) or OneInc staging */
+const ALLOWED_MESSAGE_ORIGINS = [
+  "https://api.petrxbyflex.com",
+  "https://stgportalone.processonepayments.com",
+]
 
 export type OneIncPaymentResult = {
   paymentToken: string
@@ -15,21 +22,17 @@ export type OneIncPaymentResult = {
 export type OneIncModalLauncherProps = {
   onPaymentSuccess: (result: OneIncPaymentResult) => void
   onPaymentError?: (error: string) => void
-  leadId?: string  // HP leadId (maps to OneInc customerId)
-  accountId?: string  // HP accountId from SetupPending (maps to OneInc policyId)
+  leadId?: string
+  accountId?: string
   amount?: number
+  oneincModalData?: Record<string, unknown> | null
   disabled?: boolean
 }
 
 /**
- * OneInc Payment Launcher Component
- *
- * Opens OneInc hosted modal in an iframe overlay (same pattern as HP dev site).
- * Backend /api/oneinc/init returns the GenericModalV2 URL; we load it in the iframe.
- *
- * If the modal renders blank: OneInc staging may require additional integration details
- * (SDK, params, whitelisting, or config) from their dev docs. Our URL/params are based
- * on HAR from enroll.hptest.info; confirm with OneInc/HP documentation.
+ * OneInc Payment Launcher – hosted modal iframe flow.
+ * Calls POST /api/oneinc/init to get modalUrl, loads it in an iframe, listens for
+ * postMessage from /api/oneinc/return (Token, TransactionId, Status).
  */
 export function OneIncModalLauncher({
   onPaymentSuccess,
@@ -44,37 +47,27 @@ export function OneIncModalLauncher({
   const [paymentResult, setPaymentResult] = React.useState<OneIncPaymentResult | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const [modalUrl, setModalUrl] = React.useState<string | null>(null)
+  /** Set when iframe load succeeds but contentWindow access throws (X-Frame-Options / CSP). */
+  const [frameBlocked, setFrameBlocked] = React.useState(false)
   const iframeRef = React.useRef<HTMLIFrameElement | null>(null)
   const messageHandlerRef = React.useRef<((event: MessageEvent) => void) | null>(null)
+  const paymentReceivedRef = React.useRef(false)
+  const fallbackUsedRef = React.useRef(false)
 
-  // Get allowed origin for postMessage (API_BASE origin for returnUrl handler)
-  const getAllowedOrigin = React.useCallback(() => {
-    try {
-      const apiUrl = new URL(API_BASE)
-      return apiUrl.origin
-    } catch {
-      return null
-    }
-  }, [])
-
-  // Clean up message listener
-  const cleanup = React.useCallback(() => {
+  const cleanupMessageListener = React.useCallback(() => {
     if (messageHandlerRef.current) {
       window.removeEventListener("message", messageHandlerRef.current)
       messageHandlerRef.current = null
     }
   }, [])
 
-  // Initialize OneInc hosted modal (iframe), same pattern as HP dev site
   const initializeModal = React.useCallback(async () => {
     if (disabled || isLoading || isModalOpen) return
 
-    if (!leadId || !accountId || !amount) {
+    if (!leadId || !accountId || amount == null || amount <= 0) {
       const errorMsg = "Missing required payment information (leadId, accountId, amount)"
       setError(errorMsg)
-      if (onPaymentError) {
-        onPaymentError(errorMsg)
-      }
+      onPaymentError?.(errorMsg)
       return
     }
 
@@ -82,9 +75,9 @@ export function OneIncModalLauncher({
     setError(null)
 
     try {
-      console.log("[OneIncModalLauncher] Calling /api/oneinc/init", { leadId, accountId, amount, referrer: window.location.origin })
-      // Get OneInc hosted modal URL from backend
-      const initResponse = await fetch(`${API_BASE}/api/oneinc/init`, {
+      const initUrl = `${API_BASE}/api/oneinc/init`
+      console.log("[OneIncModalLauncher] fetch init", initUrl)
+      const initResponse = await fetch(initUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,115 +87,206 @@ export function OneIncModalLauncher({
           referrer: window.location.origin,
         }),
       })
-      console.log("[OneIncModalLauncher] /api/oneinc/init response:", initResponse.status, initResponse.ok)
+
+      const xOneIncInit = initResponse.headers.get("X-OneInc-Init")
+      const data = await initResponse.json().catch(() => ({}))
+      console.log("[OneIncModalLauncher] init response status:", initResponse.status)
+      console.log("[OneIncModalLauncher] init response header X-OneInc-Init:", xOneIncInit)
+      console.log("[OneIncModalLauncher] init response JSON:", data)
 
       if (!initResponse.ok) {
-        const errorData = await initResponse.json().catch(() => ({}))
-        const errorMsg = errorData.message || `OneInc init failed: ${initResponse.status}`
+        const errorMsg = data.message || `OneInc init failed: ${initResponse.status}`
         setError(errorMsg)
         setIsLoading(false)
-        if (onPaymentError) {
-          onPaymentError(errorMsg)
-        }
+        onPaymentError?.(errorMsg)
         return
       }
 
-      const initData = await initResponse.json().catch(() => ({}))
-      const url = initData.modalUrl
-
-      if (!url || typeof url !== "string") {
-        const errorMsg = "Invalid init response: modalUrl is required"
+      // E) Single contract: backend must return hosted-modal URL (modalUrl). Reject old shape.
+      if (data?.portalOneSessionKey != null || data?.monthlySubtotal != null) {
+        const errorMsg =
+          "Server returned old OneInc format (portalOneSessionKey/monthlySubtotal). " +
+          "Ensure backend returns modalUrl only and correct route is deployed."
+        console.error("[OneIncModalLauncher] Old response shape detected. Wrong route or wrong deployed code. Response:", data)
         setError(errorMsg)
         setIsLoading(false)
-        if (onPaymentError) {
-          onPaymentError(errorMsg)
-        }
+        onPaymentError?.(errorMsg)
         return
       }
 
-      // Clean up any existing listener
-      cleanup()
+      if (!data?.modalUrl || typeof data.modalUrl !== "string") {
+        const errorMsg =
+          "Invalid init response: modalUrl is required. " +
+          `X-OneInc-Init: ${xOneIncInit ?? "null"}. Response: ${JSON.stringify(data)}`
+        console.error("[OneIncModalLauncher] modalUrl missing. Full response:", data)
+        console.error("[OneIncModalLauncher] X-OneInc-Init:", xOneIncInit)
+        setError(errorMsg)
+        setIsLoading(false)
+        onPaymentError?.(errorMsg)
+        return
+      }
 
-      // Set up postMessage listener for returnUrl callback (API return page sends to parent)
-      const allowedOrigin = getAllowedOrigin()
+      const url = data.modalUrl
+      cleanupMessageListener()
+
+      const allowedOrigins = ALLOWED_MESSAGE_ORIGINS
       const messageHandler = (event: MessageEvent) => {
-        if (!allowedOrigin || event.origin !== allowedOrigin) {
+        if (!allowedOrigins.includes(event.origin) && event.origin !== "null") {
           return
         }
+        const d = event.data
+        const msgType = d?.type
 
-        if (event.data?.type === "ONEINC_SUCCESS") {
-          const { paymentToken, transactionId, paymentMethod, convenienceFee } = event.data
+        // ONEINC_PAYMENT_COMPLETE: from return page (token, transactionId, status)
+        if (msgType === "ONEINC_PAYMENT_COMPLETE") {
+          console.log("[OneIncModalLauncher] ONEINC_PAYMENT_COMPLETE payload:", d)
+          paymentReceivedRef.current = true
+          const paymentToken = d.token ?? d.paymentToken
+          const transactionId = d.transactionId
           if (!paymentToken || !transactionId) {
-            setError("Invalid payment response")
-            if (onPaymentError) onPaymentError("Invalid payment response")
-            cleanup()
+            setError("Invalid payment response: missing token or transactionId")
+            onPaymentError?.("Invalid payment response")
+            cleanupMessageListener()
             setIsModalOpen(false)
+            setModalUrl(null)
             setIsLoading(false)
             return
           }
-
           const result: OneIncPaymentResult = {
             paymentToken,
             transactionId,
-            paymentMethod: paymentMethod === "ECheck" ? "ECheck" : "CreditCard",
-            convenienceFee: convenienceFee ? parseFloat(String(convenienceFee)) : undefined,
+            paymentMethod: d.paymentMethod === "ECheck" ? "ECheck" : "CreditCard",
+            convenienceFee: d.convenienceFee != null ? Number(d.convenienceFee) : undefined,
           }
-
           setPaymentResult(result)
           onPaymentSuccess(result)
-          cleanup()
+          cleanupMessageListener()
           setIsModalOpen(false)
+          setModalUrl(null)
           setIsLoading(false)
           return
         }
 
-        if (event.data?.type === "ONEINC_ERROR") {
-          const errorMsg = event.data.error || "Payment processing failed"
-          setError(errorMsg)
-          if (onPaymentError) onPaymentError(errorMsg)
-          cleanup()
+        if (msgType === "ONEINC_SUCCESS" || msgType === "ONEINC_ERROR") {
+          console.log("[OneIncModalLauncher] postMessage payload:", {
+            type: msgType,
+            Token: d.paymentToken,
+            TransactionId: d.transactionId,
+            Status: msgType === "ONEINC_SUCCESS" ? "Success" : d.error,
+          })
+        }
+        if (msgType === "ONEINC_SUCCESS") {
+          paymentReceivedRef.current = true
+          const paymentToken = d.paymentToken
+          const transactionId = d.transactionId
+          if (!paymentToken || !transactionId) {
+            setError("Invalid payment response")
+            onPaymentError?.("Invalid payment response")
+            cleanupMessageListener()
+            setIsModalOpen(false)
+            setModalUrl(null)
+            setIsLoading(false)
+            return
+          }
+          const result: OneIncPaymentResult = {
+            paymentToken,
+            transactionId,
+            paymentMethod: d.paymentMethod === "ECheck" ? "ECheck" : "CreditCard",
+            convenienceFee: d.convenienceFee != null ? Number(d.convenienceFee) : undefined,
+          }
+          setPaymentResult(result)
+          onPaymentSuccess(result)
+          cleanupMessageListener()
           setIsModalOpen(false)
+          setModalUrl(null)
           setIsLoading(false)
           return
+        }
+        if (msgType === "ONEINC_ERROR") {
+          const errorMsg = d.error || "Payment processing failed"
+          setError(errorMsg)
+          onPaymentError?.(errorMsg)
+          cleanupMessageListener()
+          setIsModalOpen(false)
+          setModalUrl(null)
+          setIsLoading(false)
         }
       }
 
       messageHandlerRef.current = messageHandler
       window.addEventListener("message", messageHandler)
 
-      // Open modal with iframe (HP dev site uses same pattern)
+      paymentReceivedRef.current = false
+      fallbackUsedRef.current = false
+      setFrameBlocked(false)
       setModalUrl(url)
       setIsModalOpen(true)
       setIsLoading(false)
     } catch (err) {
-      // Catch any unexpected errors - never throw, always use callbacks
-      const errorMessage = err instanceof Error ? err.message : "Failed to initialize payment modal"
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to initialize payment modal"
       setError(errorMessage)
       setIsLoading(false)
-      cleanup()
-      if (onPaymentError) {
-        onPaymentError(errorMessage)
-      }
+      cleanupMessageListener()
+      onPaymentError?.(errorMessage)
     }
-  }, [leadId, accountId, amount, disabled, isLoading, isModalOpen, onPaymentSuccess, onPaymentError, cleanup, getAllowedOrigin])
+  }, [
+    leadId,
+    accountId,
+    amount,
+    disabled,
+    isLoading,
+    isModalOpen,
+    onPaymentSuccess,
+    onPaymentError,
+    cleanupMessageListener,
+  ])
+
+  const openInNewTab = React.useCallback(() => {
+    if (modalUrl) window.open(modalUrl, "_blank", "noopener,noreferrer")
+  }, [modalUrl])
+
+  const copyModalUrl = React.useCallback(() => {
+    if (modalUrl) {
+      void navigator.clipboard.writeText(modalUrl)
+      console.log("[OneIncModalLauncher] Copied modalUrl to clipboard")
+    }
+  }, [modalUrl])
+
+  const reloadIframe = React.useCallback(() => {
+    if (iframeRef.current && modalUrl) {
+      iframeRef.current.src = modalUrl
+      console.log("[OneIncModalLauncher] iframe reloaded")
+    }
+  }, [modalUrl])
 
   const closeModal = React.useCallback(() => {
     setIsModalOpen(false)
     setModalUrl(null)
-    cleanup()
-  }, [cleanup])
+    setFrameBlocked(false)
+    cleanupMessageListener()
+  }, [cleanupMessageListener])
 
-  // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      cleanup()
+      cleanupMessageListener()
     }
-  }, [cleanup])
+  }, [cleanupMessageListener])
+
+  // D) Fallback to popup after N seconds if no payment activity (or frame blocked elsewhere)
+  React.useEffect(() => {
+    if (!isModalOpen || !modalUrl) return
+    const t = window.setTimeout(() => {
+      if (paymentReceivedRef.current || fallbackUsedRef.current) return
+      fallbackUsedRef.current = true
+      console.log("[OneIncModalLauncher] Fallback: opening modalUrl in new tab after", FALLBACK_DELAY_MS, "ms")
+      window.open(modalUrl, "_blank", "noopener,noreferrer")
+    }, FALLBACK_DELAY_MS)
+    return () => window.clearTimeout(t)
+  }, [isModalOpen, modalUrl])
 
   const handleLaunchModal = () => {
-    console.log("[OneIncModalLauncher] handleLaunchModal called", { leadId, accountId, amount, disabled, isLoading })
     if (paymentResult) {
-      // Allow changing payment method
       setPaymentResult(null)
       setError(null)
     }
@@ -213,8 +297,20 @@ export function OneIncModalLauncher({
     return (
       <div className="oneinc-payment-success">
         <div className="oneinc-payment-success__content">
-          <svg className="oneinc-payment-success__icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            className="oneinc-payment-success__icon"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M16.667 5L7.5 14.167 3.333 10"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           <span className="oneinc-payment-success__text">Payment method added successfully</span>
         </div>
@@ -271,7 +367,8 @@ export function OneIncModalLauncher({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 10000,
+            zIndex: 9999,
+            pointerEvents: "auto",
           }}
           onClick={(e) => {
             if (e.target === e.currentTarget) closeModal()
@@ -281,14 +378,14 @@ export function OneIncModalLauncher({
             className="oneinc-modal-container"
             style={{
               position: "relative",
-              width: "90%",
-              maxWidth: "520px",
-              height: "90%",
-              maxHeight: "720px",
+              width: "100%",
+              maxWidth: "900px",
+              minHeight: "720px",
               backgroundColor: "white",
               borderRadius: "8px",
               overflow: "hidden",
               boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+              pointerEvents: "auto",
             }}
           >
             <button
@@ -298,7 +395,7 @@ export function OneIncModalLauncher({
                 position: "absolute",
                 top: "8px",
                 right: "8px",
-                zIndex: 10001,
+                zIndex: 10000,
                 background: "rgba(0, 0, 0, 0.5)",
                 color: "white",
                 border: "none",
@@ -316,12 +413,81 @@ export function OneIncModalLauncher({
             >
               ×
             </button>
+
+            {/* A) Debug harness: modalUrl + Open / Copy / Reload */}
+            <div
+              style={{
+                padding: "8px 12px",
+                background: "#f0f0f0",
+                borderBottom: "1px solid #ccc",
+                fontSize: "12px",
+                wordBreak: "break-all",
+              }}
+            >
+              <div style={{ marginBottom: "6px", fontWeight: 600 }}>modalUrl</div>
+              <div style={{ marginBottom: "8px", color: "#333" }}>{modalUrl}</div>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <button type="button" onClick={openInNewTab} style={{ padding: "4px 8px" }}>
+                  Open modalUrl in new tab
+                </button>
+                <button type="button" onClick={copyModalUrl} style={{ padding: "4px 8px" }}>
+                  Copy modalUrl
+                </button>
+                <button type="button" onClick={reloadIframe} style={{ padding: "4px 8px" }}>
+                  Reload iframe
+                </button>
+              </div>
+            </div>
+
+            {/* C) Frame-blocked state: X-Frame-Options / CSP → popup flow */}
+            {frameBlocked && (
+              <div
+                role="alert"
+                style={{
+                  padding: "12px",
+                  background: "#fff3cd",
+                  borderBottom: "1px solid #ffc107",
+                  fontSize: "13px",
+                }}
+              >
+                Frame blocked (X-Frame-Options or CSP). Opened payment in new tab. You can close this overlay.
+              </div>
+            )}
+
+            {/* B) Sandbox removed for test deploy. To re-add minimal: allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation */}
             <iframe
               ref={iframeRef}
               src={modalUrl}
-              style={{ width: "100%", height: "100%", border: "none" }}
               title="OneInc Payment Modal"
-              allow="payment"
+              allow="payment *; fullscreen *; clipboard-read *; clipboard-write *"
+              style={{
+                width: "100%",
+                height: "700px",
+                border: "none",
+                display: "block",
+              }}
+              onLoad={() => {
+                console.log("[OneIncModalLauncher] OneInc iframe loaded")
+                const iframe = iframeRef.current
+                if (!iframe) return
+                try {
+                  const href = iframe.contentWindow?.location?.href
+                  console.log("[OneIncModalLauncher] iframe contentWindow.location.href:", href)
+                } catch (e) {
+                  console.warn(
+                    "[OneIncModalLauncher] iframe contentWindow access failed (cross-origin or blocked):",
+                    e
+                  )
+                  setFrameBlocked(true)
+                  if (!fallbackUsedRef.current) {
+                    fallbackUsedRef.current = true
+                    window.open(modalUrl, "_blank", "noopener,noreferrer")
+                  }
+                }
+              }}
+              onError={(e) => {
+                console.error("[OneIncModalLauncher] OneInc iframe onError:", e)
+              }}
             />
           </div>
         </div>

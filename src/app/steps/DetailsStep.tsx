@@ -207,12 +207,14 @@ export function DetailsStep({
 
   return (
     <div className="step-body step-body--details">
-      <div className="quote-narrative-header__partner-banner" aria-label="Brought to you by our partner Healthy Paws">
-        <div className="quote-narrative-header__partner-banner-text">
-          <span className="quote-narrative-header__partner-banner-title">Brought to you by our partner Healthy Paws</span>
-          <span className="quote-narrative-header__partner-banner-tagline">Trusted by pet parents nationwide</span>
+      <div className="step-body__partner-banner-wrap">
+        <div className="quote-narrative-header__partner-banner" aria-label="Brought to you by our partner Healthy Paws">
+          <div className="quote-narrative-header__partner-banner-text">
+            <span className="quote-narrative-header__partner-banner-title">Brought to you by our partner Healthy Paws</span>
+            <span className="quote-narrative-header__partner-banner-tagline">Trusted by pet parents nationwide</span>
+          </div>
+          <HealthyPawsLogo size="sm" />
         </div>
-        <HealthyPawsLogo size="sm" />
       </div>
       <h2 className="step-body__title">Your details</h2>
       <p className="step-body__subtitle">
