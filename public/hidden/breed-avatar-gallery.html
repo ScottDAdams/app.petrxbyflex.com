@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>PetRx Breed Avatar Gallery</title>
+        <style>
+            :root {
+                color-scheme: light;
+            }
+            body {
+                font-family:
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    Segoe UI,
+                    Roboto,
+                    Helvetica,
+                    Arial;
+                margin: 0;
+                padding: 20px;
+                background: #0b1020;
+                color: #e8eefc;
+            }
+            .wrap {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            h1 {
+                margin: 0 0 14px;
+                font-size: 20px;
+                font-weight: 700;
+            }
+            .controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                align-items: flex-end;
+                margin-bottom: 20px;
+            }
+            label {
+                display: block;
+                font-size: 12px;
+                opacity: 0.85;
+                margin-bottom: 6px;
+            }
+            select,
+            input {
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                background: rgba(255, 255, 255, 0.06);
+                color: #e8eefc;
+            }
+            select {
+                min-width: 120px;
+            }
+            input {
+                min-width: 200px;
+            }
+            option {
+                color: #111;
+            }
+            .note {
+                font-size: 12px;
+                opacity: 0.75;
+                margin-top: 8px;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
+            }
+            .card {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 14px;
+                padding: 10px;
+                text-align: center;
+                min-width: 0;
+            }
+            .card .imgwrap {
+                position: relative;
+                width: 100%;
+                aspect-ratio: 1;
+                background: rgba(0, 0, 0, 0.18);
+                border-radius: 10px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px dashed rgba(255, 255, 255, 0.1);
+            }
+            .card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            .card .placeholder {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                opacity: 0.7;
+                padding: 6px;
+                text-align: center;
+            }
+            .card .label {
+                margin-top: 8px;
+                font-size: 11px;
+                line-height: 1.3;
+                opacity: 0.9;
+                word-break: break-word;
+            }
+            .card .value {
+                font-size: 10px;
+                opacity: 0.5;
+                margin-top: 2px;
+            }
+            .card {
+                cursor: pointer;
+            }
+            .card:hover {
+                border-color: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.08);
+            }
+
+            /* Fullsize overlay */
+            .overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: rgba(0, 0, 0, 0.88);
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+            .overlay.open {
+                display: flex;
+            }
+            .overlay .content {
+                max-width: 92vw;
+                max-height: 92vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: default;
+            }
+            .overlay .content:focus {
+                outline: none;
+            }
+            .overlay img {
+                max-width: 90vw;
+                max-height: 80vh;
+                object-fit: contain;
+                display: block;
+            }
+            .overlay .caption {
+                margin-top: 12px;
+                font-size: 14px;
+                text-align: center;
+                color: #e8eefc;
+            }
+            .overlay .caption .value {
+                font-size: 12px;
+                opacity: 0.6;
+            }
+            .overlay .nav-hint {
+                margin-top: 8px;
+                font-size: 12px;
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <h1>Breed Avatar Gallery</h1>
+            <div class="controls">
+                <div>
+                    <label>Species</label>
+                    <select id="species">
+                        <option value="dogs">Dogs</option>
+                        <option value="cats">Cats</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Filter (type to narrow)</label>
+                    <input
+                        id="filter"
+                        placeholder="e.g. Mix, Maine Coon..."
+                        autocomplete="off"
+                    />
+                </div>
+            </div>
+            <div class="note">
+                Avatars from <code>/assets/breed-avatars/{species}/{value}.png</code>; missing ones show default.
+            </div>
+            <div class="grid" id="grid"></div>
+        </div>
+
+        <div class="overlay" id="overlay" aria-hidden="true">
+            <div class="content" id="overlayContent" tabindex="-1">
+                <img id="overlayImg" alt="" />
+                <div class="caption" id="overlayCaption"></div>
+                <div class="nav-hint">← → arrows · Esc or click to close</div>
+            </div>
+        </div>
+
+        <script>
+            const BREED_DATA_URL = "./breedData.json";
+            const BREED_META_URL = "./breedMeta.json";
+
+            function defaultAvatarUrl(species) {
+                return `/assets/breed-avatars/${species}/default.png`;
+            }
+            function avatarUrl(species, value) {
+                return `/assets/breed-avatars/${species}/${value}.png`;
+            }
+
+            const speciesSel = document.getElementById("species");
+            const filterInp = document.getElementById("filter");
+            const gridEl = document.getElementById("grid");
+            const overlay = document.getElementById("overlay");
+            const overlayContent = document.getElementById("overlayContent");
+            const overlayImg = document.getElementById("overlayImg");
+            const overlayCaption = document.getElementById("overlayCaption");
+
+            let breedData = null;
+            let currentList = [];
+            let overlayIndex = -1;
+
+            function escapeHtml(s) {
+                return (s || "").replace(
+                    /[&<>"']/g,
+                    (c) =>
+                        ({
+                            "&": "&amp;",
+                            "<": "&lt;",
+                            ">": "&gt;",
+                            '"': "&quot;",
+                            "'": "&#39;",
+                        })[c],
+                );
+            }
+
+            function buildList() {
+                const species = speciesSel.value;
+                const list = (breedData?.[species] || []).slice();
+                const q = (filterInp.value || "").trim().toLowerCase();
+                return q
+                    ? list.filter(
+                          (b) =>
+                              (b.label || "").toLowerCase().includes(q) ||
+                              String(b.value).includes(q),
+                      )
+                    : list;
+            }
+
+            function openOverlay(index) {
+                currentList = buildList();
+                if (index < 0 || index >= currentList.length) return;
+                overlayIndex = index;
+                const species = speciesSel.value;
+                const b = currentList[index];
+                const url = avatarUrl(species, b.value);
+                const fallback = defaultAvatarUrl(species);
+
+                overlayImg.alt = b.label || "";
+                overlayImg.dataset.fallback = "0";
+                overlayImg.onerror = function () {
+                    if (overlayImg.dataset.fallback === "1") {
+                        overlayImg.style.display = "none";
+                    } else {
+                        overlayImg.dataset.fallback = "1";
+                        overlayImg.src = fallback;
+                        overlayImg.style.display = "block";
+                    }
+                };
+                overlayImg.onload = function () {
+                    overlayImg.style.display = "block";
+                };
+                overlayImg.src = url;
+                overlayCaption.innerHTML = "<strong>" + escapeHtml(b.label || "") + "</strong><span class=\"value\"> (" + b.value + ")</span>";
+                overlay.setAttribute("aria-hidden", "false");
+                overlay.classList.add("open");
+                overlayContent.focus();
+            }
+
+            function closeOverlay() {
+                overlay.classList.remove("open");
+                overlay.setAttribute("aria-hidden", "true");
+                overlayIndex = -1;
+            }
+
+            function showPrev() {
+                if (currentList.length === 0) return;
+                overlayIndex = (overlayIndex - 1 + currentList.length) % currentList.length;
+                openOverlay(overlayIndex);
+            }
+            function showNext() {
+                if (currentList.length === 0) return;
+                overlayIndex = (overlayIndex + 1) % currentList.length;
+                openOverlay(overlayIndex);
+            }
+
+            function renderGrid() {
+                const species = speciesSel.value;
+                const list = buildList();
+                currentList = list;
+                gridEl.innerHTML = "";
+
+                list.forEach((b, index) => {
+                    const value = b.value;
+                    const label = b.label || "";
+                    const url = avatarUrl(species, value);
+                    const fallback = defaultAvatarUrl(species);
+
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        openOverlay(index);
+                    });
+                    const imgwrap = document.createElement("div");
+                    imgwrap.className = "imgwrap";
+                    const img = document.createElement("img");
+                    img.alt = label;
+                    img.loading = "lazy";
+                    const placeholder = document.createElement("div");
+                    placeholder.className = "placeholder";
+                    placeholder.style.display = "none";
+                    placeholder.textContent = "—";
+                    imgwrap.appendChild(img);
+                    imgwrap.appendChild(placeholder);
+
+                    const labelEl = document.createElement("div");
+                    labelEl.className = "label";
+                    labelEl.textContent = label;
+                    const valueEl = document.createElement("div");
+                    valueEl.className = "value";
+                    valueEl.textContent = value;
+
+                    img.onload = () => {
+                        placeholder.style.display = "none";
+                        img.style.display = "block";
+                    };
+                    img.onerror = () => {
+                        if (img.dataset.fallback === "1") {
+                            placeholder.textContent = "Missing";
+                            placeholder.style.display = "flex";
+                            img.style.display = "none";
+                        } else {
+                            img.dataset.fallback = "1";
+                            img.src = fallback;
+                        }
+                    };
+
+                    img.dataset.fallback = "0";
+                    img.src = url;
+                    card.appendChild(imgwrap);
+                    card.appendChild(labelEl);
+                    card.appendChild(valueEl);
+                    gridEl.appendChild(card);
+                });
+            }
+
+            function init() {
+                speciesSel.addEventListener("change", () => {
+                    filterInp.value = "";
+                    closeOverlay();
+                    renderGrid();
+                });
+                filterInp.addEventListener("input", () => {
+                    closeOverlay();
+                    renderGrid();
+                });
+
+                overlay.addEventListener("click", () => closeOverlay());
+                document.addEventListener("keydown", (e) => {
+                    if (!overlay.classList.contains("open")) return;
+                    if (e.key === "Escape") {
+                        closeOverlay();
+                        e.preventDefault();
+                    } else if (e.key === "ArrowLeft") {
+                        showPrev();
+                        e.preventDefault();
+                    } else if (e.key === "ArrowRight") {
+                        showNext();
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            (async () => {
+                const bd = await fetch(BREED_DATA_URL).then((r) => r.json());
+                breedData = bd;
+                init();
+                renderGrid();
+            })().catch((err) => {
+                document.body.innerHTML =
+                    "<pre style='white-space:pre-wrap;padding:20px;color:#fff;background:#111'>Failed to load JSON.\n\n" +
+                    (err?.stack || err) +
+                    "</pre>";
+            });
+        </script>
+    </body>
+</html>
