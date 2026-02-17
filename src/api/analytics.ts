@@ -9,6 +9,7 @@ export type EnrollmentEventName =
   | "card_image_download_clicked"
   | "insurance_teaser_expand_clicked"
   | "insurance_cta_clicked"
+  | "breed_insights_card_shown"
 
 export type EnrollmentEventMetadata = {
   session_id?: string

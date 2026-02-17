@@ -51,7 +51,7 @@ export function QuoteBreedInsightsSection({
             Insights About {breedDisplay}
           </h3>
           <ul className="quote-breed-insights__list">
-            {aboutBullets.slice(0, 2).map((b, i) => (
+            {aboutBullets.slice(0, 2).map((b: string, i: number) => (
               <li key={i}>{b}</li>
             ))}
           </ul>
@@ -63,7 +63,7 @@ export function QuoteBreedInsightsSection({
             Common Health Considerations
           </h3>
           <ul className="quote-breed-insights__list">
-            {considerationBullets.slice(0, 3).map((b, i) => (
+            {considerationBullets.slice(0, 3).map((b: string, i: number) => (
               <li key={i}>{b}</li>
             ))}
           </ul>
