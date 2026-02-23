@@ -36,7 +36,7 @@ export function PaymentStep({
       <div className="payment-container payment-container--full">
         <div className="payment-main payment-main--full">
           <div className="payment-method-card">
-            <h3 className="payment-method-card__title">Payment method</h3>
+            {/* <h3 className="payment-method-card__title">Payment method</h3> */}
             <div id="oneinc-container" className="oneinc-container">
               <OneIncModalLauncher
                 onPaymentSuccess={(result) => {

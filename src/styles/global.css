@@ -755,7 +755,7 @@ body {
 /* Details and payment: wider so partner banner matches start page (536px) */
 .step-body--details,
 .step-body--payment {
-  max-width: 536px;
+  max-width:100%;
 }
 
 /* Wrapper so details-step partner banner stretches full width like quote step */
@@ -1929,10 +1929,10 @@ body {
 }
 
 .payment-method-card {
-  background: #fff;
-  border: 1px solid var(--petrx-border);
+  background: transparent;
+  border: none;
   border-radius: 12px;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   margin-bottom: 20px;
 }
 
@@ -1944,13 +1944,12 @@ body {
 }
 
 .oneinc-container {
-  min-height: 200px;
-  border: 1px dashed var(--petrx-border);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fbfdff;
+  /* Minimal wrapper: PortalOne manages its own fullscreen modal; no white box needed here */
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  display: block;
 }
 
 .oneinc-placeholder {
@@ -1971,9 +1970,14 @@ body {
   color: #9ca3af;
 }
 
+/* PortalOne/OneInc injected backdrop — we can override since it's in our document */
+.modal-backdrop {
+  background-color: #E8F4FC !important;
+}
+
 /* OneInc Modal Launcher */
 .oneinc-modal-launcher {
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   text-align: center;
 }
 

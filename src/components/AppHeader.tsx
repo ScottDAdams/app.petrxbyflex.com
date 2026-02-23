@@ -1,12 +1,12 @@
 /**
  * Header visibility driven by session.funnel_type + current_step.
- * During quote steps: logo + support link only. No Med Lookup.
+ * During quote steps: logo + Rx Price Lookup link only. No Med Lookup.
  * After quote completion: full header.
  */
 
-type AppHeaderProps = { fullNav: boolean }
+import { Link } from "react-router-dom"
 
-const SUPPORT_URL = "https://petrxbyflex.com/support"
+type AppHeaderProps = { fullNav: boolean }
 
 export function AppHeader({ fullNav }: AppHeaderProps) {
   return (
@@ -16,9 +16,9 @@ export function AppHeader({ fullNav }: AppHeaderProps) {
           <img src="/assets/petrxbyflex-logo.svg" alt="PetRx by Flex" />
         </a>
         <nav className="app-nav" aria-label="Main">
-          <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="app-nav-link">
-            Support
-          </a>
+          <Link to="/prescriptions/drug-search" className="app-nav-link">
+            Rx Price Lookup
+          </Link>
           {fullNav && (
             <>
               <a href="/med-lookup" className="app-nav-link">
