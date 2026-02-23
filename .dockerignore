@@ -1,4 +1,17 @@
-# Exclude large directories to reduce Docker build context size
-# Comment out these lines if you need to deploy/rebuild breed avatars or data files
-data/
+# Allowlist: exclude everything, then include only what the build needs.
+# Workaround for Fly remote builder sometimes ignoring normal exclusions (1.2GB+ context).
+# Breed avatars are served from Fly volume at /data/breed-avatars; do not send them.
+
+**
+!.dockerignore
+!Dockerfile
+!nginx.conf
+!package.json
+!package-lock.json
+!index.html
+!vite.config.ts
+!tsconfig.json
+!src
+!public
+# Re-exclude large dir (kept in repo; served from volume at runtime)
 public/assets/breed-avatars
