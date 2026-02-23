@@ -1,0 +1,27 @@
+/* Chatbot floating widget – keyframes and scoped overrides */
+@keyframes chatbot-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes chatbot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes chatbot-bounce {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-8px); }
+}
+@keyframes chatbot-slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-widget__loading-spinner {
+  animation: chatbot-spin 1s linear infinite;
+}
+.chatbot-widget__status-dot {
+  animation: chatbot-pulse 2s infinite;
+}
+.chatbot-widget__teaser {
+  animation: chatbot-slideInUp 0.5s ease-out;
+}
