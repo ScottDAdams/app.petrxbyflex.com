@@ -1,12 +1,14 @@
 # app.petrxbyflex.com Documentation
 
-**Last updated:** 2026-02-24
+**Last updated:** 2026-03-26
 
 ---
 
 ## What this app is
 
 React (Vite) app for the PetRx card + insurance quote flow. Framer sends users here with a `session_id`; this app owns the product flow, API calls, and deployment to Fly.io (see root `README.md` for run/build and breed-asset notes).
+
+**Drug pricing / search:** Implemented in **`src/features/prescriptions/`** (the “prescriptions” feature). This replaces the old standalone **drug-lookup** app, which exists only as historical backup if you still have a zip/repo.
 
 ---
 
@@ -16,6 +18,8 @@ React (Vite) app for the PetRx card + insurance quote flow. Framer sends users h
 |----------|---------|
 | [CURRENT_STATE_SNAPSHOT.md](./CURRENT_STATE_SNAPSHOT.md) | Snapshot of behavior, routes, and integration points at time of writing |
 | [START_FLOW_AND_API_CALLS.md](./START_FLOW_AND_API_CALLS.md) | Start flow and which APIs are called, in order |
+
+**Code map (prescriptions):** `../src/features/prescriptions/` — drug search, pricing, and related UI (calls API proxies such as `unarx-fast-batch` per `API_CONTRACTS.md`).
 
 ---
 
