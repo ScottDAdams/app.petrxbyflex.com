@@ -24,6 +24,7 @@ React (Vite) app for the PetRx card + insurance quote flow. Framer sends users h
 - **Root README:** `../README.md` (local dev, build, breed SVGs/avatars, Fly volume for breed PNGs)
 - **Backend API:** `../../flex-pet-rx-api/docs/README.md`
 - **Framer marketing site:** `../../flex-pet-rx-site/docs/README.md`
+- **PetRx workspace map:** `../../docs/README.md`
 
 ---
 
