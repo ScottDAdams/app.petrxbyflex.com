@@ -1,5 +1,5 @@
 import { PartnerBar } from "../../components/insurance/PartnerBar"
-import { OneIncModalLauncher } from "../../components/insurance/OneIncModalLauncher"
+import { OneIncModalLauncher, type OneIncPaymentResult } from "../../components/insurance/OneIncModalLauncher"
 import { PrimaryActionButton } from "../../components/ui/PrimaryActionButton"
 
 export type PaymentStepProps = {
@@ -7,12 +7,18 @@ export type PaymentStepProps = {
   onReview?: () => void
   reviewLabel?: string
   reviewDisabled?: boolean
-  onPaymentSuccess?: (result: { paymentToken: string; transactionId: string; paymentMethod?: "CreditCard" | "ECheck"; convenienceFee?: number }) => void
+  onPaymentSuccess?: (result: OneIncPaymentResult) => void
   leadId?: string
   accountId?: string
   amount?: number
   /** Optional: pass through from SetupPending so OneInc init can use portalOneSessionKey without DB lookup */
   oneincModalData?: Record<string, unknown> | null
+  /** PetRx enrollment session UUID for POST /api/oneinc/complete */
+  enrollmentSessionId?: string
+  /** Session already has completed OneInc payment (reload-safe) */
+  paymentAlreadyComplete?: boolean
+  /** After server persist (e.g. refetch session) */
+  onPersistedSuccess?: () => void | Promise<void>
 }
 
 export function PaymentStep({
@@ -25,6 +31,9 @@ export function PaymentStep({
   accountId,
   amount,
   oneincModalData,
+  enrollmentSessionId,
+  paymentAlreadyComplete,
+  onPersistedSuccess,
 }: PaymentStepProps) {
   return (
     <div className="step-body step-body--payment">
@@ -49,6 +58,9 @@ export function PaymentStep({
                 amount={amount}
                 oneincModalData={oneincModalData}
                 disabled={!leadId || !accountId || amount == null || amount <= 0}
+                enrollmentSessionId={enrollmentSessionId}
+                paymentAlreadyComplete={paymentAlreadyComplete}
+                onPersistedSuccess={onPersistedSuccess}
               />
             </div>
           </div>

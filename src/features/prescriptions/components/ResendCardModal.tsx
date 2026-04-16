@@ -178,7 +178,7 @@ export function ResendCardModal({ onClose }: ResendCardModalProps) {
               </p>
               <p style={{ margin: "0 0 20px 0", fontSize: "0.875rem" }}>
                 <a
-                  href="https://petrxbyflex.com"
+                  href="https://petrxbyflex.com?shop_id=0"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{

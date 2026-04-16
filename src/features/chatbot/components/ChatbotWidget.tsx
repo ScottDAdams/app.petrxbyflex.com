@@ -2,7 +2,11 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { API_BASE } from "../../../api"
 import "./chatbot.css"
 
-const CHATBOT_AVATAR_URL = "https://flex-chatbot.netlify.app/petrxbyflex_avatar.png"
+/** Same asset + origin as flex-pet-rx-site Chatbot_* (Framer); override via VITE_CHATBOT_ASSETS_URL */
+const CHATBOT_ASSETS_BASE = (
+  import.meta.env.VITE_CHATBOT_ASSETS_URL || "https://app.petrxbyflex.com"
+).replace(/\/+$/, "")
+const CHATBOT_AVATAR_URL = `${CHATBOT_ASSETS_BASE}/flex_chatbot_avatar.png`
 const getChatApi = () => `${(API_BASE || "https://api.petrxbyflex.com").replace(/\/+$/, "")}/api/chatbot/chat`
 
 /** Render basic markdown in bot messages: **bold**, *italic*, newlines */

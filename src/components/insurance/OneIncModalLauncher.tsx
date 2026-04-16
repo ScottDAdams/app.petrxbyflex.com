@@ -1,5 +1,6 @@
 import * as React from "react"
-import { PortalOneModal } from "./PortalOneModal"
+import { PortalOneModal, type PortalOneFeeDiagnostics } from "./PortalOneModal"
+import { persistOneIncCompletion, type OneIncCompleteApiResponse } from "../../api/oneinc"
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"
 const BUILD_VERSION = "oneinc-portalone-session-v1-" + Date.now()
@@ -16,6 +17,19 @@ export type OneIncPaymentResult = {
   transactionId: string
   paymentMethod?: "CreditCard" | "ECheck"
   convenienceFee?: number
+  resolvedConvenienceFee?: number
+  feeDiagnostics?: PortalOneFeeDiagnostics
+  cardType?: string
+  authCode?: string
+  holderZip?: string
+  /** Sanitized portalOne.paymentComplete for session/audit (not HP paymentDetails) */
+  rawPortalOne?: Record<string, unknown>
+  /**
+   * Full JSON body from POST /api/oneinc/complete (after durable persist succeeds).
+   * Required for HP Enroll: paymentDetails.fullPaymentResponse = JSON.stringify(this object).
+   * Official HP docs omit this field; staging requires it. Do not replace with payment.raw only.
+   */
+  oneIncCompleteResponse?: OneIncCompleteApiResponse
 }
 
 export type OneIncModalLauncherProps = {
@@ -26,6 +40,12 @@ export type OneIncModalLauncherProps = {
   amount?: number
   oneincModalData?: Record<string, unknown> | null
   disabled?: boolean
+  /** PetRx enrollment session UUID — used to POST /api/oneinc/complete after OneInc success */
+  enrollmentSessionId?: string
+  /** When true (e.g. session rehydrated from DB), do not auto-open OneInc; show success UI */
+  paymentAlreadyComplete?: boolean
+  /** Called after durable persist succeeds (e.g. refetch GET /enroll/session) */
+  onPersistedSuccess?: () => void | Promise<void>
 }
 
 /**
@@ -40,6 +60,9 @@ export function OneIncModalLauncher({
   accountId,
   amount,
   disabled = false,
+  enrollmentSessionId,
+  paymentAlreadyComplete = false,
+  onPersistedSuccess,
 }: OneIncModalLauncherProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
@@ -56,7 +79,75 @@ export function OneIncModalLauncher({
     }
   }, [])
 
+  const finalizePaymentSuccess = React.useCallback(
+    async (result: OneIncPaymentResult) => {
+      const pt = result.paymentToken?.trim?.() ?? String(result.paymentToken ?? "").trim()
+      const tid = result.transactionId?.trim?.() ?? String(result.transactionId ?? "").trim()
+      if (!pt || !tid) {
+        const msg =
+          "Payment reported success but vault token or transaction id was missing. See console for portalOne.paymentComplete payload."
+        setError(msg)
+        onPaymentError?.(msg)
+        return
+      }
+      const normalized: OneIncPaymentResult = {
+        ...result,
+        paymentToken: pt,
+        transactionId: tid,
+        convenienceFee: undefined,
+        resolvedConvenienceFee: undefined,
+      }
+      if (enrollmentSessionId) {
+        try {
+          const r = await persistOneIncCompletion({
+            session_id: enrollmentSessionId,
+            paymentToken: normalized.paymentToken,
+            transactionId: normalized.transactionId,
+            paymentMethod: normalized.paymentMethod,
+            status: "Approved",
+            raw: {
+              source: "portalOne.paymentComplete",
+              portalOnePaymentComplete: normalized.rawPortalOne ?? {},
+              feeDiagnostics: normalized.feeDiagnostics,
+              normalized: {
+                paymentToken: normalized.paymentToken,
+                transactionId: normalized.transactionId,
+                paymentMethod: normalized.paymentMethod,
+                cardType: normalized.cardType,
+                authCode: normalized.authCode,
+                holderZip: normalized.holderZip,
+              },
+            },
+          })
+          if (r.error) {
+            setError(r.error)
+            onPaymentError?.(r.error)
+            return
+          }
+          /** Full /api/oneinc/complete response — stringify entire object for HP enroll fullPaymentResponse */
+          const { error: _omitErr, ...completeRest } = r as Record<string, unknown> & { error?: string }
+          void _omitErr
+          normalized.oneIncCompleteResponse = completeRest as OneIncCompleteApiResponse
+          await onPersistedSuccess?.()
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "Payment save failed"
+          setError(msg)
+          onPaymentError?.(msg)
+          return
+        }
+      }
+      setPaymentResult(normalized)
+      onPaymentSuccess(normalized)
+      cleanupMessageListener()
+      setIsModalOpen(false)
+      setSessionId(null)
+      setIsLoading(false)
+    },
+    [enrollmentSessionId, onPaymentSuccess, onPaymentError, onPersistedSuccess, cleanupMessageListener]
+  )
+
   const initializeModal = React.useCallback(async () => {
+    if (paymentAlreadyComplete) return
     if (disabled || isLoading || isModalOpen || sessionId) return
 
     if (!leadId || !accountId || amount == null || amount <= 0) {
@@ -140,14 +231,8 @@ export function OneIncModalLauncher({
             paymentToken,
             transactionId,
             paymentMethod: d.paymentMethod === "ECheck" ? "ECheck" : "CreditCard",
-            convenienceFee: d.convenienceFee != null ? Number(d.convenienceFee) : undefined,
           }
-          setPaymentResult(result)
-          onPaymentSuccess(result)
-          cleanupMessageListener()
-          setIsModalOpen(false)
-          setSessionId(null)
-          setIsLoading(false)
+          void finalizePaymentSuccess(result)
           return
         }
 
@@ -175,14 +260,8 @@ export function OneIncModalLauncher({
             paymentToken,
             transactionId,
             paymentMethod: d.paymentMethod === "ECheck" ? "ECheck" : "CreditCard",
-            convenienceFee: d.convenienceFee != null ? Number(d.convenienceFee) : undefined,
           }
-          setPaymentResult(result)
-          onPaymentSuccess(result)
-          cleanupMessageListener()
-          setIsModalOpen(false)
-          setSessionId(null)
-          setIsLoading(false)
+          void finalizePaymentSuccess(result)
           return
         }
         if (msgType === "ONEINC_ERROR") {
@@ -211,6 +290,7 @@ export function OneIncModalLauncher({
       onPaymentError?.(errorMessage)
     }
   }, [
+    paymentAlreadyComplete,
     leadId,
     accountId,
     amount,
@@ -218,20 +298,30 @@ export function OneIncModalLauncher({
     isLoading,
     isModalOpen,
     sessionId,
-    onPaymentSuccess,
     onPaymentError,
     cleanupMessageListener,
+    finalizePaymentSuccess,
   ])
 
   // Auto-start session and show PortalOne as soon as we have required data (no button)
   React.useEffect(() => {
+    if (paymentAlreadyComplete) return
     if (sessionFetchedRef.current) return
     if (!sessionId && !paymentResult && leadId && accountId && amount != null && amount > 0 && !disabled) {
       sessionFetchedRef.current = true
       initializeModal()
     }
     // Do not reset ref in cleanup — avoids double-fetch under StrictMode. Reset only in handleLaunchModal when user clicks Change.
-  }, [sessionId, paymentResult, leadId, accountId, amount, disabled, initializeModal])
+  }, [
+    paymentAlreadyComplete,
+    sessionId,
+    paymentResult,
+    leadId,
+    accountId,
+    amount,
+    disabled,
+    initializeModal,
+  ])
 
   React.useEffect(() => {
     return () => {
@@ -248,7 +338,7 @@ export function OneIncModalLauncher({
     // useEffect will call initializeModal() when sessionId becomes null
   }
 
-  if (paymentResult) {
+  if (paymentAlreadyComplete || paymentResult) {
     return (
       <div className="oneinc-payment-success">
         <div className="oneinc-payment-success__content">
@@ -273,7 +363,12 @@ export function OneIncModalLauncher({
           type="button"
           className="oneinc-payment-success__change"
           onClick={handleLaunchModal}
-          disabled={disabled}
+          disabled={disabled || paymentAlreadyComplete}
+          title={
+            paymentAlreadyComplete
+              ? "Replacing saved payment is not supported yet (TODO: phase 2)"
+              : undefined
+          }
         >
           Change
         </button>
@@ -313,14 +408,13 @@ export function OneIncModalLauncher({
               paymentToken: data.paymentToken,
               transactionId: data.transactionId,
               paymentMethod: data.paymentMethod,
-              convenienceFee: data.convenienceFee,
+              feeDiagnostics: data.feeDiagnostics,
+              cardType: data.cardType,
+              authCode: data.authCode,
+              holderZip: data.holderZip,
+              rawPortalOne: data.rawPortalOne,
             }
-            setPaymentResult(result)
-            onPaymentSuccess(result)
-            setIsModalOpen(false)
-            setSessionId(null)
-            setIsLoading(false)
-            cleanupMessageListener()
+            void finalizePaymentSuccess(result)
           }}
         />
       )}

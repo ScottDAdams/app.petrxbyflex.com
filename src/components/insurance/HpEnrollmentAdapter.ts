@@ -168,6 +168,7 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...(input.session_id && { session_id: input.session_id }),
           lead: {
             emailAddress: input.lead.emailAddress,
             affiliateCode: input.lead.affiliateCode,
@@ -239,21 +240,79 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
     }
 
     try {
+      // paymentDetails must include documented HP fields plus fullPaymentResponse (JSON string of
+      // entire POST /api/oneinc/complete body) — required in practice though omitted from HP docs.
+      // convenienceFee must be present as a number for CreditCard (HP 12027 if omitted).
+      const pdLog = input.paymentDetails as Record<string, unknown>
+      console.info("[HpEnrollmentAdapter] enroll paymentDetails snapshot", {
+        convenienceFee: pdLog.convenienceFee,
+        convenienceFeePresent:
+          typeof pdLog.convenienceFee === "number" && Number.isFinite(pdLog.convenienceFee as number),
+        hasFullPaymentResponse:
+          typeof pdLog.fullPaymentResponse === "string" && (pdLog.fullPaymentResponse as string).length > 0,
+        paymentMethod: pdLog.paymentMethod,
+      })
       const response = await fetch(`${API_BASE}/api/enrollment/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          ...(input.session_id && { session_id: input.session_id }),
           lead: input.lead,
           paymentDetails: input.paymentDetails,
         }),
       })
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: `HTTP ${response.status}` }))
-        throw new Error(error.message || `Enroll failed: ${response.status}`)
+        const error = (await response.json().catch(() => ({}))) as {
+          message?: string
+          error?:
+            | string
+            | { upstream?: { message?: string; Message?: string; errorCode?: string } }
+          upstream?: { message?: string; Message?: string; errorCode?: string }
+          upstream_status?: number
+        }
+        if (error.error === "convenience_fee_error" && typeof error.message === "string") {
+          throw new Error(error.message)
+        }
+        const upstream = error.upstream ?? (typeof error.error === "object" && error.error ? error.error.upstream : undefined)
+        const uMsg =
+          upstream && typeof upstream === "object"
+            ? (upstream.message ?? upstream.Message ?? "")
+            : ""
+        const uCode = upstream && typeof upstream === "object" ? upstream.errorCode : ""
+        const parts = [uCode, uMsg].filter(Boolean)
+        const msg =
+          parts.length > 0
+            ? parts.join(": ")
+            : typeof error.message === "string"
+              ? error.message
+              : typeof error.error === "string"
+                ? error.error
+                : `Enroll failed: ${response.status}`
+        throw new Error(msg || `Enroll failed: ${response.status}`)
       }
 
-      const data = await response.json()
+      const data = (await response.json()) as {
+        outcome?: string
+        enrollmentStatus?: string
+        message?: string
+        registrationRedirectUrl?: string
+        registration_redirect_url?: string
+      }
+
+      if (
+        data.outcome === "pending_confirmation" ||
+        data.enrollmentStatus === "enroll_submitted_unknown"
+      ) {
+        return {
+          step: "confirm",
+          pendingConfirmation: true,
+          enrollmentStatus: data.enrollmentStatus,
+          message:
+            data.message ||
+            "Processing your enrollment; this may take a moment. We will confirm shortly.",
+        }
+      }
 
       return {
         step: "confirm",

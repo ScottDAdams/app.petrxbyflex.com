@@ -122,6 +122,9 @@ export default function DrugPricePage() {
   const [availableForms, setAvailableForms] = useState<string[]>([])
   const [availableStrengths, setAvailableStrengths] = useState<string[]>([])
   const [availableQuantities, setAvailableQuantities] = useState<Quantity[]>([])
+  // strengthOptions: populated from ndc_products when form changes, provides NDC per strength
+  const [strengthOptions, setStrengthOptions] = useState<{ strength: string; ndc: string }[]>([])
+  const [selectedNdc, setSelectedNdc] = useState(initialNdcParam)
 
   const [prices, setPrices] = useState<PriceEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -146,7 +149,8 @@ export default function DrugPricePage() {
       selectedQuantityValue: number | string,
       customQuantityValue: string,
       passedNdc: string = "",
-      initialLoad: boolean = false
+      initialLoad: boolean = false,
+      resetStrengthQuantity: boolean = false
     ) => {
       setPricingErrorMessage(null)
       if (!drugNameParam || !zipCodeParam) {
@@ -185,6 +189,8 @@ export default function DrugPricePage() {
             strength: strengthParam,
             quantity: quantityToSend,
           })
+          setStrengthOptions([]) // Dash API result supersedes ndc_products strength list
+          if (result.matchedNDC) setSelectedNdc(result.matchedNDC)
           setRelatedDrugs(result.relatedInfo.relatedDrugs || [])
           let forms = result.relatedInfo.relatedForms || []
           if (result.displayInfo.displayForm && !forms.includes(result.displayInfo.displayForm)) {
@@ -212,6 +218,11 @@ export default function DrugPricePage() {
           if (initialLoad) {
             setCurrentDrugName(result.displayInfo.displayDrug.name)
             setCurrentForm(result.displayInfo.displayForm)
+            setCurrentStrength(result.displayInfo.displayStrength)
+            setCurrentQuantity(displayQtyValue)
+            setCustomQuantity("")
+          } else if (resetStrengthQuantity) {
+            // Form changed by user — only reset strength/quantity, preserve their form selection
             setCurrentStrength(result.displayInfo.displayStrength)
             setCurrentQuantity(displayQtyValue)
             setCustomQuantity("")
@@ -283,17 +294,54 @@ export default function DrugPricePage() {
   }, [initialDrugNameParam, initialZipCodeParam, initialNdcParam, fetchPricingData, searchParams, customQuantity])
 
   const handleDrugNameChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentDrugName(e.target.value)
+    const newName = e.target.value
+    setCurrentDrugName(newName)
+    setCurrentStrength("")
+    setCurrentQuantity("")
+    setAvailableForms([])
+    setAvailableStrengths([])
+    setAvailableQuantities([])
+    setStrengthOptions([])
+    setSelectedNdc("")
     setPricingErrorMessage(null)
+    fetchPricingData(newName, initialZipCodeParam, currentForm, "", 30, "", "", false, true)
   }
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentForm(e.target.value)
+  const handleFormChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newForm = e.target.value
+    setCurrentForm(newForm)
+    setCurrentStrength("")
+    setCurrentQuantity("")
+    setAvailableStrengths([])
+    setAvailableQuantities([])
+    setStrengthOptions([])
+    setSelectedNdc("")
     setPricingErrorMessage(null)
+    let ndcForForm = ""
+    try {
+      const res = await fetch(
+        `${cleanApiBase}/api/drug-form-options?name=${encodeURIComponent(currentDrugName)}&form=${encodeURIComponent(newForm)}`
+      )
+      if (res.ok) {
+        const data = await res.json()
+        if (data.strengths?.length > 0) {
+          setStrengthOptions(data.strengths)
+          setCurrentStrength(data.strengths[0].strength)
+          setSelectedNdc(data.strengths[0].ndc)
+          ndcForForm = data.strengths[0].ndc
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching form options:", err)
+    }
+    fetchPricingData(currentDrugName, initialZipCodeParam, newForm, "", 30, "", ndcForForm, false, true)
   }
 
   const handleStrengthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentStrength(e.target.value)
+    const newStrength = e.target.value
+    setCurrentStrength(newStrength)
+    const matchedOption = strengthOptions.find((o) => o.strength === newStrength)
+    if (matchedOption) setSelectedNdc(matchedOption.ndc)
     setPricingErrorMessage(null)
   }
 
@@ -318,6 +366,10 @@ export default function DrugPricePage() {
     const quantityToUse =
       currentQuantity === "custom" ? (isNaN(Number(customQuantity)) ? 0 : Number(customQuantity)) : Number(currentQuantity)
     const customQtyVal = currentQuantity === "custom" ? customQuantity : ""
+    // If strength or quantity was reset (form changed), let the API pick the best defaults
+    const shouldResetFromResponse = !currentStrength || !currentQuantity
+    // Prefer NDC from form-options lookup (accurate for selected form/strength), fall back to URL param
+    const ndcToUse = selectedNdc || initialNdcParam
     fetchPricingData(
       currentDrugName,
       initialZipCodeParam,
@@ -325,8 +377,9 @@ export default function DrugPricePage() {
       currentStrength,
       quantityToUse,
       customQtyVal,
-      initialNdcParam,
-      false
+      ndcToUse,
+      false,
+      shouldResetFromResponse
     )
   }
 
@@ -466,7 +519,11 @@ export default function DrugPricePage() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <label className="prescriptions-results__label">Strength:</label>
           <select className="prescriptions-results__control" value={currentStrength} onChange={handleStrengthChange} disabled={isLoading}>
-            {availableStrengths.map((s, i) => (
+            {currentStrength === "" && <option value="">Select strength...</option>}
+            {(strengthOptions.length > 0
+              ? strengthOptions.map((o) => o.strength)
+              : availableStrengths
+            ).map((s, i) => (
               <option key={s || `strength-${i}`} value={s}>
                 {s}
               </option>

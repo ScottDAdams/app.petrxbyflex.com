@@ -12,6 +12,9 @@ import { API_BASE } from "../api"
 type LeadLoadingContextValue = {
   /** True while /lead is in flight; overlay should be visible. Dismisses only when lead returns. */
   leadLoading: boolean
+  /** Set when CreateLead fails (HTTP error, timeout, etc.) — show banner and offer retry. */
+  leadError: string | null
+  clearLeadError: () => void
   /** Call to retry CreateLead (e.g. after 11014 "Try again"). No-op if already in flight or has lead data. */
   retryLead: () => void
 }
@@ -28,6 +31,7 @@ function isDebug(): boolean {
 export function LeadLoadingProvider({ children }: { children: React.ReactNode }) {
   const { state, refetch, setSession } = useSession()
   const [leadLoading, setLeadLoading] = useState(false)
+  const [leadError, setLeadError] = useState<string | null>(null)
   const inFlightRef = useRef(false)
   const didLogSkipRef = useRef(false)
   const didLogCallRef = useRef(false)
@@ -79,6 +83,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
 
     inFlightRef.current = true
     setLeadLoading(true)
+    setLeadError(null)
     if (DEV && !didLogCallRef.current) {
       didLogCallRef.current = true
       console.log("[Lead] Calling /api/enrollment/lead for session_id:", sessionId)
@@ -115,7 +120,12 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
         signal: controller.signal,
       })
 
-      const data = (await res.json()) as Record<string, unknown>
+      let data: Record<string, unknown> = {}
+      try {
+        data = (await res.json()) as Record<string, unknown>
+      } catch {
+        data = {}
+      }
 
       // Backend returns 200 with status=resume_available or lead_failed on HP error (e.g. 11014); session is hydrated
       if (res.ok && (data.status === "resume_available" || data.status === "lead_failed") && data.session) {
@@ -127,6 +137,15 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
       }
 
       if (!res.ok) {
+        const msg =
+          (typeof data.message === "string" && data.message) ||
+          (typeof (data as { error?: { message?: string } }).error?.message === "string" &&
+            (data as { error: { message: string } }).error.message) ||
+          (res.status === 504
+            ? "Quote service timed out. Please try again."
+            : `Quote could not be loaded (${res.status}). Please try again.`)
+        setLeadError(msg)
+        if (DEV || isDebug()) console.error("[Lead] CreateLead HTTP error:", res.status, data)
         return
       }
 
@@ -222,7 +241,14 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
     runLeadIfNeeded()
   }, [session?.session_id, runLeadIfNeeded])
 
-  const value: LeadLoadingContextValue = { leadLoading, retryLead: runLeadIfNeeded }
+  const clearLeadError = useCallback(() => setLeadError(null), [])
+
+  const value: LeadLoadingContextValue = {
+    leadLoading,
+    leadError,
+    clearLeadError,
+    retryLead: runLeadIfNeeded,
+  }
 
   return (
     <LeadLoadingContext.Provider value={value}>
@@ -233,6 +259,8 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
 
 export function useLeadLoading(): LeadLoadingContextValue {
   const ctx = useContext(LeadLoadingContext)
-  if (!ctx) return { leadLoading: false, retryLead: () => {} }
+  if (!ctx) {
+    return { leadLoading: false, leadError: null, clearLeadError: () => {}, retryLead: () => {} }
+  }
   return ctx
 }

@@ -1,6 +1,6 @@
 # app.petrxbyflex.com Documentation
 
-**Last updated:** 2026-03-26
+**Last updated:** 2026-04-03
 
 ---
 
@@ -19,7 +19,15 @@ React (Vite) app for the PetRx card + insurance quote flow. Framer sends users h
 | [CURRENT_STATE_SNAPSHOT.md](./CURRENT_STATE_SNAPSHOT.md) | Snapshot of behavior, routes, and integration points at time of writing |
 | [START_FLOW_AND_API_CALLS.md](./START_FLOW_AND_API_CALLS.md) | Start flow and which APIs are called, in order |
 
-**Code map (prescriptions):** `../src/features/prescriptions/` — drug search, pricing, and related UI (calls API proxies such as `unarx-fast-batch` per `API_CONTRACTS.md`).
+**Code map (prescriptions):** `../src/features/prescriptions/` — drug search, pricing, and related UI. Key file: `DrugPricePage.tsx`.
+
+### DrugPricePage behavior (as of 2026-04-03)
+
+- **Drug Name** and **Form** dropdowns auto-fetch prices immediately on change — no Update Prices button needed.
+- **Strength** and **Quantity** changes require the Update Prices button.
+- **Form change cascade:** On form change, the frontend first calls `GET /api/drug-form-options?name=&form=` to get correct strengths + NDC codes from `ndc_products`. The NDC for the selected strength is then passed directly to `POST /api/unarx-dash-price`, bypassing the Dash API's form-specific `relatedStrengths` limitation.
+- **Strength dropdown** is populated from `ndc_products` after a form change (accurate per-form strengths), and from the Dash API `relatedStrengths` otherwise.
+- API contracts: see `../../flex-pet-rx-api/docs/API_CONTRACTS.md` (Drug Pricing Endpoints section).
 
 ---
 

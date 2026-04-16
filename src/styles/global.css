@@ -2161,11 +2161,22 @@ body {
 
 /* Confirm step welcome */
 .confirm-welcome {
-  padding: 32px;
-  margin-bottom: 32px;
+  padding: 28px;
+  margin-bottom: 20px;
   background: linear-gradient(135deg, var(--color-brand-light) 0%, #fff 100%);
   border-radius: 16px;
   border: 1px solid var(--petrx-border);
+}
+
+.confirm-welcome__cta {
+  margin-top: 18px;
+}
+
+.confirm-welcome__cta-button {
+  padding: 0 28px;
+  min-width: 260px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .confirm-welcome__content {
@@ -2212,7 +2223,7 @@ body {
   margin: 0;
   font-size: 15px;
   color: #5b6b79;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .confirm-summary {
@@ -2227,15 +2238,15 @@ body {
 }
 
 .confirm-next-steps {
-  margin-bottom: 24px;
-  padding: 24px;
+  margin-bottom: 20px;
+  padding: 20px 22px;
   background: #f9fafb;
   border-radius: 12px;
   border: 1px solid var(--petrx-border);
 }
 
 .confirm-next-steps__title {
-  margin: 0 0 20px 0;
+  margin: 0 0 14px 0;
   font-size: 16px;
   font-weight: 700;
   color: var(--color-brand);
@@ -2244,7 +2255,7 @@ body {
 .confirm-next-steps__list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .confirm-next-steps__item {
@@ -2278,8 +2289,8 @@ body {
 }
 
 .confirm-petrx-note {
-  margin-bottom: 24px;
-  padding: 16px;
+  margin-bottom: 20px;
+  padding: 14px 16px;
   background: var(--color-brand-light);
   border-radius: 12px;
   border: 1px solid var(--petrx-border);

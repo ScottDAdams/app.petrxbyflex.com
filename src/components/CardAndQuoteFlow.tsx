@@ -4,6 +4,7 @@ import { getMockStep, isMockModeEnabled } from "../mocks/mockMode"
 import { useSession } from "../context/SessionContext"
 import { useLeadLoading } from "../context/LeadLoadingContext"
 import { updateSessionStep, updateSessionCardOverlayDismissed } from "../api/session"
+import { fetchEnrollStatus } from "../api/enrollment"
 import { trackEnrollmentEvent } from "../api/analytics"
 import { useViewportDesktop } from "../hooks/useViewportDesktop"
 import { CardDisplayPanel } from "./CardDisplayPanel"
@@ -16,6 +17,7 @@ import { DetailsStep } from "../app/steps/DetailsStep"
 import { PaymentStep } from "../app/steps/PaymentStep"
 import { ConfirmStep } from "../app/steps/ConfirmStep"
 import type { ProcessedPlans } from "./InsuranceQuoteSelector"
+import type { OneIncPaymentResult } from "./insurance/OneIncModalLauncher"
 import type { EnrollmentAdapter, EnrollmentResult } from "./insurance/EnrollmentAdapter"
 import { HpEnrollmentAdapter } from "./insurance/HpEnrollmentAdapter"
 import { MockEnrollmentAdapter } from "./insurance/MockEnrollmentAdapter"
@@ -116,15 +118,14 @@ export function CardAndQuoteFlow() {
   const [transitioning, setTransitioning] = React.useState(false)
   const [transitionError, setTransitionError] = React.useState<string | null>(null)
   const [isTimeoutError, setIsTimeoutError] = React.useState(false)
+  /** HP Enroll HTTP timeout: show processing UI and poll /api/enrollment/enroll-status */
+  const [enrollmentPendingConfirmation, setEnrollmentPendingConfirmation] = React.useState(false)
+  /** HP `registrationRedirectUrl` after successful enroll (or from session after refetch / poll) */
+  const [hpHandoffUrl, setHpHandoffUrl] = React.useState<string | null>(null)
   const [walletModalOpen, setWalletModalOpen] = React.useState(false)
   const [zipLookup, setZipLookup] = React.useState<{ city: string; state: string } | null>(null)
   // Store payment result from OneInc modal
-  const [paymentResult, setPaymentResult] = React.useState<{
-    paymentToken: string
-    transactionId: string
-    paymentMethod?: "CreditCard" | "ECheck"
-    convenienceFee?: number
-  } | null>(null)
+  const [paymentResult, setPaymentResult] = React.useState<OneIncPaymentResult | null>(null)
   // Store monthly payment amount from setupPending response
   const [authorizedAmount, setAuthorizedAmount] = React.useState<number | null>(null)
   // Store accountId from setupPending (maps to OneInc policyId)
@@ -138,6 +139,75 @@ export function CardAndQuoteFlow() {
   const overlayShownTrackedRef = React.useRef(false)
   const [overlayDismissedLocal, setOverlayDismissedLocal] = React.useState(false)
   useLeadLoading() // hook required; retryLead available if 11014 "Try again" is re-added
+
+  const readySession = state.status === "ready" ? state.session : undefined
+  const readySessionAny = readySession as Record<string, unknown> | undefined
+
+  // Resume pending-enrollment UX after reload when DB has enroll_submitted_unknown
+  React.useEffect(() => {
+    if (!readySession) return
+    const effectiveStepEarly = (mockStep ?? readySession.current_step ?? "quote").toLowerCase()
+    if (mockStep) return
+    const st = readySessionAny?.hp_enrollment_status as string | undefined
+    const url = readySessionAny?.hp_registration_redirect_url as string | undefined
+    if (effectiveStepEarly === "confirm" && st === "enroll_submitted_unknown" && !url) {
+      setEnrollmentPendingConfirmation(true)
+    }
+    if (url && effectiveStepEarly === "confirm") {
+      setEnrollmentPendingConfirmation(false)
+      setHpHandoffUrl((prev) => prev || url)
+    }
+  }, [
+    readySession,
+    readySession?.current_step,
+    readySessionAny?.hp_enrollment_status,
+    readySessionAny?.hp_registration_redirect_url,
+    mockStep,
+  ])
+
+  // Poll until backend persists registrationRedirectUrl (HP completed after slow/timeout path)
+  React.useEffect(() => {
+    if (!enrollmentPendingConfirmation || mockStep || !readySession?.session_id) return
+    const sid = readySession.session_id
+    let cancelled = false
+    let tick = 0
+    const maxTicks = 60
+    const intervalMs = 5000
+
+    const tickFn = async () => {
+      if (cancelled) return
+      tick += 1
+      if (tick > maxTicks) return
+      try {
+        const s = await fetchEnrollStatus(sid)
+        if (s.outcome === "success" && "registrationRedirectUrl" in s && s.registrationRedirectUrl) {
+          setEnrollmentPendingConfirmation(false)
+          setHpHandoffUrl(s.registrationRedirectUrl)
+          await refetch()
+        }
+      } catch {
+        // keep polling
+      }
+    }
+
+    void tickFn()
+    const id = window.setInterval(() => void tickFn(), intervalMs)
+    return () => {
+      cancelled = true
+      window.clearInterval(id)
+    }
+  }, [readySession?.session_id, enrollmentPendingConfirmation, mockStep, refetch])
+
+  // Hydrate Healthy Paws handoff URL from session when user lands or refetches on confirm step
+  React.useEffect(() => {
+    if (!readySession) return
+    const step = (mockStep ?? readySession.current_step ?? "quote").toLowerCase()
+    if (step !== "confirm") return
+    const u = readySessionAny?.hp_registration_redirect_url
+    if (typeof u === "string" && u.trim()) {
+      setHpHandoffUrl((prev) => prev || u.trim())
+    }
+  }, [readySession, readySession?.current_step, readySessionAny?.hp_registration_redirect_url, mockStep])
 
   if (state.status !== "ready") return null
 
@@ -236,6 +306,7 @@ export function CardAndQuoteFlow() {
     if (effectiveStep === "quote" && !sessionLeadId && !sessionQuoteDetailId) return
     refetch()
   }, [effectiveStep, mockStep, state.status, refetch, sessionLeadId, sessionQuoteDetailId])
+
   const handlePlanChange = (planId: "signature" | "value") => {
     setSelectedPlanId(planId)
     const isHighDeductible = planId === "value"
@@ -316,6 +387,63 @@ export function CardAndQuoteFlow() {
     confirm: { label: "Complete Enrollment" },
   }
   const cta = ctaByStep[effectiveStep] ?? ctaByStep.quote
+
+  const planName = selectedPlanId === "signature" ? "Signature Plan" : "Value Plan"
+  const isSignature = selectedPlanId === "signature"
+  const selectedPolicy = processedPlans.allPolicies.find(
+    (p) =>
+      (p.isHighDeductible as boolean) === !isSignature &&
+      Math.round(((p.reimbursement as number) || 0) * 100).toString() === selectedReimbursement &&
+      String(p.deductible) === selectedDeductible
+  )
+  const monthlyPrice = (selectedPolicy?.monthly_premium as string) ?? (selectedPolicy?.monthly_price as string) ?? "34.99"
+  const isSelectionValid = selectedPolicy !== undefined && selectedPolicy.plan_id !== undefined
+
+  const sessionPayment = session.payment
+  const effectiveAccountId =
+    (sessionPayment?.account_id as string | undefined) || sessionAccountId || undefined
+  const effectiveAuthorizedAmount =
+    (typeof sessionPayment?.authorized_amount === "number"
+      ? sessionPayment.authorized_amount
+      : null) ??
+    authorizedAmount ??
+    parseFloat(monthlyPrice)
+
+  const paymentAlreadyComplete = Boolean(
+    sessionPayment?.status === "Approved" ||
+      (sessionPayment?.transaction_id && sessionPayment?.payment_token)
+  )
+
+  const effectivePaymentResult = React.useMemo(() => {
+    if (paymentResult) return paymentResult
+    const pt = sessionPayment?.payment_token
+    const tid = sessionPayment?.transaction_id
+    if (pt && tid) {
+      const raw = sessionPayment?.raw as Record<string, unknown> | undefined
+      const petrx =
+        raw && typeof raw === "object" ? raw["__petrx_oneinc_complete_response__"] : undefined
+      const oneIncCompleteResponse =
+        petrx && typeof petrx === "object" ? (petrx as OneIncPaymentResult["oneIncCompleteResponse"]) : undefined
+      return {
+        paymentToken: pt,
+        transactionId: tid,
+        paymentMethod:
+          sessionPayment?.payment_method === "ECheck" ? ("ECheck" as const) : ("CreditCard" as const),
+        convenienceFee:
+          typeof sessionPayment?.convenience_fee === "number"
+            ? sessionPayment.convenience_fee
+            : undefined,
+        resolvedConvenienceFee:
+          typeof sessionPayment?.convenience_fee === "number"
+            ? sessionPayment.convenience_fee
+            : undefined,
+        cardType: undefined,
+        authCode: undefined,
+        ...(oneIncCompleteResponse ? { oneIncCompleteResponse } : {}),
+      }
+    }
+    return null
+  }, [paymentResult, sessionPayment])
 
   /**
    * State-driven step transitions: UI advances only when adapter mutates state successfully
@@ -518,6 +646,7 @@ export function CardAndQuoteFlow() {
         }
 
         result = await enrollmentAdapter.setupPending({
+          session_id: session.session_id,
           lead: {
             emailAddress: activeFormData.email.trim(),
             affiliateCode: "FLEXEMBD",
@@ -592,11 +721,16 @@ export function CardAndQuoteFlow() {
         
         if (!sessionLeadId) {
           setTransitionError("Missing leadId. Please start from the quote step.")
+          setTransitioning(false)
           return
         }
         
-        // Validate payment result from OneInc
-        if (!paymentResult || !paymentResult.paymentToken || !paymentResult.transactionId) {
+        // Validate payment result from OneInc (local or rehydrated from session)
+        if (
+          !effectivePaymentResult ||
+          !effectivePaymentResult.paymentToken ||
+          !effectivePaymentResult.transactionId
+        ) {
           setTransitionError("Please complete the payment form before continuing.")
           setTransitioning(false)
           return
@@ -607,18 +741,27 @@ export function CardAndQuoteFlow() {
         const billingLastName = (owner.last_name || "") as string
         const billingStreet = (owner.mailing_street ?? owner.street ?? "") as string
         const billingCity = (owner.city || "") as string
-        const billingState = (zipLookup?.state ?? pet.state_code ?? owner.state_code ?? "") as string
+        const billingState =
+          (owner.state as string) ||
+          (zipLookup?.state as string) ||
+          (pet.state_code as string) ||
+          (owner.state_code as string) ||
+          ""
         const billingPostalCode = (pet.zip_code ?? owner.zip ?? "") as string
-        
+
         if (!billingFirstName || !billingLastName || !billingStreet || !billingCity || !billingState || !billingPostalCode) {
           setTransitionError("Missing billing information. Please check your details.")
           setTransitioning(false)
           return
         }
         
-        // Use authorizedAmount from setupPending response (HP's authoritative amount)
-        // Fallback to monthlyPrice if not available
-        const finalAuthorizedAmount = authorizedAmount ?? parseFloat(monthlyPrice)
+        // Prefer DB session payment, then local setupPending, then quote premium
+        const finalAuthorizedAmount =
+          (typeof sessionPayment?.authorized_amount === "number"
+            ? sessionPayment.authorized_amount
+            : null) ??
+          authorizedAmount ??
+          parseFloat(monthlyPrice)
         
         if (!finalAuthorizedAmount || finalAuthorizedAmount <= 0) {
           setTransitionError("Invalid payment amount. Please refresh and try again.")
@@ -626,11 +769,40 @@ export function CardAndQuoteFlow() {
           return
         }
         
-        // Payment details from OneInc modal
-        // HP requires: transactionId, paymentToken, authorizedAmount, billing fields, paymentMethod
+        const pmEnroll = effectivePaymentResult.paymentMethod || ("CreditCard" as const)
+        // convenienceFee must be a finite number for CreditCard (JSON omits undefined → HP 12027).
+        // TEMPORARY: 2.99% of premium must match API ``hp_convenience_fee.calculate_hp_convenience_fee`` until a new
+        // payment modal returns an authoritative fee we can trust.
+        const _hpCreditCardConvenienceFeeRate = 0.0299
+        const fromSession =
+          typeof sessionPayment?.convenience_fee === "number" && Number.isFinite(sessionPayment.convenience_fee)
+            ? sessionPayment.convenience_fee
+            : undefined
+        const fromOneInc =
+          typeof effectivePaymentResult.resolvedConvenienceFee === "number" &&
+          Number.isFinite(effectivePaymentResult.resolvedConvenienceFee)
+            ? effectivePaymentResult.resolvedConvenienceFee
+            : typeof effectivePaymentResult.convenienceFee === "number" &&
+                Number.isFinite(effectivePaymentResult.convenienceFee)
+              ? effectivePaymentResult.convenienceFee
+              : undefined
+        const fallbackPercentFee =
+          Math.round(finalAuthorizedAmount * _hpCreditCardConvenienceFeeRate * 100) / 100
+        const creditCardConvenienceFee =
+          fromSession !== undefined ? fromSession : fromOneInc !== undefined ? fromOneInc : fallbackPercentFee
+        // fullPaymentResponse: JSON of entire POST /api/oneinc/complete body (undocumented HP requirement; see EnrollmentAdapter).
+        let fullPaymentResponse: string | undefined
+        const completeObj = effectivePaymentResult.oneIncCompleteResponse
+        if (completeObj && typeof completeObj === "object") {
+          try {
+            fullPaymentResponse = JSON.stringify(completeObj)
+          } catch {
+            fullPaymentResponse = undefined
+          }
+        }
         const paymentDetails = {
-          transactionId: paymentResult.transactionId,
-          paymentToken: paymentResult.paymentToken,
+          transactionId: effectivePaymentResult.transactionId,
+          paymentToken: effectivePaymentResult.paymentToken,
           authorizedAmount: finalAuthorizedAmount,
           billingFirstName,
           billingLastName,
@@ -638,18 +810,27 @@ export function CardAndQuoteFlow() {
           billingCity,
           billingState,
           billingPostalCode,
-          paymentMethod: paymentResult.paymentMethod || "CreditCard" as const,
-          // Convenience fee: CreditCard transactions require this, ECheck uses 0
-          // TODO: Get actual convenience fee from HP or OneInc response
-          convenienceFee: paymentResult.convenienceFee ?? (paymentResult.paymentMethod === "ECheck" ? 0 : undefined),
+          paymentMethod: pmEnroll,
+          convenienceFee: pmEnroll === "ECheck" ? 0 : creditCardConvenienceFee,
+          ...(fullPaymentResponse ? { fullPaymentResponse } : {}),
         }
+        console.info("[PetRx enroll] paymentDetails before POST /api/enrollment/enroll", {
+          convenienceFee: paymentDetails.convenienceFee,
+          convenienceFeePresent:
+            typeof paymentDetails.convenienceFee === "number" &&
+            Number.isFinite(paymentDetails.convenienceFee),
+          paymentMethod: paymentDetails.paymentMethod,
+          hasFullPaymentResponse: Boolean(fullPaymentResponse),
+        })
         
         result = await enrollmentAdapter.enroll({
+          session_id: session.session_id,
           lead: {
             emailAddress: (owner.email || "") as string,
             affiliateCode: "FLEXEMBD",
             zipCode: (pet.zip_code || owner.zip_code || "") as string,
-            stateCode: (pet.state_code || owner.state_code || "") as string,
+            stateCode:
+              ((owner.state || owner.state_code || pet.state_code) as string) || "",
             firstName: (owner.first_name || "") as string,
             lastName: (owner.last_name || "") as string,
             mailingStreet: (owner.mailing_street || owner.street || "") as string,
@@ -665,6 +846,21 @@ export function CardAndQuoteFlow() {
           return
         }
 
+        if (result.pendingConfirmation) {
+          setEnrollmentPendingConfirmation(true)
+          setIsTimeoutError(false)
+          setTransitionError(null)
+          const returned = await updateSessionStep(session.session_id, "confirm")
+          stepJustSetByContinueRef.current = "confirm"
+          setSession(returned)
+          setTransitioning(false)
+          return
+        }
+
+        setEnrollmentPendingConfirmation(false)
+        const rUrl =
+          typeof result.registrationRedirectUrl === "string" ? result.registrationRedirectUrl.trim() : ""
+        if (rUrl) setHpHandoffUrl(rUrl)
         const returned = await updateSessionStep(session.session_id, "confirm")
         stepJustSetByContinueRef.current = "confirm"
         setSession(returned)
@@ -677,19 +873,6 @@ export function CardAndQuoteFlow() {
       setTransitioning(false)
     }
   }
-
-  const planName = selectedPlanId === "signature" ? "Signature Plan" : "Value Plan"
-  const isSignature = selectedPlanId === "signature"
-  const selectedPolicy = processedPlans.allPolicies.find(
-    (p) =>
-      (p.isHighDeductible as boolean) === !isSignature &&
-      Math.round(((p.reimbursement as number) || 0) * 100).toString() === selectedReimbursement &&
-      String(p.deductible) === selectedDeductible
-  )
-  const monthlyPrice = (selectedPolicy?.monthly_premium as string) ?? (selectedPolicy?.monthly_price as string) ?? "34.99"
-  
-  // Check if current selection is valid (exists in HP policies)
-  const isSelectionValid = selectedPolicy !== undefined && selectedPolicy.plan_id !== undefined
 
   function renderStepBody() {
     switch (effectiveStep) {
@@ -722,14 +905,19 @@ export function CardAndQuoteFlow() {
         return (
           <PaymentStep
             leadId={sessionLeadId || undefined}
-            accountId={sessionAccountId || undefined}
-            amount={authorizedAmount || parseFloat(monthlyPrice)}
+            accountId={effectiveAccountId}
+            amount={effectiveAuthorizedAmount}
+            enrollmentSessionId={session.session_id}
+            paymentAlreadyComplete={paymentAlreadyComplete}
+            onPersistedSuccess={() => void refetch()}
             onPaymentSuccess={(result) => {
               setPaymentResult({
                 paymentToken: result.paymentToken,
                 transactionId: result.transactionId,
                 paymentMethod: result.paymentMethod,
-                convenienceFee: result.convenienceFee,
+                cardType: result.cardType,
+                authCode: result.authCode,
+                oneIncCompleteResponse: result.oneIncCompleteResponse,
               })
             }}
             onBack={mockStep ? () => {
@@ -739,10 +927,14 @@ export function CardAndQuoteFlow() {
             } : undefined}
             onReview={() => handleCtaClick()}
             reviewLabel={cta.label}
-            reviewDisabled={!paymentResult}
+            reviewDisabled={!effectivePaymentResult}
           />
         )
-      case "confirm":
+      case "confirm": {
+        const sidUrl = (session as Record<string, unknown>).hp_registration_redirect_url
+        const handoffFromSession =
+          typeof sidUrl === "string" && sidUrl.trim() ? sidUrl.trim() : undefined
+        const healthyPawsHandoffUrl = handoffFromSession || hpHandoffUrl?.trim() || undefined
         return (
           <ConfirmStep
             petName={displayPetName}
@@ -752,10 +944,11 @@ export function CardAndQuoteFlow() {
             deductible={selectedDeductible}
             reimbursement={selectedReimbursement}
             monthlyPrice={monthlyPrice}
-            policyNumber={(session as Record<string, unknown>).policy_number as string}
-            effectiveDate={(session as Record<string, unknown>).effective_date as string}
+            pendingConfirmation={enrollmentPendingConfirmation}
+            healthyPawsHandoffUrl={healthyPawsHandoffUrl}
           />
         )
+      }
       case "quote":
       default:
         console.log("[CardAndQuoteFlow] Rendering quote step:", {
@@ -1260,6 +1453,20 @@ export function CardAndQuoteFlow() {
                   {transitioning ? "Retrying..." : "Try Again"}
                 </button>
               )}
+            </div>
+          )}
+          {transitionError && effectiveStep === "payment" && (
+            <div
+              className="step-error step-error--payment"
+              style={{
+                marginTop: 16,
+                padding: "12px 16px",
+                background: "#fee",
+                border: "1px solid #fcc",
+                borderRadius: "8px",
+              }}
+            >
+              <p style={{ margin: 0, color: "#c33", fontSize: "14px" }}>{transitionError}</p>
             </div>
           )}
         </section>

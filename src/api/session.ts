@@ -32,6 +32,20 @@ export type SessionPlan = {
   is_high_deductible?: boolean | null
 }
 
+/** OneInc + SetupPending payment context from GET /enroll/session (reload-safe). */
+export type SessionPayment = {
+  account_id?: string | null
+  authorized_amount?: number | null
+  payment_token?: string | null
+  transaction_id?: string | null
+  payment_method?: string | null
+  convenience_fee?: number | null
+  status?: string | null
+  completed_at?: string | null
+  /** Persisted `oneinc_return_payload` (includes `__petrx_oneinc_complete_response__` after /api/oneinc/complete). */
+  raw?: Record<string, unknown> | null
+}
+
 /**
  * Frontend contract: backend must return these field names (or map in normalizeSession).
  * Expected: funnel_type, current_step, card_image_url, wallet_url, insurance_products, pet, owner,
@@ -52,6 +66,7 @@ export type SessionData = {
   pet?: SessionPet
   owner?: SessionOwner
   plan?: SessionPlan
+  payment?: SessionPayment
   [key: string]: unknown
 }
 

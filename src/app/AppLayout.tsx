@@ -13,7 +13,7 @@ import { FancyLoadingOverlay } from "../components/insurance/FancyLoadingOverlay
 
 export function AppLayout() {
   const sessionContext = useSessionOptional()
-  const { leadLoading } = useLeadLoading()
+  const { leadLoading, leadError, clearLeadError, retryLead } = useLeadLoading()
 
   const isQuoteSteps = (): boolean => {
     if (!sessionContext || sessionContext.state.status !== "ready") return true
@@ -92,6 +92,35 @@ export function AppLayout() {
           )}
 
           <MockBanner />
+          {leadError && (
+            <div
+              role="alert"
+              style={{
+                margin: "0 16px 12px",
+                padding: "12px 16px",
+                background: "#fff3cd",
+                border: "1px solid #ffc107",
+                borderRadius: 8,
+                color: "#856404",
+                fontSize: 14,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                flexWrap: "wrap",
+              }}
+            >
+              <span>{leadError}</span>
+              <span style={{ display: "flex", gap: 8 }}>
+                <button type="button" className="btn btn--primary" style={{ fontSize: 13 }} onClick={() => retryLead()}>
+                  Try again
+                </button>
+                <button type="button" className="btn btn--secondary" style={{ fontSize: 13 }} onClick={clearLeadError}>
+                  Dismiss
+                </button>
+              </span>
+            </div>
+          )}
           <Outlet />
         </div>
       </main>

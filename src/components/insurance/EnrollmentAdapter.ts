@@ -32,6 +32,11 @@ export type EnrollmentResult = {
   accountId?: string
   monthlyTotalPayment?: number // From setupPending response, used for enroll authorizedAmount
   error?: string
+  /** HP Enroll HTTP timeout — backend persisted enroll_submitted_unknown; poll enroll-status */
+  pendingConfirmation?: boolean
+  enrollmentStatus?: string
+  message?: string
+  registrationRedirectUrl?: string
   [key: string]: unknown
 }
 
@@ -112,6 +117,8 @@ export type SetupPendingInput = {
     reimbursement: number
   }>
   acceptElectronicConsent: boolean
+  /** Optional: backend persists SetupPending output and enroll merges payment when present */
+  session_id?: string
 }
 
 export type EnrollInput = {
@@ -139,5 +146,13 @@ export type EnrollInput = {
     billingPostalCode: string
     paymentMethod: "CreditCard" | "ECheck"
     convenienceFee?: number
+    /**
+     * JSON.stringify(full body from POST /api/oneinc/complete).
+     * HP Enroll succeeds on staging when this is present; official HP Enrollment API docs do not
+     * document `fullPaymentResponse`. Do not substitute only `payment.raw` or `portalOnePaymentComplete`.
+     */
+    fullPaymentResponse?: string
   }
+  /** Optional: server fills missing paymentDetails from enrollment_sessions */
+  session_id?: string
 }
