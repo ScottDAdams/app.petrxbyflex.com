@@ -1,5 +1,9 @@
 import * as React from "react"
-import { PortalOneModal, type PortalOneFeeDiagnostics } from "./PortalOneModal"
+import {
+  PortalOneModal,
+  type PortalOneFeeDiagnostics,
+  getOneIncModalVersion,
+} from "./PortalOneModal"
 import { persistOneIncCompletion, type OneIncCompleteApiResponse } from "../../api/oneinc"
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"
@@ -163,6 +167,7 @@ export function OneIncModalLauncher({
     try {
       const sessionUrl = `${API_BASE}/api/oneinc/session`
       console.log("[OneIncModalLauncher] fetch session", sessionUrl)
+      const modalVersion = getOneIncModalVersion()
       const sessionResponse = await fetch(sessionUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -171,6 +176,10 @@ export function OneIncModalLauncher({
           accountId,
           amount,
           referrer: window.location.origin,
+          // Hint the API which SessionKey/Create endpoint to target so the session it returns
+          // matches the SDK build the browser is about to load. Default "legacy" preserves
+          // the current production path; "v2" routes to GenericModalV2 server-side.
+          modalVersion,
         }),
       })
 
