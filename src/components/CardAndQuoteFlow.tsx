@@ -18,7 +18,7 @@ import { PaymentStep } from "../app/steps/PaymentStep"
 import { ConfirmStep } from "../app/steps/ConfirmStep"
 import type { ProcessedPlans } from "./InsuranceQuoteSelector"
 import type { OneIncPaymentResult } from "./insurance/OneIncModalLauncher"
-import type { EnrollmentAdapter, EnrollmentResult } from "./insurance/EnrollmentAdapter"
+import type { EnrollmentAdapter, EnrollmentResult, EnrollInput } from "./insurance/EnrollmentAdapter"
 import { HpEnrollmentAdapter } from "./insurance/HpEnrollmentAdapter"
 import { MockEnrollmentAdapter } from "./insurance/MockEnrollmentAdapter"
 
@@ -122,6 +122,12 @@ export function CardAndQuoteFlow() {
   const [enrollmentPendingConfirmation, setEnrollmentPendingConfirmation] = React.useState(false)
   /** HP `registrationRedirectUrl` after successful enroll (or from session after refetch / poll) */
   const [hpHandoffUrl, setHpHandoffUrl] = React.useState<string | null>(null)
+  /**
+   * Snapshot of the most recent enroll input we sent. Used by the bounded auto-reconcile
+   * effect so a stuck pending_confirmation can re-issue the same idempotent payload with
+   * reconcile=true without needing the user to click anything. Cleared once we resolve.
+   */
+  const lastEnrollInputRef = React.useRef<EnrollInput | null>(null)
   const [walletModalOpen, setWalletModalOpen] = React.useState(false)
   const [zipLookup, setZipLookup] = React.useState<{ city: string; state: string } | null>(null)
   // Store payment result from OneInc modal
@@ -197,6 +203,69 @@ export function CardAndQuoteFlow() {
       window.clearInterval(id)
     }
   }, [readySession?.session_id, enrollmentPendingConfirmation, mockStep, refetch])
+
+  // Bounded auto-reconcile while in pending_confirmation: re-issues the same enroll payload
+  // with reconcile=true at 15s, 45s, 90s. HP Enroll is idempotent on
+  // leadId+transactionId+paymentToken, so this either resolves the session to success
+  // (registrationRedirectUrl persisted server-side) or surfaces a definitive HP error.
+  // Skipped after a hard reload (no in-memory input snapshot) — the 5s status poll above
+  // still recovers from server-side persistence in that case.
+  React.useEffect(() => {
+    if (!enrollmentPendingConfirmation || mockStep) return
+    if (!lastEnrollInputRef.current) return
+    let cancelled = false
+    const attempts = [15000, 45000, 90000]
+    const timers: number[] = []
+
+    const runOnce = async (label: string) => {
+      if (cancelled) return
+      const input = lastEnrollInputRef.current
+      if (!input) return
+      try {
+        console.info("[CardAndQuoteFlow] auto-reconcile attempt", { label })
+        const result = await enrollmentAdapter.enroll({ ...input, reconcile: true })
+        if (cancelled) return
+        if (result.error) {
+          console.warn("[CardAndQuoteFlow] auto-reconcile returned error", {
+            label,
+            error: result.error,
+          })
+          return
+        }
+        if (result.pendingConfirmation) {
+          console.info("[CardAndQuoteFlow] auto-reconcile still pending", { label })
+          return
+        }
+        const rUrl =
+          typeof result.registrationRedirectUrl === "string"
+            ? result.registrationRedirectUrl.trim()
+            : ""
+        if (!rUrl) {
+          console.warn("[CardAndQuoteFlow] auto-reconcile success without redirect", { label })
+          return
+        }
+        setEnrollmentPendingConfirmation(false)
+        setHpHandoffUrl(rUrl)
+        timers.forEach((id) => window.clearTimeout(id))
+        await refetch()
+      } catch (err) {
+        console.warn("[CardAndQuoteFlow] auto-reconcile threw", {
+          label,
+          error: err instanceof Error ? err.message : String(err),
+        })
+      }
+    }
+
+    attempts.forEach((delay, i) => {
+      const id = window.setTimeout(() => void runOnce(`attempt-${i + 1}@${delay}ms`), delay)
+      timers.push(id)
+    })
+
+    return () => {
+      cancelled = true
+      timers.forEach((id) => window.clearTimeout(id))
+    }
+  }, [enrollmentPendingConfirmation, mockStep, enrollmentAdapter, refetch])
 
   // Hydrate Healthy Paws handoff URL from session when user lands or refetches on confirm step
   React.useEffect(() => {
@@ -413,6 +482,14 @@ export function CardAndQuoteFlow() {
     sessionPayment?.status === "Approved" ||
       (sessionPayment?.transaction_id && sessionPayment?.payment_token)
   )
+
+  /**
+   * Auto-advance from Payment → Enroll: once OneInc's paymentComplete handler calls
+   * setPaymentResult, skip the manual "Continue" click and run handleCtaClick directly.
+   * Gated by a one-shot ref so we don't loop if enroll returns an error (user can still
+   * retry manually via the CTA in that case). Resets when the user leaves the payment step.
+   */
+  const autoEnrollAfterPaymentRef = React.useRef(false)
 
   const effectivePaymentResult = React.useMemo(() => {
     if (paymentResult) return paymentResult
@@ -668,6 +745,9 @@ export function CardAndQuoteFlow() {
             reimbursement: parseInt(selectedReimbursement, 10),
           }],
           acceptElectronicConsent,
+          // 2026 HP docs require acceptTermsAndConditionsConsent on setuppendingaccount.
+          // The UI combined-consent checkbox already covers this; always send true here.
+          acceptTermsAndConditionsConsent: true,
         })
         
         if (!result) {
@@ -770,14 +850,12 @@ export function CardAndQuoteFlow() {
         }
         
         const pmEnroll = effectivePaymentResult.paymentMethod || ("CreditCard" as const)
-        // convenienceFee must be a finite number for CreditCard (JSON omits undefined → HP 12027).
-        // TEMPORARY: 2.99% of premium must match API ``hp_convenience_fee.calculate_hp_convenience_fee`` until a new
-        // payment modal returns an authoritative fee we can trust.
+        // convenienceFee must be a finite number for CreditCard (JSON omits undefined -> HP 12027).
+        // Source-of-truth order (matches backend apply_convenience_fee_for_enroll):
+        //   1. OneInc-derived fee from the PortalOne paymentComplete result (fullPaymentResponse snapshot)
+        //   2. Session-persisted fee from /api/oneinc/complete (already OneInc-derived when available)
+        //   3. Program percent-of-authorized-amount fallback
         const _hpCreditCardConvenienceFeeRate = 0.0299
-        const fromSession =
-          typeof sessionPayment?.convenience_fee === "number" && Number.isFinite(sessionPayment.convenience_fee)
-            ? sessionPayment.convenience_fee
-            : undefined
         const fromOneInc =
           typeof effectivePaymentResult.resolvedConvenienceFee === "number" &&
           Number.isFinite(effectivePaymentResult.resolvedConvenienceFee)
@@ -786,10 +864,21 @@ export function CardAndQuoteFlow() {
                 Number.isFinite(effectivePaymentResult.convenienceFee)
               ? effectivePaymentResult.convenienceFee
               : undefined
+        const fromSession =
+          typeof sessionPayment?.convenience_fee === "number" && Number.isFinite(sessionPayment.convenience_fee)
+            ? sessionPayment.convenience_fee
+            : undefined
         const fallbackPercentFee =
           Math.round(finalAuthorizedAmount * _hpCreditCardConvenienceFeeRate * 100) / 100
         const creditCardConvenienceFee =
-          fromSession !== undefined ? fromSession : fromOneInc !== undefined ? fromOneInc : fallbackPercentFee
+          fromOneInc !== undefined ? fromOneInc : fromSession !== undefined ? fromSession : fallbackPercentFee
+        console.info("[PetRx enroll] convenienceFee resolution", {
+          fromOneInc,
+          fromSession,
+          fallbackPercentFee,
+          chosen: creditCardConvenienceFee,
+          paymentMethod: pmEnroll,
+        })
         // fullPaymentResponse: JSON of entire POST /api/oneinc/complete body (undocumented HP requirement; see EnrollmentAdapter).
         let fullPaymentResponse: string | undefined
         const completeObj = effectivePaymentResult.oneIncCompleteResponse
@@ -823,7 +912,7 @@ export function CardAndQuoteFlow() {
           hasFullPaymentResponse: Boolean(fullPaymentResponse),
         })
         
-        result = await enrollmentAdapter.enroll({
+        const enrollInput: EnrollInput = {
           session_id: session.session_id,
           lead: {
             emailAddress: (owner.email || "") as string,
@@ -836,10 +925,15 @@ export function CardAndQuoteFlow() {
             mailingStreet: (owner.mailing_street || owner.street || "") as string,
             phone: (owner.phone || "") as string,
             acceptElectronicConsent: true,
+            // 2026 HP docs require acceptTermsAndConditionsConsent on /api/v1/enrollment/enroll.
+            acceptTermsAndConditionsConsent: true,
             leadId: sessionLeadId,
           },
           paymentDetails,
-        })
+        }
+        // Snapshot for the auto-reconcile effect; reused as-is with reconcile=true on retry.
+        lastEnrollInputRef.current = enrollInput
+        result = await enrollmentAdapter.enroll(enrollInput)
         
         if (result.error) {
           setTransitionError(result.error)
@@ -858,6 +952,7 @@ export function CardAndQuoteFlow() {
         }
 
         setEnrollmentPendingConfirmation(false)
+        lastEnrollInputRef.current = null
         const rUrl =
           typeof result.registrationRedirectUrl === "string" ? result.registrationRedirectUrl.trim() : ""
         if (rUrl) setHpHandoffUrl(rUrl)
@@ -873,6 +968,34 @@ export function CardAndQuoteFlow() {
       setTransitioning(false)
     }
   }
+
+  React.useEffect(() => {
+    if (effectiveStep !== "payment") {
+      autoEnrollAfterPaymentRef.current = false
+      return
+    }
+    const ready =
+      !!effectivePaymentResult &&
+      !!effectivePaymentResult.paymentToken &&
+      !!effectivePaymentResult.transactionId
+    console.info("[CardAndQuoteFlow] auto-enroll effect eval", {
+      effectiveStep,
+      hasEffectivePaymentResult: !!effectivePaymentResult,
+      ready,
+      refAlreadyFired: autoEnrollAfterPaymentRef.current,
+      transitioning,
+      hasTransitionError: !!transitionError,
+      stateStatus: state.status,
+    })
+    if (!ready) return
+    if (autoEnrollAfterPaymentRef.current) return
+    if (transitioning) return
+    if (transitionError) return
+    if (state.status !== "ready") return
+    autoEnrollAfterPaymentRef.current = true
+    console.info("[CardAndQuoteFlow] auto-advancing Payment → Enroll after OneInc paymentComplete")
+    void handleCtaClick()
+  }, [effectiveStep, effectivePaymentResult, transitioning, transitionError, state.status])
 
   function renderStepBody() {
     switch (effectiveStep) {
@@ -928,6 +1051,12 @@ export function CardAndQuoteFlow() {
             onReview={() => handleCtaClick()}
             reviewLabel={cta.label}
             reviewDisabled={!effectivePaymentResult}
+            submitting={
+              !!effectivePaymentResult &&
+              !!effectivePaymentResult.paymentToken &&
+              !!effectivePaymentResult.transactionId &&
+              !transitionError
+            }
           />
         )
       case "confirm": {

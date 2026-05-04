@@ -179,6 +179,8 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
             mailingStreet: input.lead.mailingStreet,
             phone: input.lead.phone,
             acceptElectronicConsent: input.acceptElectronicConsent,
+            // 2026 HP docs require acceptTermsAndConditionsConsent on setuppendingaccount.
+            acceptTermsAndConditionsConsent: input.acceptTermsAndConditionsConsent,
             leadId: input.lead.leadId,
           },
           pets: input.pets.map((p) => ({
@@ -259,6 +261,10 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
           ...(input.session_id && { session_id: input.session_id }),
           lead: input.lead,
           paymentDetails: input.paymentDetails,
+          // Backend bypasses its enroll_submitted_unknown guard when reconcile=true.
+          // HP Enroll is idempotent on leadId+transactionId+paymentToken so retrying
+          // the same body is safe.
+          ...(input.reconcile ? { reconcile: true } : {}),
         }),
       })
 

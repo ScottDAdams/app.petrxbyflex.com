@@ -929,6 +929,22 @@ body {
   flex: 0 0 auto;
 }
 
+.step-actions__submitting {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 0 auto;
+  padding: 10px 14px;
+  color: var(--petrx-text, #1b2a3a);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.step-actions__submitting .btn-spinner {
+  border-color: rgba(0, 102, 51, 0.25);
+  border-top-color: var(--petrx-primary, #006633);
+}
+
 .step-form {
   margin-bottom: 0;
 }

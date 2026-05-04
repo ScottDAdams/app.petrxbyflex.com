@@ -117,6 +117,11 @@ export type SetupPendingInput = {
     reimbursement: number
   }>
   acceptElectronicConsent: boolean
+  /**
+   * 2026 HP docs require acceptTermsAndConditionsConsent on setuppendingaccount, enroll, and
+   * enrollpayment. UI collects combined consent in the details step; default the caller to true.
+   */
+  acceptTermsAndConditionsConsent: boolean
   /** Optional: backend persists SetupPending output and enroll merges payment when present */
   session_id?: string
 }
@@ -132,6 +137,11 @@ export type EnrollInput = {
     mailingStreet: string
     phone: string
     acceptElectronicConsent: boolean
+    /**
+     * 2026 HP docs require this on /api/v1/enrollment/enroll. Sent true when the user
+     * completed the details consent step.
+     */
+    acceptTermsAndConditionsConsent: boolean
     leadId: string
   }
   paymentDetails: {
@@ -155,4 +165,11 @@ export type EnrollInput = {
   }
   /** Optional: server fills missing paymentDetails from enrollment_sessions */
   session_id?: string
+  /**
+   * Set true to bypass the backend's prior `enroll_submitted_unknown` guard for this
+   * session. HP Enroll is idempotent on leadId + transactionId + paymentToken, so a
+   * reconcile retry either resolves to a real success (registrationRedirectUrl persisted)
+   * or to a definitive HP error we can surface, instead of staying stuck in pending.
+   */
+  reconcile?: boolean
 }

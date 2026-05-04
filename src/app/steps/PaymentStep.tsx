@@ -19,6 +19,11 @@ export type PaymentStepProps = {
   paymentAlreadyComplete?: boolean
   /** After server persist (e.g. refetch session) */
   onPersistedSuccess?: () => void | Promise<void>
+  /**
+   * When true, we have a valid OneInc result and the parent is auto-advancing to HP Enroll.
+   * Hides the review CTA and shows a submitting indicator so the Continue button never flashes.
+   */
+  submitting?: boolean
 }
 
 export function PaymentStep({
@@ -34,6 +39,7 @@ export function PaymentStep({
   enrollmentSessionId,
   paymentAlreadyComplete,
   onPersistedSuccess,
+  submitting = false,
 }: PaymentStepProps) {
   return (
     <div className="step-body step-body--payment">
@@ -67,19 +73,26 @@ export function PaymentStep({
         </div>
       </div>
       <div className="step-actions">
-        {onBack && (
+        {onBack && !submitting && (
           <button type="button" className="btn btn--secondary step-actions__back" onClick={onBack}>
             ← Back
           </button>
         )}
-        {onReview && (
-          <PrimaryActionButton
-            onAction={onReview}
-            disabled={reviewDisabled}
-            className={`btn btn--primary step-actions__continue`}
-          >
-            {reviewLabel}
-          </PrimaryActionButton>
+        {submitting ? (
+          <p className="step-actions__submitting" role="status" aria-live="polite">
+            <span className="btn-spinner" aria-hidden />
+            Submitting your enrollment…
+          </p>
+        ) : (
+          onReview && (
+            <PrimaryActionButton
+              onAction={onReview}
+              disabled={reviewDisabled}
+              className={`btn btn--primary step-actions__continue`}
+            >
+              {reviewLabel}
+            </PrimaryActionButton>
+          )
         )}
       </div>
     </div>

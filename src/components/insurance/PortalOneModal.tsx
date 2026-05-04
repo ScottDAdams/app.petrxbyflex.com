@@ -257,14 +257,36 @@ function ensureJQuery(): Promise<void> {
   return loadScriptOnce(JQUERY_CDN)
 }
 
+/**
+ * PortalOne SDK script URL — selects which OneInc modal build the browser loads.
+ *
+ * 2026-04-16: reverted to **GenericModal** (v1) after HAR comparison with hptest.info
+ * showed v2 `getportalconfiguration` rejects us with 401 because the iframe's `referrer=`
+ * query (set by PortalOne.js from `window.location.origin`) is `https://app.petrxbyflex.com`,
+ * which is **not on HP's OneInc v2 origin allowlist** (they allow `www.hptest.info` /
+ * `enroll.hptest.info`). HP must allowlist our origin before we can try v2 again.
+ *
+ * v1 does not enforce that check, so this is the known-good path. The 2.99% CreditCard
+ * convenienceFee fallback in the API is still required with v1+`feeContext:0`; the
+ * `makePayment` call below now uses `feeContext:"PaymentWithFee"` which — per HP's working
+ * HAR — is what actually triggers OneInc's convenience-fee lookup. If v1 starts returning
+ * a real fee in `portalOne.paymentComplete.convenienceFee`, we can drop the 2.99% rule.
+ *
+ * TO RETRY v2: change `MODAL_VARIANT` to `"GenericModalV2"` AFTER our parent origin is
+ * added to HP's OneInc tenant allowlist, then align `makePayment` params to HP's shape
+ * (displayMode:"Inline", paymentCategory:"CreditCard", amountContext, etc.).
+ */
+const MODAL_VARIANT: "GenericModalV2" | "GenericModal" = "GenericModal"
+
 function getPortalOneScriptUrl(): string {
   const fromEnv = (import.meta.env.VITE_ONEINC_PORTALONE_JS_URL as string)?.trim()
   if (fromEnv) return fromEnv
   const env = (import.meta.env.VITE_ONEINC_ENV as string)?.toLowerCase() || "staging"
-  if (env === "prod" || env === "production") {
-    return "https://portalone.processonepayments.com/GenericModal/Cdn/PortalOne.js"
-  }
-  return "https://stgportalone.processonepayments.com/GenericModal/Cdn/PortalOne.js"
+  const host =
+    env === "prod" || env === "production"
+      ? "https://portalone.processonepayments.com"
+      : "https://stgportalone.processonepayments.com"
+  return `${host}/${MODAL_VARIANT}/Cdn/PortalOne.js`
 }
 
 export type PortalOnePaymentCompletePayload = {
@@ -435,6 +457,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             } | undefined
             if (!instance) throw new Error("[PortalOne] instance not found after init")
             const returnUrl = `${import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"}/api/oneinc/return`
+            // Known-good v1 params. Do NOT swap `feeContext: 0` for the v2 string enum
+            // "PaymentWithFee" — that was observed in HP's *v2* HAR and the v1 PortalOne.js bundle
+            // silently rejects it (modal fires portalOne.unload immediately and never renders).
+            // Real convenience fee from OneInc will only be available once we can run on v2, which
+            // requires HP to allowlist our parent origin for their OneInc tenant.
             console.info("[PortalOne] calling makePayment", {
               sessionId,
               amount,
