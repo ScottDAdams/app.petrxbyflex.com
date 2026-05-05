@@ -260,25 +260,36 @@ function ensureJQuery(): Promise<void> {
 /**
  * PortalOne SDK script URL — selects which OneInc modal build the browser loads.
  *
- * 2026-04-16: reverted to **GenericModal** (v1) after HAR comparison with hptest.info
- * showed v2 `getportalconfiguration` rejects us with 401 because the iframe's `referrer=`
- * query (set by PortalOne.js from `window.location.origin`) is `https://app.petrxbyflex.com`,
- * which is **not on HP's OneInc v2 origin allowlist** (they allow `www.hptest.info` /
- * `enroll.hptest.info`). HP must allowlist our origin before we can try v2 again.
+ * Selection is now driven by the env flag `VITE_ONEINC_MODAL_VERSION`:
+ *   - "legacy" (default) → GenericModal (v1). Known-good production path.
+ *   - "v2"               → GenericModalV2. Requires HP to allowlist our parent origin
+ *                          on their OneInc V2 tenant; otherwise `getportalconfiguration`
+ *                          returns 401 and the modal cannot bootstrap.
  *
- * v1 does not enforce that check, so this is the known-good path. The 2.99% CreditCard
- * convenienceFee fallback in the API is still required with v1+`feeContext:0`; the
- * `makePayment` call below now uses `feeContext:"PaymentWithFee"` which — per HP's working
- * HAR — is what actually triggers OneInc's convenience-fee lookup. If v1 starts returning
- * a real fee in `portalOne.paymentComplete.convenienceFee`, we can drop the 2.99% rule.
+ * Background (2026-04-16 retry note): HAR comparison with hptest.info showed V2
+ * `getportalconfiguration` rejects `https://app.petrxbyflex.com` with 401 because that
+ * origin is not on HP's V2 allowlist. v1 does not enforce that check, so it remains the
+ * known-good path until HP allowlists us.
  *
- * TO RETRY v2: change `MODAL_VARIANT` to `"GenericModalV2"` AFTER our parent origin is
- * added to HP's OneInc tenant allowlist, then align `makePayment` params to HP's shape
- * (displayMode:"Inline", paymentCategory:"CreditCard", amountContext, etc.).
+ * The two SDKs are NOT param-compatible. v1 expects `feeContext: 0` (int). v2 expects
+ * the string enum `"PaymentWithFee"` plus extra v2 params. Sending a v2-shaped object
+ * to a v1 SDK causes the modal to fire `portalOne.unload` immediately and never render.
+ * Therefore each branch builds its own `makePayment` payload — never share an object
+ * across versions.
  */
-const MODAL_VARIANT: "GenericModalV2" | "GenericModal" = "GenericModal"
+export type OneIncModalVariant = "GenericModal" | "GenericModalV2"
+export type OneIncModalVersion = "legacy" | "v2"
 
-function getPortalOneScriptUrl(): string {
+export function getOneIncModalVersion(): OneIncModalVersion {
+  const raw = (import.meta.env.VITE_ONEINC_MODAL_VERSION as string | undefined)?.trim().toLowerCase()
+  return raw === "v2" ? "v2" : "legacy"
+}
+
+function modalVariantForVersion(v: OneIncModalVersion): OneIncModalVariant {
+  return v === "v2" ? "GenericModalV2" : "GenericModal"
+}
+
+function getPortalOneScriptUrl(version: OneIncModalVersion): string {
   const fromEnv = (import.meta.env.VITE_ONEINC_PORTALONE_JS_URL as string)?.trim()
   if (fromEnv) return fromEnv
   const env = (import.meta.env.VITE_ONEINC_ENV as string)?.toLowerCase() || "staging"
@@ -286,7 +297,7 @@ function getPortalOneScriptUrl(): string {
     env === "prod" || env === "production"
       ? "https://portalone.processonepayments.com"
       : "https://stgportalone.processonepayments.com"
-  return `${host}/${MODAL_VARIANT}/Cdn/PortalOne.js`
+  return `${host}/${modalVariantForVersion(version)}/Cdn/PortalOne.js`
 }
 
 export type PortalOnePaymentCompletePayload = {
@@ -335,7 +346,9 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
     if (_initializedSessions.has(sessionId)) return
     _initializedSessions.add(sessionId)
 
-    const scriptUrl = getPortalOneScriptUrl()
+    const modalVersion = getOneIncModalVersion()
+    const scriptUrl = getPortalOneScriptUrl(modalVersion)
+    console.info("[PortalOne] modal version selected", { modalVersion, scriptUrl })
     ensureJQuery()
       .then(() => loadScriptOnce(scriptUrl))
       .then(() => {
@@ -457,30 +470,43 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             } | undefined
             if (!instance) throw new Error("[PortalOne] instance not found after init")
             const returnUrl = `${import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"}/api/oneinc/return`
-            // Known-good v1 params. Do NOT swap `feeContext: 0` for the v2 string enum
-            // "PaymentWithFee" — that was observed in HP's *v2* HAR and the v1 PortalOne.js bundle
-            // silently rejects it (modal fires portalOne.unload immediately and never renders).
-            // Real convenience fee from OneInc will only be available once we can run on v2, which
-            // requires HP to allowlist our parent origin for their OneInc tenant.
+            // Build the makePayment payload from scratch per version. The two SDKs reject each
+            // other's parameter shapes; v1 silently fires portalOne.unload when given v2 enums
+            // like feeContext:"PaymentWithFee" and never renders.
+            const makePaymentPayload: Record<string, unknown> =
+              modalVersion === "v2"
+                ? {
+                    sessionId,
+                    paymentCategory: "UserSelect",
+                    feeContext: "PaymentWithFee",
+                    convenienceFeeType: "Default",
+                    amountContext: "AmountDueOnly",
+                    amountContextDefault: "minimumAmountDue",
+                    minAmountDue: amount,
+                    accountBalance: amount,
+                    confirmationDisplay: true,
+                    saveOption: "Save",
+                    acknowledgmentRequired: "true",
+                    clientReferenceData1: leadId,
+                    operation: "makePayment",
+                    returnUrl,
+                  }
+                : {
+                    sessionId,
+                    paymentCategory: "UserSelect",
+                    feeContext: 0,
+                    minAmountDue: amount,
+                    clientReferenceData1: leadId,
+                    saveOption: "Save",
+                    acknowledgmentRequired: "true",
+                    returnUrl,
+                  }
             console.info("[PortalOne] calling makePayment", {
-              sessionId,
-              amount,
+              modalVersion,
+              ...makePaymentPayload,
               leadId,
-              paymentCategory: "UserSelect",
-              saveOption: "Save",
-              acknowledgmentRequired: "true",
-              returnUrl,
             })
-            instance.makePayment({
-              sessionId,
-              paymentCategory: "UserSelect",
-              feeContext: 0,
-              minAmountDue: amount,
-              clientReferenceData1: leadId,
-              saveOption: "Save",
-              acknowledgmentRequired: "true",
-              returnUrl,
-            })
+            instance.makePayment(makePaymentPayload)
           } catch (e) {
             const err = e instanceof Error ? e : new Error(String(e))
             console.error("[PortalOne] init failed", err)
