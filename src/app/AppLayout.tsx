@@ -10,6 +10,7 @@ import { useLeadLoading } from "../context/LeadLoadingContext"
 import { AppHeader } from "../components/AppHeader"
 import { MockBanner } from "../components/MockBanner"
 import { FancyLoadingOverlay } from "../components/insurance/FancyLoadingOverlay"
+import { ChatbotWidget } from "../features/chatbot"
 
 export function AppLayout() {
   const sessionContext = useSessionOptional()
@@ -124,6 +125,9 @@ export function AppLayout() {
           <Outlet />
         </div>
       </main>
+      {/* "insurance" context loads the combined PetRx + Healthy Paws knowledge base
+          so the same widget works across quote, details, payment, and confirm steps. */}
+      <ChatbotWidget pageContext="insurance" />
     </div>
   )
 }
