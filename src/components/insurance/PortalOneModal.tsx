@@ -359,10 +359,6 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
   const paymentCompleteRef = React.useRef(false)
   // Resolved once per render so the render branch below stays in sync with the effect.
   const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
-  // V2 iframe self-reports its content height (cdk-overlay-pane) so we can grow
-  // and shrink between OneInc screens (notice ~470px, card-entry ~620px). The
-  // initial value is a sensible fallback if the resize message never arrives.
-  const [iframeHeight, setIframeHeight] = React.useState<number>(540)
 
   // ---------------------------------------------------------------------------
   // V2 path: load OneInc inside an isolated <iframe src="/oneinc-frame.html">.
@@ -413,21 +409,15 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         return
       }
 
+      // Resize events are no longer used: V2's #PortalOneFrame stays at
+      // height:100% and OneInc never assigns an explicit pixel height, so we
+      // make the outer iframe full-viewport+transparent instead and let
+      // OneInc's modal float centered in it. Logged for diagnostics only.
       if (action === "resize") {
         const h = Number(d.height)
-        if (!Number.isFinite(h) || h <= 0) {
-          console.info("[PortalOne] iframe resize ignored", { raw: d.height })
-          return
+        if (Number.isFinite(h) && h > 0) {
+          console.info(`[PortalOne] iframe resize (ignored, full-viewport mode) h=${h}`)
         }
-        // OneInc's #PortalOneFrame is anchored at top:0/left:0 of our iframe
-        // body and its height equals the modal content exactly, so we match
-        // 1:1 (no allowance) and just clamp to the viewport.
-        const target = Math.min(
-          Math.max(Math.ceil(h), 280),
-          Math.floor(window.innerHeight * 0.92)
-        )
-        console.info(`[PortalOne] iframe resize reported=${h} target=${target}`)
-        setIframeHeight((prev) => (Math.abs(prev - target) < 4 ? prev : target))
         return
       }
 
@@ -741,12 +731,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
   //     viewport center if the host is absent.
   if (typeof document === "undefined") return null
   if (!sessionId || !iframeSrc) return null
-  const mobile = isMobileDevice()
-  const host = document.getElementById("payment-step-overlay-host")
-  const anchored = !!host
   return (
     <>
       {createPortal(
+        // Page-wide dim. OneInc's modal page itself draws no backdrop in
+        // GenericModalV2, so we render the dim here.
         <div
           aria-hidden="true"
           style={{
@@ -759,30 +748,28 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         document.body,
       )}
       {createPortal(
+        // The iframe is full viewport and transparent. OneInc V2's
+        // #PortalOneFrame sits inside as position:fixed; top:0; left:0;
+        // width:100%; height:100% and renders its modal centered. Because
+        // our iframe is the size of the screen and has no background, there
+        // is no visible "white box" around the modal — just the OneInc modal
+        // itself floating on our dim, the way HP's iframe pattern looks.
         <iframe
           title="Payment"
           src={iframeSrc}
           allow="payment"
-          // OneInc's V2 SDK draws its full modal (chrome, close button, action buttons)
-          // inside the iframe. The iframe self-reports the modal pane's height via
-          // postMessage(action:'resize'), so it grows/shrinks between OneInc screens
-          // (notice ~470px, card-entry ~620px) with no visible gutter.
           style={{
-            position: anchored ? "absolute" : "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%) translateZ(0)",
-            width: mobile ? "100%" : "min(480px, 100%)",
-            height: mobile ? "100%" : `${iframeHeight}px`,
+            position: "fixed",
+            inset: 0,
+            width: "100vw",
+            height: "100vh",
             border: "none",
-            borderRadius: mobile ? 0 : 12,
-            background: "#ffffff",
-            boxShadow: mobile ? "none" : "0 12px 32px rgba(15, 23, 42, 0.25)",
+            background: "transparent",
+            colorScheme: "normal",
             zIndex: 9001,
-            transition: "height 180ms ease-out",
           }}
         />,
-        host || document.body,
+        document.body,
       )}
     </>
   )
