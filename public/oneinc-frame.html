@@ -269,11 +269,13 @@
           minAmountDue: amount,
           accountBalance: amount,
           // OneInc V2 shows its confirmation notice unless these are explicitly
-          // false — omitting them isn't enough. Our React ConfirmPaymentModal is
-          // the pre-payment summary now, so we suppress OneInc's notice and go
-          // straight to the card-entry screen (HP production pattern).
-          confirmationDisplay: "false",
-          acknowledgmentRequired: "false",
+          // false. The OneInc V2 SDK's makePayment options object is checked as
+          // booleans for these flags; pass primitive false (NOT the string
+          // "false" — that gets coerced to truthy by JS-side checks in their
+          // SDK). Our React ConfirmPaymentModal is the pre-payment summary now,
+          // so we suppress OneInc's notice and go straight to card entry.
+          confirmationDisplay: false,
+          acknowledgmentRequired: false,
           saveOption: "Save",
           clientReferenceData1: leadId,
           operation: "makePayment",
@@ -284,6 +286,11 @@
         if (billingAddressStreet) payload.billingAddressStreet = billingAddressStreet;
         if (returnUrl) payload.returnUrl = returnUrl;
 
+        // Log the literal payload so we can verify what reaches OneInc when
+        // debugging notice / pre-fill behavior. Parent also receives this via
+        // postMessage; logging in the iframe console too removes one layer of
+        // indirection.
+        try { console.info("[oneinc-frame] makePayment payload", JSON.stringify(payload)); } catch (_) {}
         post("makePayment", { payload: payload });
         instance.makePayment(payload);
 
