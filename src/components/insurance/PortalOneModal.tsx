@@ -297,7 +297,13 @@ function getPortalOneScriptUrl(version: OneIncModalVersion): string {
     env === "prod" || env === "production"
       ? "https://portalone.processonepayments.com"
       : "https://stgportalone.processonepayments.com"
-  return `${host}/${modalVariantForVersion(version)}/Cdn/PortalOne.js`
+  // v1 (GenericModal) historically serves the SDK from /Cdn/. v2 (GenericModalV2) is
+  // documented in OneInc's "Make a Payment" tutorial at /GenericModalV2/PortalOne.js
+  // (no /Cdn/). Both paths resolve in staging today (the v2 /Cdn/ URL returns 304),
+  // but using the documented path keeps us aligned with their reference impl.
+  const variant = modalVariantForVersion(version)
+  if (version === "v2") return `${host}/${variant}/PortalOne.js`
+  return `${host}/${variant}/Cdn/PortalOne.js`
 }
 
 export type PortalOnePaymentCompletePayload = {
