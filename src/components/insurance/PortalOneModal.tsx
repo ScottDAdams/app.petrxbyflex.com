@@ -504,6 +504,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
                     clientReferenceData1: leadId,
                     operation: "makePayment",
                     returnUrl,
+                    // Ask the V2 SDK to draw its own properly-sized overlay rather than
+                    // inline-fill our container. If V2 honors this, OneInc auto-sizes the
+                    // modal per screen (no gutter on notice vs card form). If V2 ignores
+                    // it, we fall back to the inline-in-container render below.
+                    displayMode: "Modal",
                   }
                 : {
                     sessionId,
@@ -593,25 +598,35 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
     )
   }
 
-  // GenericModalV2 inline embed renders its content at the top of a tall iframe and
-  // leaves the rest of the container as gray gutter. Wrapping #portalOneContainer in a
-  // fixed full-page backdrop + centered card gives the user a real overlay feel.
+  // GenericModalV2 inline embed renders its content centered inside whatever container
+  // height we give it, so any "extra" container height becomes a gray gutter above/below
+  // OneInc's card. Two strategies are layered here:
   //
-  // We render through a React Portal into ``document.body`` so the overlay escapes the
-  // PaymentStep column flex layout entirely. Without the portal, any ``transform`` on an
-  // ancestor would re-base our ``position: fixed`` overlay to that ancestor (CSS
-  // containing-block rule), which is what made the dim disappear on first attempt.
-  // ``#portalOneContainer`` keeps the exact id the V2 SDK looks up via getElementById, so
-  // the SDK still mounts cleanly into it from body level.
+  // 1) ``displayMode: "Modal"`` is set on the makePayment payload above. If the V2 SDK
+  //    honors it, OneInc draws their own auto-sized overlay and our inline container is
+  //    effectively unused (no gutter possible).
+  //
+  // 2) If the SDK still renders inline into ``#portalOneContainer``, we anchor the
+  //    overlay to ``#payment-step-overlay-host`` (PaymentStep's right column) via React
+  //    Portal so the dim + centered modal scope to the quote panel, not the whole
+  //    viewport. We fall back to ``document.body`` + ``position: fixed`` only when the
+  //    host is missing (e.g. legacy callers / preview routes), preserving the prior
+  //    behavior in that case.
+  //
+  // The portal is required either way: rendering inline collides with the PaymentStep
+  // column flex layout, and any ancestor ``transform`` would re-base ``position: fixed``
+  // back to that ancestor per the CSS containing-block rule.
   const mobile = isMobileDevice()
   if (typeof document === "undefined") return null
+  const host = document.getElementById("payment-step-overlay-host")
+  const anchored = !!host
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Payment"
       style={{
-        position: "fixed",
+        position: anchored ? "absolute" : "fixed",
         inset: 0,
         zIndex: 9000,
         background: "rgba(15, 23, 42, 0.55)",
@@ -627,11 +642,6 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         className="portal-one-container portal-one-container--v2"
         style={{
           position: "relative",
-          // OneInc V2's iframe vertically centers its modal content inside whatever
-          // height we give the container, so any "extra" height shows up as white
-          // gutter around their card. Sizing tight to the OneInc card's intrinsic
-          // dimensions (~440x340 for short screens, ~440x640 for the full card form)
-          // minimizes the gutter while still fitting the tallest screen we see.
           width: mobile ? "100%" : "min(480px, 100%)",
           height: mobile ? "100%" : "min(640px, 92vh)",
           background: "transparent",
@@ -641,6 +651,6 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         }}
       />
     </div>,
-    document.body,
+    host || document.body,
   )
 }
