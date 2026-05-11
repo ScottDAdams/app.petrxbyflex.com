@@ -77,11 +77,11 @@
       });
     }
 
-    // Watch the OneInc V2 modal pane and report its height to the parent so the
-    // parent can size the surrounding iframe to fit. This eliminates the gutter
-    // above/below the modal between OneInc's notice screen (~470px) and the
-    // card-entry screen (~620px). We retry briefly because the pane is injected
-    // asynchronously after loadComplete fires.
+    // OneInc V2's SDK creates <iframe id="PortalOneFrame"> and dynamically
+    // sets its style.height as the inner OneInc page posts UpdateContentHeight
+    // commands (notice screen -> ~470px, card-entry -> ~620px). We just need
+    // to observe that height and forward it to our React parent so the outer
+    // iframe matches and there's no gutter.
     var _lastReportedHeight = 0;
     function reportHeight(h) {
       var rounded = Math.ceil(h);
@@ -90,17 +90,15 @@
       _lastReportedHeight = rounded;
       post("resize", { height: rounded });
     }
-    function watchPaneSize() {
+    function watchPortalOneFrame() {
       var attempts = 0;
-      function findPane() {
-        // V2 (Angular CDK) injects .cdk-overlay-pane that wraps the modal.
-        return document.querySelector(".cdk-overlay-pane")
-          || document.querySelector(".portalone-modal")
+      function findFrame() {
+        return document.getElementById("PortalOneFrame")
+          || document.querySelector("iframe[id^='PortalOne']")
           || null;
       }
-      function attach(pane) {
-        // Initial measurement.
-        var rect = pane.getBoundingClientRect();
+      function attach(frame) {
+        var rect = frame.getBoundingClientRect();
         reportHeight(rect.height);
         if (typeof ResizeObserver === "function") {
           var ro = new ResizeObserver(function (entries) {
@@ -108,32 +106,31 @@
               reportHeight(entries[i].contentRect.height);
             }
           });
-          ro.observe(pane);
-        } else {
-          // Fallback: poll for size changes every 250ms for ~20s.
-          var ticks = 0;
-          var iv = setInterval(function () {
-            var r = pane.getBoundingClientRect();
-            reportHeight(r.height);
-            if (++ticks > 80) clearInterval(iv);
-          }, 250);
+          ro.observe(frame);
+        }
+        // Belt-and-suspenders: OneInc mutates style.height via inline JS, which
+        // ResizeObserver should still catch, but a MutationObserver on the
+        // style attribute makes the resize feel instant on the screen swap.
+        if (typeof MutationObserver === "function") {
+          var mo = new MutationObserver(function () {
+            reportHeight(frame.getBoundingClientRect().height);
+          });
+          mo.observe(frame, { attributes: true, attributeFilter: ["style"] });
         }
       }
       function tick() {
-        var p = findPane();
-        if (p) {
-          post("debug", { stage: "pane-found", afterMs: attempts * 150, tag: p.tagName, cls: p.className });
-          attach(p);
+        var f = findFrame();
+        if (f) {
+          post("debug", { stage: "frame-found", afterMs: attempts * 150, id: f.id, h: Math.ceil(f.getBoundingClientRect().height) });
+          attach(f);
           return;
         }
         if (++attempts < 60) {
           setTimeout(tick, 150);
         } else {
-          // Couldn't find a CDK overlay. Surface what the iframe DOM actually
-          // looks like so we can diagnose. Caps at 800 chars to avoid spam.
           var snapshot = "";
-          try { snapshot = String(document.body.innerHTML || "").slice(0, 800); } catch (_) {}
-          post("debug", { stage: "pane-not-found", afterMs: attempts * 150, bodySnapshot: snapshot });
+          try { snapshot = String(document.body.innerHTML || "").slice(0, 1200); } catch (_) {}
+          post("debug", { stage: "frame-not-found", afterMs: attempts * 150, bodySnapshot: snapshot });
         }
       }
       tick();
@@ -214,25 +211,22 @@
         post("makePayment", { payload: payload });
         instance.makePayment(payload);
 
-        // Start watching for the modal pane unconditionally. V2's SDK does not
-        // reliably fire `portalOne.loadComplete` on jQuery, so we can't gate
-        // sizing on that event. The retry loop in watchPaneSize() polls for
-        // `.cdk-overlay-pane` every 150ms for up to ~6s, which is plenty for
-        // OneInc to inject its Angular overlay.
-        watchPaneSize();
+        // V2's SDK doesn't fire portalOne.loadComplete reliably; instead it
+        // injects <iframe id="PortalOneFrame"> and dynamically sets its height
+        // as the modal content changes. We watch that iframe directly.
+        watchPortalOneFrame();
 
-        // Also clear the placeholder once we see the pane, in case
-        // loadComplete never fires.
-        var clearFallbackWhenPaneVisible = function () {
-          var p = document.querySelector(".cdk-overlay-pane");
+        // Clear the placeholder once OneInc's iframe attaches.
+        var clearFallbackWhenFrameVisible = function () {
+          var p = document.getElementById("PortalOneFrame");
           if (p) {
             var fb = document.getElementById("petrx-frame-fallback");
             if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
             return;
           }
-          setTimeout(clearFallbackWhenPaneVisible, 150);
+          setTimeout(clearFallbackWhenFrameVisible, 150);
         };
-        clearFallbackWhenPaneVisible();
+        clearFallbackWhenFrameVisible();
       })
       .catch(function (err) {
         setFallback("We couldn't load the payment form. Please refresh the page to try again.");

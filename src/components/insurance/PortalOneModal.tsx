@@ -412,10 +412,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
       if (action === "resize") {
         const h = Number(d.height)
         if (!Number.isFinite(h) || h <= 0) return
-        // Add a small allowance for the modal's own padding/shadow and clamp
-        // so we never blow past the viewport on tall screens.
+        // OneInc's #PortalOneFrame is anchored at top:0/left:0 of our iframe
+        // body and its height equals the modal content exactly, so we match
+        // 1:1 (no allowance) and just clamp to the viewport.
         const target = Math.min(
-          Math.max(Math.ceil(h) + 16, 320),
+          Math.max(Math.ceil(h), 280),
           Math.floor(window.innerHeight * 0.92)
         )
         setIframeHeight((prev) => (Math.abs(prev - target) < 4 ? prev : target))
