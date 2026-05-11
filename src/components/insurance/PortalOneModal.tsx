@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 
 const PORTALONE_SCRIPT_CACHE: Record<string, Promise<void>> = {}
 const _initializedSessions = new Set<string>()
@@ -393,22 +394,28 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             }
             // Step 1: initialize (stores instance in jQuery data)
             $container.portalOne()
-            // Move PortalOne's iframe into our container on desktop; on mobile leave on body as native fullscreen modal
-            const observer = new MutationObserver((mutations) => {
-              for (const mutation of mutations) {
-                for (const node of Array.from(mutation.addedNodes)) {
-                  if (node instanceof HTMLIFrameElement && node.src?.includes("processonepayments.com")) {
-                    if (!isMobileDevice()) {
-                      container.appendChild(node)
+            // v1 GenericModal appends its iframe to ``document.body`` by default; this
+            // observer relocates it back into ``#portalOneContainer`` so it embeds inline.
+            // v2 GenericModalV2 already mounts directly into the container via
+            // ``getElementById`` and renders its own overlay/positioning, so the relocation
+            // is unnecessary and risks racing with the SDK's own DOM management.
+            if (modalVersion !== "v2") {
+              const observer = new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                  for (const node of Array.from(mutation.addedNodes)) {
+                    if (node instanceof HTMLIFrameElement && node.src?.includes("processonepayments.com")) {
+                      if (!isMobileDevice()) {
+                        container.appendChild(node)
+                      }
+                      // On mobile: leave iframe on body as native fullscreen modal
+                      observer.disconnect()
                     }
-                    // On mobile: leave iframe on body as native fullscreen modal
-                    observer.disconnect()
                   }
                 }
-              }
-            })
-            observer.observe(document.body, { childList: true, subtree: true })
-            iframeObserverRef.current = observer
+              })
+              observer.observe(document.body, { childList: true, subtree: true })
+              iframeObserverRef.current = observer
+            }
             ;(win.jQuery(container) as { on: (event: string, handler: (evt: unknown, data: Record<string, unknown>) => void) => void }).on("portalOne.paymentComplete", function(_evt: unknown, data: Record<string, unknown>) {
               console.info("[PortalOne] portalOne.paymentComplete (raw reference)", data)
               if (typeof data?.acknowledge === "function") (data.acknowledge as () => void)()
@@ -588,12 +595,17 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
 
   // GenericModalV2 inline embed renders its content at the top of a tall iframe and
   // leaves the rest of the container as gray gutter. Wrapping #portalOneContainer in a
-  // fixed full-page backdrop + centered card collapses that gutter to "outside the
-  // card" and gives the user a real overlay feel. ``backdrop`` only intercepts pointer
-  // events on its own area; ``#portalOneContainer`` keeps the exact id the V2 SDK looks
-  // up via getElementById, so the SDK still mounts cleanly into it.
+  // fixed full-page backdrop + centered card gives the user a real overlay feel.
+  //
+  // We render through a React Portal into ``document.body`` so the overlay escapes the
+  // PaymentStep column flex layout entirely. Without the portal, any ``transform`` on an
+  // ancestor would re-base our ``position: fixed`` overlay to that ancestor (CSS
+  // containing-block rule), which is what made the dim disappear on first attempt.
+  // ``#portalOneContainer`` keeps the exact id the V2 SDK looks up via getElementById, so
+  // the SDK still mounts cleanly into it from body level.
   const mobile = isMobileDevice()
-  return (
+  if (typeof document === "undefined") return null
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -624,6 +636,7 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
           transform: "translateZ(0)",
         }}
       />
-    </div>
+    </div>,
+    document.body,
   )
 }
