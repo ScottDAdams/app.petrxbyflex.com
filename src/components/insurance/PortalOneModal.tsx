@@ -627,11 +627,15 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         className="portal-one-container portal-one-container--v2"
         style={{
           position: "relative",
-          width: mobile ? "100%" : "min(560px, 100%)",
-          height: mobile ? "100%" : "min(820px, 92vh)",
-          background: "#ffffff",
-          borderRadius: mobile ? 0 : 16,
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
+          // OneInc V2's iframe vertically centers its modal content inside whatever
+          // height we give the container, so any "extra" height shows up as white
+          // gutter around their card. Sizing tight to the OneInc card's intrinsic
+          // dimensions (~440x340 for short screens, ~440x640 for the full card form)
+          // minimizes the gutter while still fitting the tallest screen we see.
+          width: mobile ? "100%" : "min(480px, 100%)",
+          height: mobile ? "100%" : "min(640px, 92vh)",
+          background: "transparent",
+          borderRadius: mobile ? 0 : 12,
           overflow: "hidden",
           transform: "translateZ(0)",
         }}
