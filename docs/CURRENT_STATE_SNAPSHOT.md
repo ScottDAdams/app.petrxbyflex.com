@@ -1,7 +1,8 @@
 # PetRx Enrollment Flow - Current State Snapshot
 
-**Generated:** 2026-02-10  
-**Repo:** `@PetRx/app.petrxbyflex.com/`  
+**Generated:** 2026-02-10
+**Last refreshed:** 2026-05-11 (OneInc V2 + iframe-isolation + close/reopen)
+**Repo:** `@PetRx/app.petrxbyflex.com/`
 **Purpose:** Document the quote → details → payment → confirm flow WITHOUT making code changes
 
 ---
@@ -48,16 +49,19 @@ quote → details → payment → confirm
 - **Router:** `CardAndQuoteFlow.tsx` → `renderStepBody()` → `case "payment"`
 - **Step Source:** `session.current_step` OR `mockStep`
 - **API Calls:**
-  - **OneInc Init** (on "Add payment method"): `POST /api/oneinc/init`
-    - Called by: `OneIncModalLauncher.initializeModal()`
-    - **STATUS:** Placeholder - throws error "OneInc modal SDK integration required"
-  - **Enroll** (on "Review & Confirm"): `POST /api/enrollment/enroll`
+  - **OneInc Session** (auto on mount): `POST /api/oneinc/session`
+    - Called by: `OneIncModalLauncher.initializeModal()` (no Add-payment-method button — modal auto-opens)
+    - Selects V1 vs V2 wire format from `ONEINC_MODAL_VERSION` / `modalVersion` hint; returns `{ sessionId, environment, expiresAt, modalVersion }`.
+  - **OneInc Complete** (on `paymentComplete`): `POST /api/oneinc/complete`
+    - Called by: `OneIncModalLauncher.finalizePaymentSuccess()`
+    - Durably persists the OneInc result on the enrollment session; the full response body is stringified into `paymentDetails.fullPaymentResponse` on the next HP Enroll call.
+  - **Enroll** (auto-advance after `complete`): `POST /api/enrollment/enroll`
     - Called by: `CardAndQuoteFlow.handleCtaClick()` → `enrollmentAdapter.enroll()`
-    - Requires: `paymentResult` from OneInc (currently not available)
-    - Updates: Session step to `"confirm"` via `updateSessionStep()`
-- **Payment Data:** Expected from `OneIncModalLauncher.onPaymentSuccess()`:
-  - `paymentToken`, `transactionId`, `paymentMethod` ("CreditCard" | "ECheck")
-- **Missing:** OneInc SDK integration (see PaymentStep section)
+    - Reads `paymentResult` from `OneIncModalLauncher.onPaymentSuccess`.
+    - Updates: Session step to `"confirm"` via `updateSessionStep()`. While pending, the UI shows a "Submitting…" indicator and auto-reconciles at 15s/45s/90s (`reconcile: true`) plus a 5s `/enroll-status` poll backstop.
+- **Payment Data:** From `OneIncModalLauncher.onPaymentSuccess()`:
+  - `paymentToken`, `transactionId`, `paymentMethod` ("CreditCard" | "ECheck"), `convenienceFee`, `oneIncCompleteResponse`
+- **Cancel path:** If the user closes OneInc without paying, the launcher shows "Reopen Payment", which mints a fresh SessionKey via `/api/oneinc/session`.
 
 #### **Step 4: Confirm (`confirm`)**
 - **Component:** `ConfirmStep` (`src/app/steps/ConfirmStep.tsx`)
@@ -80,7 +84,9 @@ quote → details → payment → confirm
 | `src/components/insurance/EnrollmentAdapter.ts` | **Adapter interface** | Defines `EnrollmentAdapter` interface + input/output types |
 | `src/components/insurance/HpEnrollmentAdapter.ts` | **Real HP API adapter** | `createLead()`, `setPlan()`, `setupPending()`, `enroll()` - calls backend endpoints |
 | `src/components/insurance/MockEnrollmentAdapter.ts` | Mock adapter (dev) | Mock implementations for testing |
-| `src/components/insurance/OneIncModalLauncher.tsx` | **OneInc payment modal** | `OneIncModalLauncher()` - **PLACEHOLDER** (throws error, SDK not integrated) |
+| `src/components/insurance/OneIncModalLauncher.tsx` | **OneInc payment launcher** | `OneIncModalLauncher()` - auto-creates PortalOne session, mounts `PortalOneModal`, finalizes via `POST /api/oneinc/complete`, handles close → "Reopen Payment" |
+| `src/components/insurance/PortalOneModal.tsx` | **PortalOne SDK shell** | Branches on `VITE_ONEINC_MODAL_VERSION`. V2 embeds `public/oneinc-frame.html` as a transparent full-viewport iframe (HP-style isolation). V1 loads PortalOne.js directly in the host document. |
+| `public/oneinc-frame.html` | **V2 iframe host page** | Loads `GenericModalV2/PortalOne.js`, calls `makePayment`, bridges native CustomEvents (`portalOne.load`/`unload`/`paymentComplete`/`error`) back to the parent via `postMessage`. |
 | `src/context/LeadLoadingContext.tsx` | Auto-loads quotes | `LeadLoadingProvider` - calls `/api/enrollment/lead` when `lead_id`/`quote_detail_id` missing |
 | `src/api/session.ts` | Session API client | `fetchSession()`, `updateSessionStep()`, `updateSessionInsuranceProducts()` |
 | `src/api/index.ts` | API base URL | `API_BASE` - from `VITE_API_URL` env var (default: `https://api.petrxbyflex.com`) |
@@ -127,28 +133,20 @@ quote → details → payment → confirm
 
 ## D) Open Questions / Risks
 
-### 🔴 Critical Missing Pieces
+### ✅ Resolved (formerly "Critical Missing Pieces")
 
-1. **OneInc SDK Integration**
-   - **File:** `src/components/insurance/OneIncModalLauncher.tsx`
-   - **Status:** Throws error "OneInc modal SDK integration required"
-   - **Missing:**
-     - OneInc JavaScript SDK loading (`<script>` tag or npm package)
-     - Modal initialization with `initData` from `/api/oneinc/init`
-     - Success/error callback wiring
-   - **Impact:** Payment step cannot complete without this
+1. **OneInc SDK Integration** — resolved 2026-04 → 2026-05-11.
+   - PortalOne.js SDK is integrated end-to-end. V2 (`GenericModalV2`) is the active staging path; V1 (`GenericModal`) is still wired as a fallback behind `VITE_ONEINC_MODAL_VERSION`.
+   - V2 runs inside an isolated iframe (`public/oneinc-frame.html`) that mirrors HP's `/Enrollment/PaymentPage` pattern — OneInc's Angular CDK overlay lives inside that iframe's document, eliminating CSS conflicts with the host React app.
+   - On `portalOne.paymentComplete`, the launcher POSTs the result to `/api/oneinc/complete` for durable persistence, then `CardAndQuoteFlow` auto-advances into HP Enroll.
+   - Close → "Reopen Payment" works as of commit `03e831a` (bundle `index-CbuQeKd5.js`): V2 events are bound via native `addEventListener` (jQuery's `.on("portalOne.unload",...)` mis-treats the dot as a namespace), and the launcher's auto-start effect now depends on `closedWithoutPayment` so Reopen mints a fresh session.
 
-2. **Convenience Fee**
-   - **Location:** `CardAndQuoteFlow.tsx:562`
-   - **Status:** Hardcoded to `0` (placeholder comment: "needs actual fee")
-   - **Missing:** Logic to get actual convenience fee from HP or OneInc response
-   - **Impact:** May cause enrollment failures if HP requires accurate fee
+2. **Convenience Fee** — resolved 2026-05-04.
+   - Backend resolution priority: (1) fee extracted from `paymentDetails.fullPaymentResponse`, (2) explicit OneInc/client-supplied fee, (3) program 2.99% percent-of-authorized-amount fallback for CreditCard. ECheck uses `HP_ECHECK_CONVENIENCE_FEE`.
+   - Frontend mirrors the priority (`extractConvenienceFeeFromPortalOne` → session-persisted → 2.99% fallback) and forwards `convenienceFee` to HP on Enroll.
 
-3. **Payment Method Detection**
-   - **Location:** `OneIncModalLauncher.tsx` (commented example)
-   - **Status:** Assumes OneInc returns `paymentMethod` in success callback
-   - **Missing:** Confirmation that OneInc SDK actually returns this field
-   - **Impact:** May default incorrectly to "CreditCard" vs "ECheck"
+3. **Payment Method Detection** — resolved.
+   - V1's `paymentComplete` payload exposes `paymentCategory` and `paymentMethod`; V2 returns the same fields shaped under `detail`. `PortalOneModal.flattenPaymentCompletePayload` handles the documented nesting variants, and the launcher maps `paymentMethod === "ECheck"` vs `"CreditCard"` explicitly.
 
 ### ⚠️ State Management Risks
 
@@ -340,72 +338,81 @@ const effectiveStep = (mockStep ?? session.current_step ?? "quote").toLowerCase(
 
 ## H) Payment Integration Status
 
-### Current Implementation (OneInc Hosted Modal)
-- **Component:** `PaymentStep` renders `OneIncModalLauncher`
-- **Props Passed:**
-  - `leadId`: HP leadId from CreateLead (maps to OneInc customerId)
-  - `accountId`: HP accountId from SetupPending (maps to OneInc policyId)
-  - `amount`: `authorizedAmount` (from `setupPending`) or `monthlyPrice`
+### Current Implementation (PortalOne.js SDK)
 
-### OneInc Hosted Modal Flow
-**We now use OneInc hosted modal URL, iframe dialog, returnUrl redirect success mechanism.**
+**The "hosted modal URL" approach described in earlier revisions of this doc is dead.** Both the V1 and V2 paths now use the PortalOne.js SDK directly. `POST /api/oneinc/init` and `GET /api/oneinc/return` are still in the codebase but are not on the active flow and can be retired alongside the V1 cleanup.
 
-Based on HAR analysis from `enroll.hptest.info`:
-1. **OneInc Hosted Modal:** No JS SDK required. OneInc provides hosted modal URL:
-   - Format: `https://stgportalone.processonepayments.com/GenericModalV2/start-with-parameters?...`
-   - Parameters: `customerId` (leadId), `policyId` (accountId), `MerchantId` ("HP"), `Amount`, `returnUrl`, `referrer`
-   - Modal establishes session/auth via cookies when loaded
-   - Modal makes API calls internally:
-     - `POST /gm2card/getconveniencefeeslist` (calculates convenience fee)
-     - `POST /gm2card/charge` (processes payment)
+- **Components:** `PaymentStep` → `OneIncModalLauncher` → `PortalOneModal`
+- **Props passed to the launcher:**
+  - `leadId`: HP leadId from CreateLead (forwarded to OneInc as `clientReferenceData1` and threaded into the V2 iframe via URL param)
+  - `accountId`: HP accountId from SetupPending (carried for audit; V2 does not require a CustomerId on the SessionKey)
+  - `amount`: `authorizedAmount` from SetupPending (used for `minAmountDue` / `accountBalance` in `makePayment`)
+  - `enrollmentSessionId`: PetRx enrollment session UUID — used by `POST /api/oneinc/complete` for durable persistence
 
-2. **Frontend Implementation:**
-   - `OneIncModalLauncher` opens OneInc hosted modal URL in iframe dialog overlay (not popup)
-   - Iframe size: 520x720px, centered overlay with backdrop
-   - User completes payment in iframe (all PCI-sensitive data handled by OneInc)
+### SDK Path Selection (V1 vs V2)
 
-3. **Success Mechanism:**
-   - OneInc redirects to `returnUrl` (`/api/oneinc/return`) with payment result:
-     - `Token`: payment token for enrollment
-     - `TransactionId`: transaction ID
-     - `Status`: "Approved" or error status
-     - `ConvenienceFee`: convenience fee amount (if CreditCard)
-     - `AmountSubmitted`: total amount charged
-   - Return handler (`oneinc-return.html`) sends `postMessage` to parent window
-   - Parent window (`OneIncModalLauncher`) listens for message and extracts payment result
-   - Modal closes automatically on success
+Controlled by `VITE_ONEINC_MODAL_VERSION` (frontend build-arg) mirrored by `ONEINC_MODAL_VERSION` (backend env). Staging is on `v2` as of 2026-05-11; production is still on `legacy` pending cutover.
 
-4. **Payment Result:**
-   - `paymentToken`: Token from OneInc response
-   - `transactionId`: TransactionId from OneInc response
-   - `paymentMethod`: "CreditCard" or "ECheck" (determined by ConvenienceFee > 0)
-   - `convenienceFee`: ConvenienceFee from OneInc response (for CreditCard transactions)
+| | Legacy (v1) | V2 (active in staging) |
+|--|--|--|
+| Frontend SDK URL | `…/GenericModal/Cdn/PortalOne.js` | `…/GenericModalV2/PortalOne.js` |
+| Where the SDK loads | Directly in the host React document | Inside an isolated iframe (`public/oneinc-frame.html`) |
+| Backend session endpoint | `POST /GenericModal/SessionKey/Create` (form-encoded) | `GET /Api/Api/Session/Create?PortalOneAuthenticationKey=...` |
+| SessionKey field | `SessionKey` (flat UUID) | `PortalOneSessionKey` (base64 / JWT-like blob) |
+| `feeContext` enum | `0` (integer) | `"PaymentWithFee"` (string) |
+| Event delivery | jQuery `.trigger("portalOne.…")` (catchable with `.on`) | Native `CustomEvent("portalOne.…")` — must use `addEventListener` |
 
-5. **Enrollment Flow:**
-   - User clicks "Continue to payment" → opens iframe modal
-   - User completes payment → OneInc redirects to returnUrl → postMessage → modal closes
-   - `PaymentStep` stores result in `paymentResult` state
-   - User clicks "Review & Confirm"
-   - `handleCtaClick()` calls `adapter.enroll()` with payment details including `convenienceFee`
+The two wire formats are **not** interchangeable. The most consequential gotcha: V2's SDK validates that the SessionKey is the V2 base64 blob — feeding it a v1 UUID returns 401 at `gm2template/getportalconfiguration` and surfaces as a misleading `Failed to execute 'atob' on 'Window'` in the console. That was the actual root cause of the 401s we previously misattributed to a tenant origin allowlist (see `flex-pet-rx-api/docs/ONEINC_INTEGRATION.md`, 2026-05-11 entry).
 
-### Backend Implementation
-- **`POST /api/oneinc/init`**: Returns OneInc hosted modal URL with correct parameters
-  - Maps HP `leadId` → OneInc `customerId`
-  - Maps HP `accountId` → OneInc `policyId`
-  - Sets `MerchantId` = "HP" (constant)
-  - Includes `returnUrl` pointing to `/api/oneinc/return`
-- **`GET /api/oneinc/return`**: Handles OneInc redirect after payment
-  - Extracts Token, TransactionId, ConvenienceFee from URL params
-  - Renders HTML page that sends postMessage to parent window
-  - Validates payment status ("Approved")
+### V2 Iframe-Isolation Pattern
 
-### TODO / Needs Confirmation
-- **agentId parameter:** HAR shows `agentId` in OneInc requests. Need to confirm:
-  - Is it in SetupPending response?
-  - Is it a constant value?
-  - Check OneInc-Payment-Integration-Documentation.pdf for exact parameter names
-- **Exact parameter names:** Confirm from OneInc docs (may differ from HAR observation)
-- **Error handling:** Confirm how OneInc communicates errors (Status field or separate error params)
+`PortalOneModal.tsx` (V2 branch) renders two React portals into `document.body`:
+
+1. A full-page dim div at `z-index: 9000`.
+2. A transparent full-viewport `<iframe src="/oneinc-frame.html?sessionId=...&amount=...&leadId=...&returnUrl=...">` at `z-index: 9001`.
+
+`public/oneinc-frame.html` loads jQuery + V2 PortalOne.js, calls `instance.makePayment(...)` with the V2-shape payload, and bridges OneInc events back to the parent via `postMessage`:
+
+```
+{ source: "petrx-oneinc-frame", action: "ready" }
+{ source: "petrx-oneinc-frame", action: "loadComplete" }
+{ source: "petrx-oneinc-frame", action: "paymentComplete", data: {...} }
+{ source: "petrx-oneinc-frame", action: "unload", paymentCompleted: boolean }
+{ source: "petrx-oneinc-frame", action: "error", message: string }
+```
+
+All V2 events are bound via native `addEventListener` on `#portalOneContainer`. jQuery `.on("portalOne.unload", ...)` interprets the dot as a namespace separator and silently drops V2's native `CustomEvent("portalOne.unload")`. jQuery `.on()` bindings are kept as a fallback for V1 emissions only.
+
+### Success and Failure Paths
+
+- **`paymentComplete` →** `OneIncModalLauncher.finalizePaymentSuccess` POSTs `{ session_id, paymentToken, transactionId, paymentMethod, status: "Approved", raw: {...} }` to `/api/oneinc/complete`. The full response is stored on the result as `oneIncCompleteResponse` and `JSON.stringify`'d into `paymentDetails.fullPaymentResponse` on the HP Enroll call.
+- **`unload` (no paymentComplete) →** `PortalOneModal.onClose` fires, the launcher tears down the current `sessionId`, and surfaces a "Payment was canceled — Reopen Payment" button. Clicking it resets state, retriggers the auto-start `useEffect` (via `closedWithoutPayment` in its deps as of 2026-05-11), and mints a fresh SessionKey.
+- **`error` →** same teardown plus the error message routed through `onPaymentError`.
+
+### Payment Result Shape (passed to `onPaymentSuccess`)
+
+```typescript
+{
+  paymentToken: string,           // OneInc vault token
+  transactionId: string,          // OneInc transaction id
+  paymentMethod: "CreditCard" | "ECheck",
+  convenienceFee?: number,        // extracted from portalOne payload
+  resolvedConvenienceFee?: number,// after backend fee-priority resolution
+  feeDiagnostics?: {...},
+  cardType?: string,
+  authCode?: string,
+  holderZip?: string,
+  rawPortalOne?: object,          // sanitized for audit
+  oneIncCompleteResponse?: object // full /api/oneinc/complete body — stringified into paymentDetails.fullPaymentResponse on Enroll
+}
+```
+
+### Backend Endpoints
+
+- **`POST /api/oneinc/session`** — creates the SessionKey server-side. Selects V1 vs V2 wire format from `ONEINC_MODAL_VERSION` (or `modalVersion` in the request body). Returns `{ sessionId, environment, expiresAt, modalVersion }`. `ONEINC_AUTH_KEY` never reaches the browser.
+- **`POST /api/oneinc/complete`** — durably persists the OneInc result on the enrollment session before HP Enroll is called. Idempotent on `(session_id, transactionId)`.
+- **`POST /api/oneinc/init`** (legacy, hosted-modal-URL) — kept in the codebase but not on the active path. Do not wire new callers to it.
+- **`GET /api/oneinc/return`** (legacy, hosted-modal returnUrl) — same status; will be removed alongside `init` when V1 is retired.
 
 ---
 

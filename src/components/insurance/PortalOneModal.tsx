@@ -334,6 +334,17 @@ export type PortalOneModalProps = {
   amount: number
   leadId: string
   memberId: string
+  /**
+   * Optional pre-fills threaded into OneInc V2 `makePayment` (per the official
+   * "Make a Payment using React" recipe). These eliminate redundant typing for
+   * the customer:
+   *   - `policyHolderName` → populates "Name On Card" on the OneInc form
+   *   - `billingZip`       → populates "Billing Zip" on the OneInc form
+   *   - `billingAddressStreet` → persisted for save-on-file; not always shown
+   */
+  policyHolderName?: string
+  billingZip?: string
+  billingAddressStreet?: string
   onInitError?: (err: Error) => void
   onPaymentComplete?: (data: PortalOnePaymentCompletePayload) => void
   /**
@@ -350,7 +361,18 @@ export type PortalOneModalProps = {
  * Script URL: VITE_ONEINC_PORTALONE_JS_URL or derived from VITE_ONEINC_ENV (staging|prod).
  * Init: jQuery $.fn.portalOne if present, else window.portalOne / window.PortalOne.
  */
-export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId, onInitError, onPaymentComplete, onClose }: PortalOneModalProps) {
+export function PortalOneModal({
+  sessionId,
+  amount,
+  leadId,
+  memberId: _memberId,
+  policyHolderName,
+  billingZip,
+  billingAddressStreet,
+  onInitError,
+  onPaymentComplete,
+  onClose,
+}: PortalOneModalProps) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const initLoggedRef = React.useRef(false)
   const iframeObserverRef = React.useRef<MutationObserver | null>(null)
@@ -381,8 +403,14 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
       returnUrl: `${apiBase}/api/oneinc/return`,
     })
     if (scriptOverride) q.set("scriptUrl", scriptOverride)
+    const trimmedName = (policyHolderName || "").trim()
+    if (trimmedName) q.set("policyHolderName", trimmedName)
+    const trimmedZip = (billingZip || "").trim()
+    if (trimmedZip) q.set("billingZip", trimmedZip)
+    const trimmedStreet = (billingAddressStreet || "").trim()
+    if (trimmedStreet) q.set("billingAddressStreet", trimmedStreet)
     return `/oneinc-frame.html?${q.toString()}`
-  }, [modalVersion, sessionId, amount, leadId])
+  }, [modalVersion, sessionId, amount, leadId, policyHolderName, billingZip, billingAddressStreet])
 
   React.useEffect(() => {
     if (modalVersion !== "v2") return

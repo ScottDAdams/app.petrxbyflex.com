@@ -1024,7 +1024,20 @@ export function CardAndQuoteFlow() {
             continueDisabled={transitioning}
           />
         )
-      case "payment":
+      case "payment": {
+        const ownerForPayment = session.owner as Record<string, unknown> | undefined
+        const firstName = ((ownerForPayment?.first_name as string) || "").trim()
+        const lastName = ((ownerForPayment?.last_name as string) || "").trim()
+        const fullName = [firstName, lastName].filter(Boolean).join(" ").trim()
+        const billingZipFromOwner =
+          ((ownerForPayment?.zip as string) ||
+            (ownerForPayment?.zip_code as string) ||
+            ((session.pet as Record<string, unknown>)?.zip_code as string) ||
+            "").trim()
+        const billingStreetFromOwner =
+          ((ownerForPayment?.mailing_street as string) ||
+            (ownerForPayment?.street as string) ||
+            "").trim()
         return (
           <PaymentStep
             leadId={sessionLeadId || undefined}
@@ -1033,6 +1046,10 @@ export function CardAndQuoteFlow() {
             enrollmentSessionId={session.session_id}
             paymentAlreadyComplete={paymentAlreadyComplete}
             onPersistedSuccess={() => void refetch()}
+            customerFirstName={firstName || undefined}
+            customerFullName={fullName || undefined}
+            billingZip={billingZipFromOwner || undefined}
+            billingAddressStreet={billingStreetFromOwner || undefined}
             onPaymentSuccess={(result) => {
               setPaymentResult({
                 paymentToken: result.paymentToken,
@@ -1059,6 +1076,7 @@ export function CardAndQuoteFlow() {
             }
           />
         )
+      }
       case "confirm": {
         const sidUrl = (session as Record<string, unknown>).hp_registration_redirect_url
         const handoffFromSession =

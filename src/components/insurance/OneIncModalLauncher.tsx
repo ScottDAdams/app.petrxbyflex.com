@@ -4,6 +4,7 @@ import {
   type PortalOneFeeDiagnostics,
   getOneIncModalVersion,
 } from "./PortalOneModal"
+import { ConfirmPaymentModal } from "./ConfirmPaymentModal"
 import { persistOneIncCompletion, type OneIncCompleteApiResponse } from "../../api/oneinc"
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"
@@ -50,6 +51,21 @@ export type OneIncModalLauncherProps = {
   paymentAlreadyComplete?: boolean
   /** Called after durable persist succeeds (e.g. refetch GET /enroll/session) */
   onPersistedSuccess?: () => void | Promise<void>
+  /**
+   * Customer identity threaded into OneInc V2 makePayment so the card-entry form
+   * shows "Name On Card" and "Billing Zip" already populated. We also use
+   * `customerFirstName` to personalize the pre-payment ConfirmPaymentModal.
+   */
+  customerFirstName?: string
+  customerFullName?: string
+  billingZip?: string
+  billingAddressStreet?: string
+  /**
+   * Optional cancel hook for the ConfirmPaymentModal. PaymentStep wires this to
+   * its `onBack` so clicking CANCEL on the summary returns the user to the
+   * details step (mirrors HP's notice→back behavior).
+   */
+  onCancel?: () => void
 }
 
 /**
@@ -67,14 +83,28 @@ export function OneIncModalLauncher({
   enrollmentSessionId,
   paymentAlreadyComplete = false,
   onPersistedSuccess,
+  customerFirstName,
+  customerFullName,
+  billingZip,
+  billingAddressStreet,
+  onCancel,
 }: OneIncModalLauncherProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [paymentResult, setPaymentResult] = React.useState<OneIncPaymentResult | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const [sessionId, setSessionId] = React.useState<string | null>(null)
-  /** True after the OneInc modal emits unload WITHOUT a paymentComplete (user cancel). */
-  const [closedWithoutPayment, setClosedWithoutPayment] = React.useState(false)
+  /**
+   * UX flow (HP-style):
+   *   1. `summary`   — ConfirmPaymentModal visible; OneInc not yet loaded.
+   *   2. `pending`   — user clicked CONTINUE; we are minting a session and
+   *                    about to mount PortalOneModal.
+   *   3. `modal`     — OneInc card-entry visible (PortalOneModal mounted).
+   * If the user closes OneInc without paying, we return to `summary`. If they
+   * click CANCEL on the summary, we collapse to `summary` and call `onCancel`
+   * (PaymentStep wires that to "back to details").
+   */
+  const [userInitiated, setUserInitiated] = React.useState(false)
   const messageHandlerRef = React.useRef<((event: MessageEvent) => void) | null>(null)
   const sessionFetchedRef = React.useRef(false)
 
@@ -314,16 +344,20 @@ export function OneIncModalLauncher({
     finalizePaymentSuccess,
   ])
 
-  // Auto-start session and show PortalOne as soon as we have required data (no button)
+  // Auto-start session ONLY after the user clicks CONTINUE on the
+  // ConfirmPaymentModal (HP pattern). Mounting the launcher no longer fires a
+  // session create — that keeps OneInc dark until the user explicitly asks for
+  // it, mirroring Healthy Paws' production behavior.
   React.useEffect(() => {
+    if (!userInitiated) return
     if (paymentAlreadyComplete) return
     if (sessionFetchedRef.current) return
     if (!sessionId && !paymentResult && leadId && accountId && amount != null && amount > 0 && !disabled) {
       sessionFetchedRef.current = true
       initializeModal()
     }
-    // Do not reset ref in cleanup — avoids double-fetch under StrictMode. Reset only in handleLaunchModal when user clicks Change.
   }, [
+    userInitiated,
     paymentAlreadyComplete,
     sessionId,
     paymentResult,
@@ -332,9 +366,6 @@ export function OneIncModalLauncher({
     amount,
     disabled,
     initializeModal,
-    // closedWithoutPayment is included so Reopen Payment re-triggers this
-    // effect even though sessionId was already null at click time.
-    closedWithoutPayment,
   ])
 
   React.useEffect(() => {
@@ -343,15 +374,26 @@ export function OneIncModalLauncher({
     }
   }, [cleanupMessageListener])
 
-  const handleLaunchModal = () => {
-    setPaymentResult(null)
+  /** User clicked CONTINUE on the ConfirmPaymentModal — mint a fresh session. */
+  const handleContinueClick = React.useCallback(() => {
     setError(null)
+    setPaymentResult(null)
     setSessionId(null)
     setIsModalOpen(false)
-    setClosedWithoutPayment(false)
     sessionFetchedRef.current = false
-    // useEffect will call initializeModal() when sessionId becomes null
-  }
+    setUserInitiated(true)
+    // The userInitiated effect above will call initializeModal() once flipped.
+  }, [])
+
+  /**
+   * User dismissed the ConfirmPaymentModal via CANCEL. Collapse to a re-launch
+   * card so the user has an obvious way to come back, and delegate the actual
+   * "go back a step" intent to the host via onCancel.
+   */
+  const handleCancelClick = React.useCallback(() => {
+    setUserInitiated(false)
+    onCancel?.()
+  }, [onCancel])
 
   if (paymentAlreadyComplete || paymentResult) {
     return (
@@ -377,7 +419,7 @@ export function OneIncModalLauncher({
         <button
           type="button"
           className="oneinc-payment-success__change"
-          onClick={handleLaunchModal}
+          onClick={handleContinueClick}
           disabled={disabled || paymentAlreadyComplete}
           title={
             paymentAlreadyComplete
@@ -391,6 +433,11 @@ export function OneIncModalLauncher({
     )
   }
 
+  const required = !!leadId && !!accountId && amount != null && amount > 0
+  const summaryDisabled = disabled || !required
+  const showSummary = !sessionId && !isLoading && !userInitiated
+  const showLoading = isLoading || (userInitiated && !sessionId)
+
   return (
     <>
       <div className="oneinc-modal-launcher">
@@ -399,28 +446,34 @@ export function OneIncModalLauncher({
             {error}
           </div>
         )}
-        {!sessionId && isLoading && (
+        {showLoading && (
           <p className="oneinc-modal-launcher__loading">
             <span className="btn-spinner" aria-hidden />
             Initializing payment…
           </p>
         )}
-        {closedWithoutPayment && !isLoading && !sessionId && (
-          <div className="oneinc-modal-launcher__reopen">
-            <p className="oneinc-modal-launcher__reopen-text">
-              Payment was canceled. Reopen the payment window to continue.
-            </p>
-            <button
-              type="button"
-              className="btn btn--primary"
-              onClick={handleLaunchModal}
-              disabled={disabled}
-            >
-              Reopen Payment
-            </button>
-          </div>
+        {!showLoading && !sessionId && !showSummary && (
+          <button
+            type="button"
+            className="btn btn--primary"
+            onClick={handleContinueClick}
+            disabled={summaryDisabled}
+          >
+            Make Payment
+          </button>
         )}
       </div>
+
+      {showSummary && required && (
+        <ConfirmPaymentModal
+          customerFirstName={customerFirstName}
+          customerFullName={customerFullName}
+          amount={amount ?? 0}
+          onContinue={handleContinueClick}
+          onCancel={onCancel ? handleCancelClick : undefined}
+          disabled={summaryDisabled}
+        />
+      )}
 
       {sessionId && (
         <PortalOneModal
@@ -428,6 +481,9 @@ export function OneIncModalLauncher({
           amount={amount ?? 0}
           leadId={leadId ?? ""}
           memberId={accountId ?? ""}
+          policyHolderName={customerFullName || undefined}
+          billingZip={billingZip}
+          billingAddressStreet={billingAddressStreet}
           onInitError={(err) => {
             console.error("[PortalOne] init failed", err)
             setError(err.message)
@@ -447,13 +503,14 @@ export function OneIncModalLauncher({
             void finalizePaymentSuccess(result)
           }}
           onClose={() => {
-            // SDK unloaded the modal without a paymentComplete (user X/Cancel). Tear down
-            // the current session so handleLaunchModal can mint a fresh one when the user
-            // clicks Reopen Payment.
+            // SDK unloaded the modal without a paymentComplete (user X/Cancel).
+            // Drop back to the ConfirmPaymentModal — clicking CONTINUE there
+            // mints a fresh session. No separate "Reopen Payment" CTA needed.
             cleanupMessageListener()
             setIsModalOpen(false)
             setSessionId(null)
-            setClosedWithoutPayment(true)
+            setUserInitiated(false)
+            sessionFetchedRef.current = false
           }}
         />
       )}

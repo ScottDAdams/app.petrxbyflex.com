@@ -30,12 +30,21 @@
     "use strict";
 
     var params = new URLSearchParams(window.location.search);
-    var sessionId   = params.get("sessionId") || "";
-    var amount      = parseFloat(params.get("amount") || "0");
-    var leadId      = params.get("leadId") || "";
-    var env         = (params.get("env") || "staging").toLowerCase();
-    var returnUrl   = params.get("returnUrl") || "";
-    var scriptOverride = params.get("scriptUrl") || "";
+    var sessionId        = params.get("sessionId") || "";
+    var amount           = parseFloat(params.get("amount") || "0");
+    var leadId           = params.get("leadId") || "";
+    var env              = (params.get("env") || "staging").toLowerCase();
+    var returnUrl        = params.get("returnUrl") || "";
+    var scriptOverride   = params.get("scriptUrl") || "";
+    // Optional pre-fills threaded from the launcher so the user doesn't have
+    // to re-type info we already have. These map to OneInc V2 makePayment
+    // params per the official "Make a Payment using React" recipe:
+    //   policyHolderName  -> populates "Name On Card"
+    //   billingZip        -> populates "Billing Zip"
+    //   billingAddressStreet -> persisted for save-on-file; not always shown
+    var policyHolderName     = params.get("policyHolderName") || "";
+    var billingZip           = params.get("billingZip") || "";
+    var billingAddressStreet = params.get("billingAddressStreet") || "";
 
     function post(action, extra) {
       try {
@@ -180,6 +189,10 @@
           throw new Error("jQuery PortalOne plugin not present after script load");
         }
         var $c = $("#portalOneContainer");
+        // Defensive cleanup per OneInc V2 React recipe: "remove all old handlers
+        // for case when dialog is reopened to avoid double handling". Safe to
+        // call before init since .off() is a no-op when no handlers exist.
+        try { $c.off(); } catch (_) {}
         $c.portalOne();
 
         var paymentCompleted = false;
@@ -255,13 +268,17 @@
           amountContextDefault: "minimumAmountDue",
           minAmountDue: amount,
           accountBalance: amount,
-          confirmationDisplay: true,
+          // confirmationDisplay/acknowledgmentRequired intentionally omitted:
+          // the React app shows its own ConfirmPaymentModal first (HP pattern),
+          // so OneInc opens directly on the card-entry screen.
           saveOption: "Save",
-          acknowledgmentRequired: "true",
           clientReferenceData1: leadId,
           operation: "makePayment",
           displayMode: "Modal"
         };
+        if (policyHolderName)     payload.policyHolderName     = policyHolderName;
+        if (billingZip)           payload.billingZip           = billingZip;
+        if (billingAddressStreet) payload.billingAddressStreet = billingAddressStreet;
         if (returnUrl) payload.returnUrl = returnUrl;
 
         post("makePayment", { payload: payload });
