@@ -360,7 +360,117 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
   // Resolved once per render so the render branch below stays in sync with the effect.
   const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
 
+  // ---------------------------------------------------------------------------
+  // V2 path: load OneInc inside an isolated <iframe src="/oneinc-frame.html">.
+  // The iframe page (public/oneinc-frame.html) loads the V2 SDK on its own
+  // document, so Angular CDK's overlay container lives inside the iframe and
+  // does not fight our app's CSS. This mirrors Healthy Paws' production pattern
+  // (their "/Enrollment/PaymentPage" iframe). The bridge contract:
+  //   { source: 'petrx-oneinc-frame', action: 'ready'|'loadComplete'|'paymentComplete'|'unload'|'error', ... }
+  // ---------------------------------------------------------------------------
+  const iframeSrc = React.useMemo(() => {
+    if (modalVersion !== "v2" || !sessionId) return ""
+    const apiBase = (import.meta.env.VITE_API_BASE as string) || "https://api.petrxbyflex.com"
+    const env = ((import.meta.env.VITE_ONEINC_ENV as string) || "staging").toLowerCase()
+    const scriptOverride = (import.meta.env.VITE_ONEINC_PORTALONE_JS_URL as string)?.trim() || ""
+    const q = new URLSearchParams({
+      sessionId,
+      amount: String(amount),
+      leadId,
+      env,
+      returnUrl: `${apiBase}/api/oneinc/return`,
+    })
+    if (scriptOverride) q.set("scriptUrl", scriptOverride)
+    return `/oneinc-frame.html?${q.toString()}`
+  }, [modalVersion, sessionId, amount, leadId])
+
   React.useEffect(() => {
+    if (modalVersion !== "v2") return
+    if (!sessionId) return
+    console.info("[PortalOne] V2 iframe mode", { iframeSrc })
+
+    const handler = (event: MessageEvent) => {
+      const d = event.data as Record<string, unknown> | null | undefined
+      if (!d || typeof d !== "object") return
+      if (d.source !== "petrx-oneinc-frame") return
+      const action = d.action as string | undefined
+
+      if (action === "ready" || action === "loadComplete" || action === "makePayment") {
+        console.info("[PortalOne] iframe", { action, ...(action === "makePayment" ? { payload: d.payload } : {}) })
+        return
+      }
+
+      if (action === "error") {
+        const message = (d.message as string) || "OneInc iframe error"
+        console.error("[PortalOne] iframe error", { message, raw: d.data })
+        onInitError?.(new Error(message))
+        return
+      }
+
+      if (action === "unload") {
+        const completed = !!d.paymentCompleted || paymentCompleteRef.current
+        console.info("[PortalOne] iframe unload", { paymentCompleted: completed })
+        if (!completed) onClose?.()
+        return
+      }
+
+      if (action === "paymentComplete") {
+        const data = (d.data || {}) as Record<string, unknown>
+        paymentCompleteRef.current = true
+        const rawPortalOne = sanitizePortalOnePaymentComplete(data)
+        const feeDiagnostics = collectPortalOneFeeDiagnostics(data)
+        const feeSnapshot = collectExplicitFeeFieldSnapshot(data)
+        console.info("[PortalOne] iframe paymentComplete", {
+          explicitFee: feeSnapshot.explicitFee,
+          amountLikeNotUsedAsFee: feeSnapshot.amountLikeNotUsedAsFee,
+        })
+        const flat = flattenPaymentCompletePayload(data)
+        const { paymentToken, transactionId } = extractPaymentTokenAndTxn(data)
+        if (!paymentToken || !transactionId) {
+          console.error("[PortalOne] iframe paymentComplete missing token/transactionId", {
+            keys: Object.keys(data),
+          })
+          onInitError?.(
+            new Error(
+              "Payment succeeded but token/transaction id were not returned. Check console for portalOne.paymentComplete keys."
+            )
+          )
+          return
+        }
+        onPaymentComplete?.({
+          paymentToken,
+          transactionId,
+          paymentMethod: data.paymentCategory === "ECheck" ? "ECheck" : "CreditCard",
+          feeDiagnostics,
+          billingFirstName: (data.billingFirstName as string) || (flat.billingFirstName as string),
+          billingLastName: (data.billingLastName as string) || (flat.billingLastName as string),
+          billingStreet:
+            (data.billingAddress as string) || (flat.billingStreet as string) || (flat.billingAddress as string),
+          billingCity: (data.billingCity as string) || (flat.billingCity as string),
+          billingState: (data.billingState as string) || (flat.billingState as string),
+          billingPostalCode:
+            (data.billingZip as string) ||
+            (flat.billingZip as string) ||
+            (flat.billingPostalCode as string) ||
+            (flat.holderZip as string),
+          cardType: (data.cardType as string) || (flat.cardType as string),
+          authCode: (data.authCode as string) || (flat.authCode as string) || (flat.AuthCode as string),
+          holderZip: (data.holderZip as string) || (flat.holderZip as string),
+          rawPortalOne,
+        })
+      }
+    }
+
+    window.addEventListener("message", handler)
+    return () => window.removeEventListener("message", handler)
+  }, [modalVersion, sessionId, iframeSrc, onInitError, onPaymentComplete, onClose])
+
+  // ---------------------------------------------------------------------------
+  // V1 path (legacy): jQuery + inline #portalOneContainer. Preserved verbatim
+  // so the known-good production flow is not touched while V2 is being adopted.
+  // ---------------------------------------------------------------------------
+  React.useEffect(() => {
+    if (modalVersion === "v2") return
     if (!sessionId) return
     if (_initializedSessions.has(sessionId)) return
     _initializedSessions.add(sessionId)
@@ -406,26 +516,22 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             $container.portalOne()
             // v1 GenericModal appends its iframe to ``document.body`` by default; this
             // observer relocates it back into ``#portalOneContainer`` so it embeds inline.
-            // v2 GenericModalV2 already mounts directly into the container via
-            // ``getElementById`` and renders its own overlay/positioning, so the relocation
-            // is unnecessary and risks racing with the SDK's own DOM management.
-            if (modalVersion !== "v2") {
-              const observer = new MutationObserver((mutations) => {
-                for (const mutation of mutations) {
-                  for (const node of Array.from(mutation.addedNodes)) {
-                    if (node instanceof HTMLIFrameElement && node.src?.includes("processonepayments.com")) {
-                      if (!isMobileDevice()) {
-                        container.appendChild(node)
-                      }
-                      // On mobile: leave iframe on body as native fullscreen modal
-                      observer.disconnect()
+            // (V2 takes the isolated-iframe path above and never reaches this branch.)
+            const observer = new MutationObserver((mutations) => {
+              for (const mutation of mutations) {
+                for (const node of Array.from(mutation.addedNodes)) {
+                  if (node instanceof HTMLIFrameElement && node.src?.includes("processonepayments.com")) {
+                    if (!isMobileDevice()) {
+                      container.appendChild(node)
                     }
+                    // On mobile: leave iframe on body as native fullscreen modal
+                    observer.disconnect()
                   }
                 }
-              })
-              observer.observe(document.body, { childList: true, subtree: true })
-              iframeObserverRef.current = observer
-            }
+              }
+            })
+            observer.observe(document.body, { childList: true, subtree: true })
+            iframeObserverRef.current = observer
             ;(win.jQuery(container) as { on: (event: string, handler: (evt: unknown, data: Record<string, unknown>) => void) => void }).on("portalOne.paymentComplete", function(_evt: unknown, data: Record<string, unknown>) {
               console.info("[PortalOne] portalOne.paymentComplete (raw reference)", data)
               paymentCompleteRef.current = true
@@ -500,42 +606,20 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             } | undefined
             if (!instance) throw new Error("[PortalOne] instance not found after init")
             const returnUrl = `${import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"}/api/oneinc/return`
-            // Build the makePayment payload from scratch per version. The two SDKs reject each
-            // other's parameter shapes; v1 silently fires portalOne.unload when given v2 enums
-            // like feeContext:"PaymentWithFee" and never renders.
-            const makePaymentPayload: Record<string, unknown> =
-              modalVersion === "v2"
-                ? {
-                    sessionId,
-                    paymentCategory: "UserSelect",
-                    feeContext: "PaymentWithFee",
-                    convenienceFeeType: "Default",
-                    amountContext: "AmountDueOnly",
-                    amountContextDefault: "minimumAmountDue",
-                    minAmountDue: amount,
-                    accountBalance: amount,
-                    confirmationDisplay: true,
-                    saveOption: "Save",
-                    acknowledgmentRequired: "true",
-                    clientReferenceData1: leadId,
-                    operation: "makePayment",
-                    returnUrl,
-                    // Ask the V2 SDK to draw its own properly-sized overlay rather than
-                    // inline-fill our container. If V2 honors this, OneInc auto-sizes the
-                    // modal per screen (no gutter on notice vs card form). If V2 ignores
-                    // it, we fall back to the inline-in-container render below.
-                    displayMode: "Modal",
-                  }
-                : {
-                    sessionId,
-                    paymentCategory: "UserSelect",
-                    feeContext: 0,
-                    minAmountDue: amount,
-                    clientReferenceData1: leadId,
-                    saveOption: "Save",
-                    acknowledgmentRequired: "true",
-                    returnUrl,
-                  }
+            // V1 payload shape. V1 expects ``feeContext`` as the integer 0; passing the
+            // V2 string enum ("PaymentWithFee") causes V1 to silently fire
+            // portalOne.unload without rendering. V2 has its own makePayment call
+            // inside the isolated iframe (public/oneinc-frame.html).
+            const makePaymentPayload: Record<string, unknown> = {
+              sessionId,
+              paymentCategory: "UserSelect",
+              feeContext: 0,
+              minAmountDue: amount,
+              clientReferenceData1: leadId,
+              saveOption: "Save",
+              acknowledgmentRequired: "true",
+              returnUrl,
+            }
             console.info("[PortalOne] calling makePayment", {
               modalVersion,
               ...makePaymentPayload,
@@ -614,43 +698,23 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
     )
   }
 
-  // GenericModalV2 is Angular CDK based. The SDK injects ``.cdk-overlay-container`` >
-  // ``.cdk-global-overlay-wrapper`` inside ``#portalOneContainer`` and the wrapper is
-  // ``height: 100%`` with flex vertical centering. Whenever our container is taller than
-  // OneInc's current screen (notice vs card-entry have very different intrinsic heights),
-  // that wrapper renders as visible gutter above/below the modal. The fix is to neutralize
-  // the wrapper's height so it collapses to its content. (Verified by the user via DevTools.)
-  //
-  // Layout:
-  // 1) A full-viewport dim is portaled into ``document.body`` (matches the user's
-  //    "full page dim is fine" feedback).
-  // 2) ``#portalOneContainer`` is portaled into ``#payment-step-overlay-host`` (the right
-  //    column on PaymentStep) and centered there with absolute positioning, so the modal
-  //    sits centered on the quote panel rather than the whole viewport. Falls back to body
-  //    + position:fixed when the host is missing.
-  // 3) A scoped ``<style>`` override removes the CDK wrapper's forced height inside our
-  //    container only — no risk to other CDK overlays elsewhere on the app.
-  const mobile = isMobileDevice()
+  // GenericModalV2: rendered inside an isolated iframe at /oneinc-frame.html. This
+  // is the same pattern Healthy Paws uses in production (/Enrollment/PaymentPage):
+  //   - OneInc's Angular CDK overlay container lives inside the iframe's document,
+  //     so CDK ``height: 100%`` fills the iframe (not our React layout), and there
+  //     is zero risk of host-app CSS interfering with OneInc styles.
+  //   - The parent (this component) just owns the dim backdrop, iframe sizing,
+  //     and the postMessage bridge defined in the effect above.
+  //   - The iframe is anchored to #payment-step-overlay-host (the right column on
+  //     PaymentStep) so it sits centered on the quote panel; falls back to the
+  //     viewport center if the host is absent.
   if (typeof document === "undefined") return null
+  if (!sessionId || !iframeSrc) return null
+  const mobile = isMobileDevice()
   const host = document.getElementById("payment-step-overlay-host")
   const anchored = !!host
   return (
     <>
-      {createPortal(
-        <style>{`
-          /* OneInc V2's Angular CDK wrapper forces height:100% (and sometimes inset:0
-             / bottom:0), which produces gutter above/below the modal whenever our host
-             element is taller than the current OneInc screen. Collapsing it to content
-             height eliminates that gutter. The user verified the height:100% removal
-             via DevTools; the bottom:auto / position-static fallbacks defensively cover
-             SDK variants that use inset:0 instead. */
-          #portalOneContainer .cdk-global-overlay-wrapper {
-            height: auto !important;
-            bottom: auto !important;
-          }
-        `}</style>,
-        document.head,
-      )}
       {createPortal(
         <div
           aria-hidden="true"
@@ -664,32 +728,25 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         document.body,
       )}
       {createPortal(
-        <div
-          id="portalOneContainer"
-          ref={containerRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Payment"
-          className="portal-one-container portal-one-container--v2"
+        <iframe
+          title="Payment"
+          src={iframeSrc}
+          allow="payment"
+          // OneInc's V2 SDK draws its full modal (chrome, close button, action buttons)
+          // inside the iframe. We size the iframe to roughly match HP's 600px window
+          // so both the notice screen and the card-entry screen fit without forcing a
+          // page scroll. Internal scrolling inside the iframe handles edge cases.
           style={{
             position: anchored ? "absolute" : "fixed",
             top: "50%",
             left: "50%",
-            // translateZ(0) creates a containing block so the CDK's position:fixed
-            // overlay constrains to our container instead of the viewport.
             transform: "translate(-50%, -50%) translateZ(0)",
             width: mobile ? "100%" : "min(480px, 100%)",
-            // Sized to the notice/acknowledgement screen so the visible footprint matches
-            // the OneInc card. With the CDK wrapper override above the modal is anchored
-            // at the top of this container, so 420px keeps the dim space below the modal
-            // negligible. The taller card-entry form will scroll inside the container.
-            height: mobile ? "100%" : "min(420px, 92vh)",
-            background: "transparent",
+            height: mobile ? "100%" : "min(640px, 92vh)",
+            border: "none",
             borderRadius: mobile ? 0 : 12,
-            // ``auto`` (not ``hidden``) so the card-entry form remains accessible when
-            // OneInc's screen is taller than our container; the user can scroll within
-            // the container instead of having the form clipped.
-            overflow: "auto",
+            background: "#ffffff",
+            boxShadow: mobile ? "none" : "0 12px 32px rgba(15, 23, 42, 0.25)",
             zIndex: 9001,
           }}
         />,
