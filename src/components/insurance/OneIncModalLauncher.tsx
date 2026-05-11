@@ -73,6 +73,8 @@ export function OneIncModalLauncher({
   const [paymentResult, setPaymentResult] = React.useState<OneIncPaymentResult | null>(null)
   const [isModalOpen, setIsModalOpen] = React.useState(false)
   const [sessionId, setSessionId] = React.useState<string | null>(null)
+  /** True after the OneInc modal emits unload WITHOUT a paymentComplete (user cancel). */
+  const [closedWithoutPayment, setClosedWithoutPayment] = React.useState(false)
   const messageHandlerRef = React.useRef<((event: MessageEvent) => void) | null>(null)
   const sessionFetchedRef = React.useRef(false)
 
@@ -343,6 +345,7 @@ export function OneIncModalLauncher({
     setError(null)
     setSessionId(null)
     setIsModalOpen(false)
+    setClosedWithoutPayment(false)
     sessionFetchedRef.current = false
     // useEffect will call initializeModal() when sessionId becomes null
   }
@@ -399,6 +402,21 @@ export function OneIncModalLauncher({
             Initializing payment…
           </p>
         )}
+        {closedWithoutPayment && !isLoading && !sessionId && (
+          <div className="oneinc-modal-launcher__reopen">
+            <p className="oneinc-modal-launcher__reopen-text">
+              Payment was canceled. Reopen the payment window to continue.
+            </p>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={handleLaunchModal}
+              disabled={disabled}
+            >
+              Reopen Payment
+            </button>
+          </div>
+        )}
       </div>
 
       {sessionId && (
@@ -424,6 +442,15 @@ export function OneIncModalLauncher({
               rawPortalOne: data.rawPortalOne,
             }
             void finalizePaymentSuccess(result)
+          }}
+          onClose={() => {
+            // SDK unloaded the modal without a paymentComplete (user X/Cancel). Tear down
+            // the current session so handleLaunchModal can mint a fresh one when the user
+            // clicks Reopen Payment.
+            cleanupMessageListener()
+            setIsModalOpen(false)
+            setSessionId(null)
+            setClosedWithoutPayment(true)
           }}
         />
       )}

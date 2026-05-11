@@ -42,14 +42,7 @@ export function PaymentStep({
   submitting = false,
 }: PaymentStepProps) {
   return (
-    // ``position: relative`` + the host id anchor the OneInc V2 overlay to this
-    // right-column panel via React Portal, so the dim + centered modal scope to the
-    // quote panel instead of the full viewport. The id is read by PortalOneModal.tsx.
-    <div
-      id="payment-step-overlay-host"
-      className="step-body step-body--payment"
-      style={{ position: "relative" }}
-    >
+    <div className="step-body step-body--payment">
       <PartnerBar />
       <h2 className="step-body__title">Payment</h2>
       <p className="step-body__subtitle">

@@ -336,6 +336,13 @@ export type PortalOneModalProps = {
   memberId: string
   onInitError?: (err: Error) => void
   onPaymentComplete?: (data: PortalOnePaymentCompletePayload) => void
+  /**
+   * Fired when the OneInc SDK emits ``portalOne.unload`` WITHOUT a preceding
+   * ``portalOne.paymentComplete`` (e.g. user clicked the X or hit Cancel on the notice).
+   * The launcher uses this to surface a "Reopen Payment" button so the user has a
+   * recovery path instead of being stuck on an empty payment step.
+   */
+  onClose?: () => void
 }
 
 /**
@@ -343,10 +350,13 @@ export type PortalOneModalProps = {
  * Script URL: VITE_ONEINC_PORTALONE_JS_URL or derived from VITE_ONEINC_ENV (staging|prod).
  * Init: jQuery $.fn.portalOne if present, else window.portalOne / window.PortalOne.
  */
-export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId, onInitError, onPaymentComplete }: PortalOneModalProps) {
+export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId, onInitError, onPaymentComplete, onClose }: PortalOneModalProps) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const initLoggedRef = React.useRef(false)
   const iframeObserverRef = React.useRef<MutationObserver | null>(null)
+  // portalOne.unload fires on BOTH success-close and user-cancel; this ref lets us
+  // distinguish so onClose is only called on real user cancels.
+  const paymentCompleteRef = React.useRef(false)
   // Resolved once per render so the render branch below stays in sync with the effect.
   const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
 
@@ -418,6 +428,7 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             }
             ;(win.jQuery(container) as { on: (event: string, handler: (evt: unknown, data: Record<string, unknown>) => void) => void }).on("portalOne.paymentComplete", function(_evt: unknown, data: Record<string, unknown>) {
               console.info("[PortalOne] portalOne.paymentComplete (raw reference)", data)
+              paymentCompleteRef.current = true
               if (typeof data?.acknowledge === "function") (data.acknowledge as () => void)()
               const rawPortalOne = sanitizePortalOnePaymentComplete(data)
               const feeDiagnostics = collectPortalOneFeeDiagnostics(data)
@@ -476,7 +487,12 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
               })
             })
             ;(win.jQuery(container) as { on: (event: string, handler: () => void) => void }).on("portalOne.unload", () => {
-              console.info("[PortalOne] portalOne.unload")
+              console.info("[PortalOne] portalOne.unload", { paymentCompleted: paymentCompleteRef.current })
+              if (!paymentCompleteRef.current) {
+                // User dismissed without paying (e.g. X / Cancel). Let the launcher
+                // show a Reopen Payment recovery path.
+                onClose?.()
+              }
             })
             // Step 2: get the instance and call makePayment on it
             const instance = $container.data("portalOne") as {
@@ -573,7 +589,7 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
       iframeObserverRef.current?.disconnect()
       iframeObserverRef.current = null
     }
-  }, [sessionId, amount, leadId, modalVersion, onInitError, onPaymentComplete])
+  }, [sessionId, amount, leadId, modalVersion, onInitError, onPaymentComplete, onClose])
 
   // Legacy v1 SDK has always rendered inline. Keep that path unchanged so the live
   // production flow is not perturbed by V2 styling work.
@@ -598,35 +614,25 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
     )
   }
 
-  // GenericModalV2 inline embed renders its content centered inside whatever container
-  // height we give it, so any "extra" container height becomes a gray gutter above/below
-  // OneInc's card. Two strategies are layered here:
+  // GenericModalV2 renders its content inline at the top of ``#portalOneContainer`` and
+  // does NOT honor ``displayMode: "Modal"`` (we tried — the modal still rendered inline).
+  // To avoid the gray gutter the SDK shows below short screens (notice / acknowledgement),
+  // we tighten the container height to the notice modal's intrinsic size. The taller
+  // card-entry form will scroll inside the OneInc iframe — OneInc handles that natively.
   //
-  // 1) ``displayMode: "Modal"`` is set on the makePayment payload above. If the V2 SDK
-  //    honors it, OneInc draws their own auto-sized overlay and our inline container is
-  //    effectively unused (no gutter possible).
-  //
-  // 2) If the SDK still renders inline into ``#portalOneContainer``, we anchor the
-  //    overlay to ``#payment-step-overlay-host`` (PaymentStep's right column) via React
-  //    Portal so the dim + centered modal scope to the quote panel, not the whole
-  //    viewport. We fall back to ``document.body`` + ``position: fixed`` only when the
-  //    host is missing (e.g. legacy callers / preview routes), preserving the prior
-  //    behavior in that case.
-  //
-  // The portal is required either way: rendering inline collides with the PaymentStep
-  // column flex layout, and any ancestor ``transform`` would re-base ``position: fixed``
-  // back to that ancestor per the CSS containing-block rule.
+  // Rendered through a React Portal into ``document.body`` so the overlay escapes the
+  // PaymentStep column flex layout. Any ancestor ``transform`` would otherwise re-base
+  // ``position: fixed`` to that ancestor per the CSS containing-block rule, which is what
+  // broke the dim on earlier attempts.
   const mobile = isMobileDevice()
   if (typeof document === "undefined") return null
-  const host = document.getElementById("payment-step-overlay-host")
-  const anchored = !!host
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Payment"
       style={{
-        position: anchored ? "absolute" : "fixed",
+        position: "fixed",
         inset: 0,
         zIndex: 9000,
         background: "rgba(15, 23, 42, 0.55)",
@@ -643,7 +649,9 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         style={{
           position: "relative",
           width: mobile ? "100%" : "min(480px, 100%)",
-          height: mobile ? "100%" : "min(640px, 92vh)",
+          // 400px fits the notice acknowledgement card without gutter; the card-entry
+          // form is taller and will scroll inside OneInc's own iframe.
+          height: mobile ? "100%" : "min(400px, 92vh)",
           background: "transparent",
           borderRadius: mobile ? 0 : 12,
           overflow: "hidden",
@@ -651,6 +659,6 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         }}
       />
     </div>,
-    host || document.body,
+    document.body,
   )
 }
