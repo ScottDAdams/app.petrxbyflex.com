@@ -679,13 +679,17 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
             // overlay constrains to our container instead of the viewport.
             transform: "translate(-50%, -50%) translateZ(0)",
             width: mobile ? "100%" : "min(480px, 100%)",
-            // Explicit height (not max-height) so the CDK's position:fixed children have
-            // a definite size to attach to; the CDK wrapper override above collapses the
-            // wrapper to content height so the visible modal is gutter-free regardless.
-            height: mobile ? "100%" : "min(720px, 92vh)",
+            // Sized to the notice/acknowledgement screen so the visible footprint matches
+            // the OneInc card. With the CDK wrapper override above the modal is anchored
+            // at the top of this container, so 420px keeps the dim space below the modal
+            // negligible. The taller card-entry form will scroll inside the container.
+            height: mobile ? "100%" : "min(420px, 92vh)",
             background: "transparent",
             borderRadius: mobile ? 0 : 12,
-            overflow: "hidden",
+            // ``auto`` (not ``hidden``) so the card-entry form remains accessible when
+            // OneInc's screen is taller than our container; the user can scroll within
+            // the container instead of having the form clipped.
+            overflow: "auto",
             zIndex: 9001,
           }}
         />,
