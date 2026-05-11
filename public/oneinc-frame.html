@@ -183,27 +183,61 @@
         $c.portalOne();
 
         var paymentCompleted = false;
+        var containerEl = document.getElementById("portalOneContainer");
 
-        $c.on("portalOne.paymentComplete", function (_e, data) {
+        // OneInc V2 dispatches events as native CustomEvent with literal dotted
+        // names (e.g. "portalOne.unload"). jQuery's `.on("portalOne.unload",...)`
+        // interprets the dot as a namespace and never fires. So we use plain
+        // addEventListener on the container, which catches both V1 (jQuery
+        // .trigger) and V2 (native CustomEvent) emissions reliably.
+        function extractEventData(e) {
+          if (!e) return {};
+          // V2: detail-shaped CustomEvent.
+          if (e.detail !== undefined) return e.detail || {};
+          // V1: jQuery passes a second arg, accessible via e.originalEvent.detail
+          // for native handlers, or as undefined here. Caller can pass data via
+          // arguments[1] when wiring through jQuery, but we standardize on detail.
+          return {};
+        }
+
+        containerEl.addEventListener("portalOne.paymentComplete", function (e) {
+          var data = extractEventData(e);
           paymentCompleted = true;
           try { if (data && typeof data.acknowledge === "function") data.acknowledge(); } catch (_) {}
           var clean = sanitize(data || {});
           post("paymentComplete", { data: clean });
         });
 
-        $c.on("portalOne.loadComplete", function () {
-          // Clear our placeholder once the SDK has injected its UI.
+        // V2 emits portalOne.load; V1 emits portalOne.loadComplete. Listen to both.
+        function onLoad() {
           var fb = document.getElementById("petrx-frame-fallback");
           if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
           post("loadComplete");
-        });
+        }
+        containerEl.addEventListener("portalOne.load", onLoad);
+        containerEl.addEventListener("portalOne.loadComplete", onLoad);
 
-        $c.on("portalOne.unload", function () {
+        containerEl.addEventListener("portalOne.unload", function () {
           post("unload", { paymentCompleted: paymentCompleted });
         });
 
-        $c.on("portalOne.error", function (_e, data) {
-          post("error", { message: (data && (data.message || data.error)) || "portalOne.error", data: sanitize(data || {}) });
+        containerEl.addEventListener("portalOne.error", function (e) {
+          var data = extractEventData(e);
+          post("error", {
+            message: (data && (data.description || data.message || data.error)) || "portalOne.error",
+            data: sanitize(data || {}),
+          });
+        });
+
+        // Belt-and-suspenders: also bind via jQuery for the V1 fallback path.
+        $c.on("portalOne.paymentComplete", function (_e, data) {
+          if (paymentCompleted) return; // already handled via native listener
+          paymentCompleted = true;
+          try { if (data && typeof data.acknowledge === "function") data.acknowledge(); } catch (_) {}
+          post("paymentComplete", { data: sanitize(data || {}) });
+        });
+        $c.on("portalOne.unload", function () {
+          post("unload", { paymentCompleted: paymentCompleted });
         });
 
         var instance = $c.data("portalOne");

@@ -332,6 +332,9 @@ export function OneIncModalLauncher({
     amount,
     disabled,
     initializeModal,
+    // closedWithoutPayment is included so Reopen Payment re-triggers this
+    // effect even though sessionId was already null at click time.
+    closedWithoutPayment,
   ])
 
   React.useEffect(() => {
