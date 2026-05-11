@@ -359,6 +359,10 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
   const paymentCompleteRef = React.useRef(false)
   // Resolved once per render so the render branch below stays in sync with the effect.
   const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
+  // V2 iframe self-reports its content height (cdk-overlay-pane) so we can grow
+  // and shrink between OneInc screens (notice ~470px, card-entry ~620px). The
+  // initial value is a sensible fallback if the resize message never arrives.
+  const [iframeHeight, setIframeHeight] = React.useState<number>(540)
 
   // ---------------------------------------------------------------------------
   // V2 path: load OneInc inside an isolated <iframe src="/oneinc-frame.html">.
@@ -397,6 +401,19 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
 
       if (action === "ready" || action === "loadComplete" || action === "makePayment") {
         console.info("[PortalOne] iframe", { action, ...(action === "makePayment" ? { payload: d.payload } : {}) })
+        return
+      }
+
+      if (action === "resize") {
+        const h = Number(d.height)
+        if (!Number.isFinite(h) || h <= 0) return
+        // Add a small allowance for the modal's own padding/shadow and clamp
+        // so we never blow past the viewport on tall screens.
+        const target = Math.min(
+          Math.max(Math.ceil(h) + 16, 320),
+          Math.floor(window.innerHeight * 0.92)
+        )
+        setIframeHeight((prev) => (Math.abs(prev - target) < 4 ? prev : target))
         return
       }
 
@@ -733,21 +750,22 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
           src={iframeSrc}
           allow="payment"
           // OneInc's V2 SDK draws its full modal (chrome, close button, action buttons)
-          // inside the iframe. We size the iframe to roughly match HP's 600px window
-          // so both the notice screen and the card-entry screen fit without forcing a
-          // page scroll. Internal scrolling inside the iframe handles edge cases.
+          // inside the iframe. The iframe self-reports the modal pane's height via
+          // postMessage(action:'resize'), so it grows/shrinks between OneInc screens
+          // (notice ~470px, card-entry ~620px) with no visible gutter.
           style={{
             position: anchored ? "absolute" : "fixed",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%) translateZ(0)",
             width: mobile ? "100%" : "min(480px, 100%)",
-            height: mobile ? "100%" : "min(640px, 92vh)",
+            height: mobile ? "100%" : `${iframeHeight}px`,
             border: "none",
             borderRadius: mobile ? 0 : 12,
             background: "#ffffff",
             boxShadow: mobile ? "none" : "0 12px 32px rgba(15, 23, 42, 0.25)",
             zIndex: 9001,
+            transition: "height 180ms ease-out",
           }}
         />,
         host || document.body,

@@ -77,6 +77,56 @@
       });
     }
 
+    // Watch the OneInc V2 modal pane and report its height to the parent so the
+    // parent can size the surrounding iframe to fit. This eliminates the gutter
+    // above/below the modal between OneInc's notice screen (~470px) and the
+    // card-entry screen (~620px). We retry briefly because the pane is injected
+    // asynchronously after loadComplete fires.
+    var _lastReportedHeight = 0;
+    function reportHeight(h) {
+      var rounded = Math.ceil(h);
+      if (rounded <= 0) return;
+      if (Math.abs(rounded - _lastReportedHeight) < 4) return;
+      _lastReportedHeight = rounded;
+      post("resize", { height: rounded });
+    }
+    function watchPaneSize() {
+      var attempts = 0;
+      function findPane() {
+        // V2 (Angular CDK) injects .cdk-overlay-pane that wraps the modal.
+        return document.querySelector(".cdk-overlay-pane")
+          || document.querySelector(".portalone-modal")
+          || null;
+      }
+      function attach(pane) {
+        // Initial measurement.
+        var rect = pane.getBoundingClientRect();
+        reportHeight(rect.height);
+        if (typeof ResizeObserver === "function") {
+          var ro = new ResizeObserver(function (entries) {
+            for (var i = 0; i < entries.length; i++) {
+              reportHeight(entries[i].contentRect.height);
+            }
+          });
+          ro.observe(pane);
+        } else {
+          // Fallback: poll for size changes every 250ms for ~20s.
+          var ticks = 0;
+          var iv = setInterval(function () {
+            var r = pane.getBoundingClientRect();
+            reportHeight(r.height);
+            if (++ticks > 80) clearInterval(iv);
+          }, 250);
+        }
+      }
+      function tick() {
+        var p = findPane();
+        if (p) { attach(p); return; }
+        if (++attempts < 40) setTimeout(tick, 150);
+      }
+      tick();
+    }
+
     function sanitize(obj) {
       // Drop functions (e.g. acknowledge) and non-JSON-serializable values so
       // postMessage doesn't fail with DataCloneError.
@@ -115,6 +165,7 @@
           var fb = document.getElementById("petrx-frame-fallback");
           if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
           post("loadComplete");
+          watchPaneSize();
         });
 
         $c.on("portalOne.unload", function () {
