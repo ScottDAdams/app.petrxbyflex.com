@@ -405,7 +405,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
       }
 
       if (action === "debug") {
-        console.info("[PortalOne] iframe debug", d)
+        try {
+          console.info("[PortalOne] iframe debug " + JSON.stringify(d))
+        } catch {
+          console.info("[PortalOne] iframe debug", d)
+        }
         return
       }
 
@@ -422,7 +426,7 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
           Math.max(Math.ceil(h), 280),
           Math.floor(window.innerHeight * 0.92)
         )
-        console.info("[PortalOne] iframe resize", { reported: h, target })
+        console.info(`[PortalOne] iframe resize reported=${h} target=${target}`)
         setIframeHeight((prev) => (Math.abs(prev - target) < 4 ? prev : target))
         return
       }
