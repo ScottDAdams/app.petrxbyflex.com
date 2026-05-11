@@ -411,7 +411,10 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
 
       if (action === "resize") {
         const h = Number(d.height)
-        if (!Number.isFinite(h) || h <= 0) return
+        if (!Number.isFinite(h) || h <= 0) {
+          console.info("[PortalOne] iframe resize ignored", { raw: d.height })
+          return
+        }
         // OneInc's #PortalOneFrame is anchored at top:0/left:0 of our iframe
         // body and its height equals the modal content exactly, so we match
         // 1:1 (no allowance) and just clamp to the viewport.
@@ -419,6 +422,7 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
           Math.max(Math.ceil(h), 280),
           Math.floor(window.innerHeight * 0.92)
         )
+        console.info("[PortalOne] iframe resize", { reported: h, target })
         setIframeHeight((prev) => (Math.abs(prev - target) < 4 ? prev : target))
         return
       }

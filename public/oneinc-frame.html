@@ -90,6 +90,20 @@
       _lastReportedHeight = rounded;
       post("resize", { height: rounded });
     }
+    function snapshotFrame(frame) {
+      try {
+        var rect = frame.getBoundingClientRect();
+        return {
+          id: frame.id,
+          rectH: Math.ceil(rect.height),
+          rectW: Math.ceil(rect.width),
+          inlineH: (frame.style && frame.style.height) || "",
+          inlineW: (frame.style && frame.style.width) || "",
+          inlineTop: (frame.style && frame.style.top) || "",
+          inlinePos: (frame.style && frame.style.position) || ""
+        };
+      } catch (_) { return null; }
+    }
     function watchPortalOneFrame() {
       var attempts = 0;
       function findFrame() {
@@ -98,8 +112,9 @@
           || null;
       }
       function attach(frame) {
-        var rect = frame.getBoundingClientRect();
-        reportHeight(rect.height);
+        var snap = snapshotFrame(frame);
+        post("debug", { stage: "frame-attach", snap: snap });
+        reportHeight(frame.getBoundingClientRect().height);
         if (typeof ResizeObserver === "function") {
           var ro = new ResizeObserver(function (entries) {
             for (var i = 0; i < entries.length; i++) {
@@ -108,20 +123,27 @@
           });
           ro.observe(frame);
         }
-        // Belt-and-suspenders: OneInc mutates style.height via inline JS, which
-        // ResizeObserver should still catch, but a MutationObserver on the
-        // style attribute makes the resize feel instant on the screen swap.
         if (typeof MutationObserver === "function") {
           var mo = new MutationObserver(function () {
+            var s = snapshotFrame(frame);
+            post("debug", { stage: "frame-style-mut", snap: s });
             reportHeight(frame.getBoundingClientRect().height);
           });
           mo.observe(frame, { attributes: true, attributeFilter: ["style"] });
         }
+        // Belt-and-suspenders: also report height periodically for 12s so we
+        // catch the actual resize value even if Observer fires before OneInc
+        // sets the explicit pixel height.
+        var ticks = 0;
+        var iv = setInterval(function () {
+          reportHeight(frame.getBoundingClientRect().height);
+          if (++ticks > 48) clearInterval(iv);
+        }, 250);
       }
       function tick() {
         var f = findFrame();
         if (f) {
-          post("debug", { stage: "frame-found", afterMs: attempts * 150, id: f.id, h: Math.ceil(f.getBoundingClientRect().height) });
+          post("debug", { stage: "frame-found", afterMs: attempts * 150, snap: snapshotFrame(f) });
           attach(f);
           return;
         }
