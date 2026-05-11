@@ -121,8 +121,20 @@
       }
       function tick() {
         var p = findPane();
-        if (p) { attach(p); return; }
-        if (++attempts < 40) setTimeout(tick, 150);
+        if (p) {
+          post("debug", { stage: "pane-found", afterMs: attempts * 150, tag: p.tagName, cls: p.className });
+          attach(p);
+          return;
+        }
+        if (++attempts < 60) {
+          setTimeout(tick, 150);
+        } else {
+          // Couldn't find a CDK overlay. Surface what the iframe DOM actually
+          // looks like so we can diagnose. Caps at 800 chars to avoid spam.
+          var snapshot = "";
+          try { snapshot = String(document.body.innerHTML || "").slice(0, 800); } catch (_) {}
+          post("debug", { stage: "pane-not-found", afterMs: attempts * 150, bodySnapshot: snapshot });
+        }
       }
       tick();
     }
@@ -165,7 +177,6 @@
           var fb = document.getElementById("petrx-frame-fallback");
           if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
           post("loadComplete");
-          watchPaneSize();
         });
 
         $c.on("portalOne.unload", function () {
@@ -202,6 +213,26 @@
 
         post("makePayment", { payload: payload });
         instance.makePayment(payload);
+
+        // Start watching for the modal pane unconditionally. V2's SDK does not
+        // reliably fire `portalOne.loadComplete` on jQuery, so we can't gate
+        // sizing on that event. The retry loop in watchPaneSize() polls for
+        // `.cdk-overlay-pane` every 150ms for up to ~6s, which is plenty for
+        // OneInc to inject its Angular overlay.
+        watchPaneSize();
+
+        // Also clear the placeholder once we see the pane, in case
+        // loadComplete never fires.
+        var clearFallbackWhenPaneVisible = function () {
+          var p = document.querySelector(".cdk-overlay-pane");
+          if (p) {
+            var fb = document.getElementById("petrx-frame-fallback");
+            if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
+            return;
+          }
+          setTimeout(clearFallbackWhenPaneVisible, 150);
+        };
+        clearFallbackWhenPaneVisible();
       })
       .catch(function (err) {
         setFallback("We couldn't load the payment form. Please refresh the page to try again.");

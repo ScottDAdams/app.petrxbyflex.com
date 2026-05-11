@@ -404,6 +404,11 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
         return
       }
 
+      if (action === "debug") {
+        console.info("[PortalOne] iframe debug", d)
+        return
+      }
+
       if (action === "resize") {
         const h = Number(d.height)
         if (!Number.isFinite(h) || h <= 0) return
