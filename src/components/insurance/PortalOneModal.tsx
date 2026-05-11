@@ -769,7 +769,7 @@ export function PortalOneModal({
           style={{
             position: "fixed",
             inset: 0,
-            zIndex: 9000,
+            zIndex: 45000,
             background: "rgba(15, 23, 42, 0.55)",
           }}
         />,
@@ -790,11 +790,12 @@ export function PortalOneModal({
             position: "fixed",
             inset: 0,
             width: "100vw",
-            height: "100vh",
+            height: "100dvh",
+            minHeight: "100vh",
             border: "none",
             background: "transparent",
             colorScheme: "normal",
-            zIndex: 9001,
+            zIndex: 45001,
           }}
         />,
         document.body,

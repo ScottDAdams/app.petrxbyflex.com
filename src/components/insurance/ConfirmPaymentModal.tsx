@@ -19,9 +19,12 @@ export type ConfirmPaymentModalProps = {
  * card showing a personalized greeting, the monthly premium / amount due, and
  * CONTINUE / CANCEL buttons. Click CONTINUE to mount the OneInc PortalOne modal.
  *
- * OneInc's own confirmationDisplay notice is intentionally disabled in
- * public/oneinc-frame.html so the flow goes:
- *   ConfirmPaymentModal (Pay Now) -> OneInc card-entry directly (no notice).
+ * Whether OneInc shows its extra ``NOTICE`` interstitial is driven by portal
+ * configuration for the **browser origin** passed on ``start-with-parameters``
+ * (see ``ONEINC_INTEGRATION.md`` HAR diff: ``EnabledPortalUseCases`` empty for
+ * ``app.petrxbyflex.com`` vs populated for ``www.hptest.info``). We still send
+ * ``confirmationDisplay: false`` from ``oneinc-frame.html`` so the SDK gets an
+ * explicit intent; the tenant must still map our origin to the same profile as HP.
  *
  * This component takes no responsibility for OneInc state; it's a pure
  * presentational gate. The launcher owns "have we initialized OneInc yet?".
@@ -44,40 +47,54 @@ export function ConfirmPaymentModal({
 
   if (typeof document === "undefined") return null
 
+  // Stack above in-app overlays (guided tour / wallet / loaders use ≤9999).
+  // Single scrollable layer: avoids clipped headers when the card is taller
+  // than the viewport and prevents a “detached” dim vs. card shadow artifact.
+  const Z = 45000
+
   return createPortal(
-    <>
-      <div
-        aria-hidden
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(15, 23, 42, 0.55)",
-          zIndex: 9000,
-        }}
-      />
+    <div
+      role="presentation"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: Z,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehavior: "contain",
+        WebkitOverflowScrolling: "touch",
+        background: "rgba(15, 23, 42, 0.55)",
+        boxSizing: "border-box",
+        paddingTop: "max(16px, env(safe-area-inset-top, 0px))",
+        paddingRight: "max(16px, env(safe-area-inset-right, 0px))",
+        paddingBottom: "max(16px, env(safe-area-inset-bottom, 0px))",
+        paddingLeft: "max(16px, env(safe-area-inset-left, 0px))",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100%",
+      }}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="petrx-confirm-payment-title"
         style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9001,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "16px",
-          pointerEvents: "none",
+          width: "min(560px, 100%)",
+          maxWidth: "100%",
+          maxHeight: "min(calc(100dvh - 32px), calc(100vh - 32px))",
+          overflowY: "auto",
+          margin: "auto",
+          flexShrink: 0,
         }}
       >
         <div
           style={{
-            pointerEvents: "auto",
             background: "#ffffff",
             borderRadius: "12px",
             boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
             padding: "32px 36px 28px 36px",
-            width: "min(560px, 100%)",
+            width: "100%",
             color: "#0f172a",
             fontFamily:
               "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
@@ -269,7 +286,7 @@ export function ConfirmPaymentModal({
           </p>
         </div>
       </div>
-    </>,
+    </div>,
     document.body,
   )
 }
