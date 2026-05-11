@@ -346,13 +346,14 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
   const containerRef = React.useRef<HTMLDivElement>(null)
   const initLoggedRef = React.useRef(false)
   const iframeObserverRef = React.useRef<MutationObserver | null>(null)
+  // Resolved once per render so the render branch below stays in sync with the effect.
+  const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
 
   React.useEffect(() => {
     if (!sessionId) return
     if (_initializedSessions.has(sessionId)) return
     _initializedSessions.add(sessionId)
 
-    const modalVersion = getOneIncModalVersion()
     const scriptUrl = getPortalOneScriptUrl(modalVersion)
     console.info("[PortalOne] modal version selected", { modalVersion, scriptUrl })
     ensureJQuery()
@@ -560,24 +561,69 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
       iframeObserverRef.current?.disconnect()
       iframeObserverRef.current = null
     }
-  }, [sessionId, amount, leadId, onInitError, onPaymentComplete])
+  }, [sessionId, amount, leadId, modalVersion, onInitError, onPaymentComplete])
 
+  // Legacy v1 SDK has always rendered inline. Keep that path unchanged so the live
+  // production flow is not perturbed by V2 styling work.
+  if (modalVersion !== "v2") {
+    return (
+      <div
+        id="portalOneContainer"
+        ref={containerRef}
+        className="portal-one-container"
+        style={
+          isMobileDevice()
+            ? {}
+            : {
+                position: "relative",
+                width: "100%",
+                height: "950px",
+                overflow: "hidden",
+                transform: "translateZ(0)",
+              }
+        }
+      />
+    )
+  }
+
+  // GenericModalV2 inline embed renders its content at the top of a tall iframe and
+  // leaves the rest of the container as gray gutter. Wrapping #portalOneContainer in a
+  // fixed full-page backdrop + centered card collapses that gutter to "outside the
+  // card" and gives the user a real overlay feel. ``backdrop`` only intercepts pointer
+  // events on its own area; ``#portalOneContainer`` keeps the exact id the V2 SDK looks
+  // up via getElementById, so the SDK still mounts cleanly into it.
+  const mobile = isMobileDevice()
   return (
     <div
-      id="portalOneContainer"
-      ref={containerRef}
-      className="portal-one-container"
-      style={
-        isMobileDevice()
-          ? {}
-          : {
-              position: "relative",
-              width: "100%",
-              height: "950px",
-              overflow: "hidden",
-              transform: "translateZ(0)",
-            }
-      }
-    />
+      role="dialog"
+      aria-modal="true"
+      aria-label="Payment"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9000,
+        background: "rgba(15, 23, 42, 0.55)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: mobile ? 0 : 24,
+      }}
+    >
+      <div
+        id="portalOneContainer"
+        ref={containerRef}
+        className="portal-one-container portal-one-container--v2"
+        style={{
+          position: "relative",
+          width: mobile ? "100%" : "min(560px, 100%)",
+          height: mobile ? "100%" : "min(820px, 92vh)",
+          background: "#ffffff",
+          borderRadius: mobile ? 0 : 16,
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
+          overflow: "hidden",
+          transform: "translateZ(0)",
+        }}
+      />
+    </div>
   )
 }
