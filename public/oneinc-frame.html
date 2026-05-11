@@ -268,9 +268,12 @@
           amountContextDefault: "minimumAmountDue",
           minAmountDue: amount,
           accountBalance: amount,
-          // confirmationDisplay/acknowledgmentRequired intentionally omitted:
-          // the React app shows its own ConfirmPaymentModal first (HP pattern),
-          // so OneInc opens directly on the card-entry screen.
+          // OneInc V2 shows its confirmation notice unless these are explicitly
+          // false — omitting them isn't enough. Our React ConfirmPaymentModal is
+          // the pre-payment summary now, so we suppress OneInc's notice and go
+          // straight to the card-entry screen (HP production pattern).
+          confirmationDisplay: "false",
+          acknowledgmentRequired: "false",
           saveOption: "Save",
           clientReferenceData1: leadId,
           operation: "makePayment",
