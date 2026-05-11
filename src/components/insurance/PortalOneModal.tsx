@@ -614,51 +614,83 @@ export function PortalOneModal({ sessionId, amount, leadId, memberId: _memberId,
     )
   }
 
-  // GenericModalV2 renders its content inline at the top of ``#portalOneContainer`` and
-  // does NOT honor ``displayMode: "Modal"`` (we tried — the modal still rendered inline).
-  // To avoid the gray gutter the SDK shows below short screens (notice / acknowledgement),
-  // we tighten the container height to the notice modal's intrinsic size. The taller
-  // card-entry form will scroll inside the OneInc iframe — OneInc handles that natively.
+  // GenericModalV2 is Angular CDK based. The SDK injects ``.cdk-overlay-container`` >
+  // ``.cdk-global-overlay-wrapper`` inside ``#portalOneContainer`` and the wrapper is
+  // ``height: 100%`` with flex vertical centering. Whenever our container is taller than
+  // OneInc's current screen (notice vs card-entry have very different intrinsic heights),
+  // that wrapper renders as visible gutter above/below the modal. The fix is to neutralize
+  // the wrapper's height so it collapses to its content. (Verified by the user via DevTools.)
   //
-  // Rendered through a React Portal into ``document.body`` so the overlay escapes the
-  // PaymentStep column flex layout. Any ancestor ``transform`` would otherwise re-base
-  // ``position: fixed`` to that ancestor per the CSS containing-block rule, which is what
-  // broke the dim on earlier attempts.
+  // Layout:
+  // 1) A full-viewport dim is portaled into ``document.body`` (matches the user's
+  //    "full page dim is fine" feedback).
+  // 2) ``#portalOneContainer`` is portaled into ``#payment-step-overlay-host`` (the right
+  //    column on PaymentStep) and centered there with absolute positioning, so the modal
+  //    sits centered on the quote panel rather than the whole viewport. Falls back to body
+  //    + position:fixed when the host is missing.
+  // 3) A scoped ``<style>`` override removes the CDK wrapper's forced height inside our
+  //    container only — no risk to other CDK overlays elsewhere on the app.
   const mobile = isMobileDevice()
   if (typeof document === "undefined") return null
-  return createPortal(
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Payment"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9000,
-        background: "rgba(15, 23, 42, 0.55)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: mobile ? 0 : 24,
-      }}
-    >
-      <div
-        id="portalOneContainer"
-        ref={containerRef}
-        className="portal-one-container portal-one-container--v2"
-        style={{
-          position: "relative",
-          width: mobile ? "100%" : "min(480px, 100%)",
-          // 400px fits the notice acknowledgement card without gutter; the card-entry
-          // form is taller and will scroll inside OneInc's own iframe.
-          height: mobile ? "100%" : "min(400px, 92vh)",
-          background: "transparent",
-          borderRadius: mobile ? 0 : 12,
-          overflow: "hidden",
-          transform: "translateZ(0)",
-        }}
-      />
-    </div>,
-    document.body,
+  const host = document.getElementById("payment-step-overlay-host")
+  const anchored = !!host
+  return (
+    <>
+      {createPortal(
+        <style>{`
+          /* OneInc V2's Angular CDK wrapper forces height:100% (and sometimes inset:0
+             / bottom:0), which produces gutter above/below the modal whenever our host
+             element is taller than the current OneInc screen. Collapsing it to content
+             height eliminates that gutter. The user verified the height:100% removal
+             via DevTools; the bottom:auto / position-static fallbacks defensively cover
+             SDK variants that use inset:0 instead. */
+          #portalOneContainer .cdk-global-overlay-wrapper {
+            height: auto !important;
+            bottom: auto !important;
+          }
+        `}</style>,
+        document.head,
+      )}
+      {createPortal(
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9000,
+            background: "rgba(15, 23, 42, 0.55)",
+          }}
+        />,
+        document.body,
+      )}
+      {createPortal(
+        <div
+          id="portalOneContainer"
+          ref={containerRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Payment"
+          className="portal-one-container portal-one-container--v2"
+          style={{
+            position: anchored ? "absolute" : "fixed",
+            top: "50%",
+            left: "50%",
+            // translateZ(0) creates a containing block so the CDK's position:fixed
+            // overlay constrains to our container instead of the viewport.
+            transform: "translate(-50%, -50%) translateZ(0)",
+            width: mobile ? "100%" : "min(480px, 100%)",
+            // Explicit height (not max-height) so the CDK's position:fixed children have
+            // a definite size to attach to; the CDK wrapper override above collapses the
+            // wrapper to content height so the visible modal is gutter-free regardless.
+            height: mobile ? "100%" : "min(720px, 92vh)",
+            background: "transparent",
+            borderRadius: mobile ? 0 : 12,
+            overflow: "hidden",
+            zIndex: 9001,
+          }}
+        />,
+        host || document.body,
+      )}
+    </>
   )
 }

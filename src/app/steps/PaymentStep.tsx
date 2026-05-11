@@ -42,7 +42,14 @@ export function PaymentStep({
   submitting = false,
 }: PaymentStepProps) {
   return (
-    <div className="step-body step-body--payment">
+    // ``position: relative`` + the host id anchor the OneInc V2 modal container to this
+    // right-column panel via React Portal. The dim still covers the full viewport
+    // (separate portal into document.body); only the modal pane is centered here.
+    <div
+      id="payment-step-overlay-host"
+      className="step-body step-body--payment"
+      style={{ position: "relative" }}
+    >
       <PartnerBar />
       <h2 className="step-body__title">Payment</h2>
       <p className="step-body__subtitle">
