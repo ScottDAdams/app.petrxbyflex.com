@@ -83,6 +83,15 @@ function processInsuranceProducts(products: unknown[]): ProcessedPlans {
   }
 }
 
+/** HP quote line id for the selected plan row (see LeadLoadingContext insurance_products). */
+function quoteDetailIdForPolicy(
+  policy: Record<string, unknown> | null | undefined,
+  fallback: string | undefined,
+): string | undefined {
+  const raw = policy?.quote_detail_id
+  return typeof raw === "string" && raw.trim().length > 0 ? raw.trim() : fallback
+}
+
 /**
  * ⚠️ ADAPTER BOUNDARY RULE:
  * 
@@ -609,13 +618,23 @@ export function CardAndQuoteFlow() {
           setTransitionError("Missing zip code. Please check your pet information.")
           return
         }
-        
+
+        const quoteDetailIdForHp = quoteDetailIdForPolicy(
+          selectedPolicy as Record<string, unknown>,
+          sessionQuoteDetailId,
+        )
+        if (!quoteDetailIdForHp) {
+          setTransitionError("Missing quote detail for this plan. Please refresh the page and try again.")
+          setTransitioning(false)
+          return
+        }
+
         // Call SetPlan (HP requires: affiliateCode, zipCode, emailAddress, quoteDetailId, planId)
         result = await enrollmentAdapter.setPlan({
           emailAddress: ownerEmail,
           affiliateCode: "FLEXEMBD",
           zipCode,
-          quoteDetailId: sessionQuoteDetailId,
+          quoteDetailId: quoteDetailIdForHp,
           planId,
         })
         
@@ -632,6 +651,7 @@ export function CardAndQuoteFlow() {
             deductible: selectedDeductible,
             is_high_deductible: selectedPlanId === "value",
           },
+          quote_detail_id: quoteDetailIdForHp,
         })
         stepJustSetByContinueRef.current = "details"
         setSession(returned)
@@ -669,18 +689,19 @@ export function CardAndQuoteFlow() {
         
         const acceptElectronicConsent = true
 
-        // Session pet has birth_month/birth_year; HP API requires dateOfBirth as YYYY-MM-DD (no empty string)
+        // Must match LeadLoadingContext CreateLead pet DOB: month/year → YYYY-MM-01 (not full
+        // date_of_birth first), or HP setup-pending often returns 500 when pet identity drifts.
         const rawMonth = pet.birth_month as number | undefined | null
         const rawYear = pet.birth_year as number | undefined | null
         const birthMonth = typeof rawMonth === "number" && rawMonth >= 1 && rawMonth <= 12 ? rawMonth : undefined
         const birthYear = typeof rawYear === "number" && rawYear > 1900 && rawYear < 2100 ? rawYear : undefined
-        let petDateOfBirth = (pet.date_of_birth as string)?.trim() || ""
-        if (!petDateOfBirth && (birthYear != null || birthMonth != null)) {
-          if (birthYear != null && birthMonth != null) {
-            petDateOfBirth = `${birthYear}-${String(birthMonth).padStart(2, "0")}-01`
-          } else if (birthYear != null) {
-            petDateOfBirth = `${birthYear}-01-01`
-          }
+        let petDateOfBirth = ""
+        if (birthYear != null && birthMonth != null) {
+          petDateOfBirth = `${birthYear}-${String(birthMonth).padStart(2, "0")}-01`
+        } else if (birthYear != null) {
+          petDateOfBirth = `${birthYear}-01-01`
+        } else {
+          petDateOfBirth = (pet.date_of_birth as string)?.trim() || ""
         }
         if (!petDateOfBirth || petDateOfBirth.length < 8) {
           console.error("[CardAndQuoteFlow] Missing pet date of birth:", {
@@ -730,7 +751,11 @@ export function CardAndQuoteFlow() {
         const planIdForResync =
           (sessionPlan?.plan_id as string | undefined) ||
           (selectedPolicy?.plan_id as string | undefined)
-        if (!sessionQuoteDetailId || !planIdForResync) {
+        const quoteDetailIdForSetup = quoteDetailIdForPolicy(
+          selectedPolicy as Record<string, unknown>,
+          sessionQuoteDetailId,
+        )
+        if (!quoteDetailIdForSetup || !planIdForResync) {
           setTransitionError(
             "Missing quote or plan information. Return to the quote step, then continue again.",
           )
@@ -746,7 +771,7 @@ export function CardAndQuoteFlow() {
           emailAddress: activeFormData.email.trim(),
           affiliateCode: "FLEXEMBD",
           zipCode: zipForHp,
-          quoteDetailId: sessionQuoteDetailId,
+          quoteDetailId: quoteDetailIdForSetup,
           planId: planIdForResync,
         })
         if (setPlanResync.error) {

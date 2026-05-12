@@ -197,7 +197,12 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: `HTTP ${response.status}` }))
-        
+        const nested = error as { error?: { upstream?: { message?: string; subMessage?: string } } }
+        const upstreamMsg = nested.error?.upstream
+        const upstreamStr =
+          upstreamMsg &&
+          `${upstreamMsg.message ?? ""}${upstreamMsg.subMessage ? ` — ${upstreamMsg.subMessage}` : ""}`.trim()
+
         // Check for timeout error (504 Gateway Timeout)
         if (response.status === 504 || (error.error === "Upstream timeout" || error.message?.includes("too long"))) {
           const timeoutError = new Error(error.message || "HealthyPaws took too long to respond. Please try again.")
@@ -205,8 +210,12 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
           ;(timeoutError as any).requestId = error.request_id
           throw timeoutError
         }
-        
-        throw new Error(error.message || `SetupPending failed: ${response.status}`)
+
+        const msg =
+          (typeof error.message === "string" && error.message) ||
+          upstreamStr ||
+          `SetupPending failed: ${response.status}`
+        throw new Error(msg)
       }
 
       const data = await response.json()

@@ -169,7 +169,9 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
       for (const quote of quotes) {
         const quotePets = (quote.pets ?? []) as Array<Record<string, unknown>>
         if (quotePets.length === 0) continue
-        const pricing = (quotePets[0].pricing ?? {}) as Record<string, unknown>
+        const qp0 = quotePets[0]
+        const qdThis = (qp0.quoteDetailId ?? qp0.quote_detail_id) as string | undefined
+        const pricing = (qp0.pricing ?? {}) as Record<string, unknown>
         const deductible = (quote.annualDeductibleUsd as number) ?? 500
         const reimbursementPct = (quote.reimbursementPercentage as number) ?? 80
         const monthlyRaw = (pricing.monthlyPriceUsd ?? pricing.firstYearMonthlyPriceUsd ?? 0) as number
@@ -186,6 +188,9 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
           plan_id: quotePlanId,
           isDefaultPlan: pricing.isDefaultPlan ?? false,
           isHighDeductible,
+          // Each HP quote line has its own quoteDetailId; SetPlan/SetupPending must use the id
+          // for the line matching the selected plan_id, not only the first quote in the array.
+          quote_detail_id: qdThis ?? "",
         })
       }
       if (insuranceProducts.length === 0) {
@@ -196,6 +201,7 @@ export function LeadLoadingProvider({ children }: { children: React.ReactNode })
           plan_id: planId ?? "70_500",
           isDefaultPlan: false,
           isHighDeductible: false,
+          quote_detail_id: quoteDetailId ?? "",
         })
       }
 
