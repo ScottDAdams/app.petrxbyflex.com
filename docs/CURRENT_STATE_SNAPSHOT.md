@@ -1,9 +1,9 @@
 # PetRx Enrollment Flow - Current State Snapshot
 
 **Generated:** 2026-02-10
-**Last refreshed:** 2026-05-11 (OneInc V2 + iframe-isolation + close/reopen)
+**Last refreshed:** 2026-05-12 (HP SetupPending alignment: quoteDetailId per plan, DOB parity, SetPlan resync)
 **Repo:** `@PetRx/app.petrxbyflex.com/`
-**Purpose:** Document the quote → details → payment → confirm flow WITHOUT making code changes
+**Purpose:** Document the quote → details → payment → confirm flow (reference for engineers; code is source of truth)
 
 ---
 
@@ -24,9 +24,11 @@ quote → details → payment → confirm
   - **CreateLead** (if `lead_id`/`quote_detail_id` missing): `POST /api/enrollment/lead`
     - Called by: `LeadLoadingContext` (automatic on mount)
     - Stores: `lead_id`, `quote_detail_id`, `insurance_products[]` in session
+    - Each `insurance_products[]` row includes **`quote_detail_id`** for that HP quote line (same row as `plan_id`). The session column `quote_detail_id` remains a convenience default (first line); **SetPlan must use the id for the row the shopper selected.**
   - **SetPlan** (on "Continue to Details"): `POST /api/enrollment/set-plan`
     - Called by: `CardAndQuoteFlow.handleCtaClick()` → `enrollmentAdapter.setPlan()`
-    - Updates: Session step to `"details"` via `updateSessionStep()`
+    - Uses **`quoteDetailId`** resolved from the selected plan row (`quote_detail_id` on the matching `insurance_products` entry, fallback to session `quote_detail_id`).
+    - Updates: Session step to `"details"` via `updateSessionStep()`, including **`quote_detail_id`** on the PATCH so the DB matches the selected line.
 - **State Management:**
   - Plans sourced from: `session.insurance_products[]` → `processInsuranceProducts()` → `ProcessedPlans`
   - Selected plan stored in: `selectedPlanIdFromHP` (state) + `selectedReimbursement` + `selectedDeductible`
@@ -38,6 +40,8 @@ quote → details → payment → confirm
 - **Step Source:** `session.current_step` OR `mockStep`
 - **API Calls:**
   - **SetupPending** (on "Continue to Payment"): `POST /api/enrollment/setup-pending`
+    - **Before** SetupPending: **`setPlan` is called again** with the details-form **email**, **zip**, **`quoteDetailId` for the selected plan**, and **`plan_id`** so HP’s lead/plan state matches what we send on setup (avoids upstream 500 → our 502 when the user edits email/zip on details).
+    - **Pet `dateOfBirth`:** Computed the **same way as CreateLead** in `LeadLoadingContext`: if `birth_month` + `birth_year` exist, use `YYYY-MM-01` (or `YYYY-01-01` if year only); otherwise use `pet.date_of_birth`. Preferring a full `date_of_birth` when month/year exist **diverged from CreateLead** and caused HP `setuppendingaccount` failures.
     - Called by: `CardAndQuoteFlow.handleCtaClick()` → `enrollmentAdapter.setupPending()`
     - Returns: `accountId`, `monthlyTotalPayment` (stored in `authorizedAmount` state)
     - Updates: Session step to `"payment"` via `updateSessionStep()`
@@ -218,7 +222,7 @@ quote → details → payment → confirm
   emailAddress: string,
   affiliateCode: "FLEXEMBD",
   zipCode: string,
-  quoteDetailId: string,  // From CreateLead response
+  quoteDetailId: string,  // Must match the selected plan’s HP quote line (see insurance_products[].quote_detail_id)
   planId: string  // From HP policies (selectedPlanIdFromHP)
 }
 ```
@@ -226,6 +230,7 @@ quote → details → payment → confirm
 ### SetupPending (`POST /api/enrollment/setup-pending`)
 ```typescript
 {
+  session_id?: string,  // Optional; backend may persist accountId / amount on session
   lead: {
     emailAddress: string,
     affiliateCode: "FLEXEMBD",
@@ -236,6 +241,7 @@ quote → details → payment → confirm
     mailingStreet: string,
     phone: string,  // Normalized: 10 digits, optionally hyphenated
     acceptElectronicConsent: true,
+    acceptTermsAndConditionsConsent: true,  // Required by 2026 HP docs; adapter sends true
     leadId: string
   },
   pets: Array<{
@@ -305,8 +311,8 @@ const effectiveStep = (mockStep ?? session.current_step ?? "quote").toLowerCase(
 3. Default: `"quote"`
 
 ### Step Transitions (State-Driven)
-- **Quote → Details:** `adapter.setPlan()` → `updateSessionStep("details")`
-- **Details → Payment:** `adapter.setupPending()` → `updateSessionStep("payment")`
+- **Quote → Details:** `adapter.setPlan()` → `updateSessionStep("details")` (PATCH includes `quote_detail_id` for the selected plan row)
+- **Details → Payment:** `adapter.setPlan()` (resync) → `adapter.setupPending()` → `updateSessionStep("payment")`
 - **Payment → Confirm:** `adapter.enroll()` → `updateSessionStep("confirm")`
 
 **Rule:** All transitions go through adapter methods. UI never directly mutates step.

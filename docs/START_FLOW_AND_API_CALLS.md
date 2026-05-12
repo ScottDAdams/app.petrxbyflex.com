@@ -66,7 +66,7 @@ Session must have: `pet.zip_code`, `pet.name`, `pet.birth_month` or `pet.birth_y
 After success we:
 
 - Set **enrollmentState**: `leadId`, `quoteDetailId`, `planId`.
-- Transform **quotes** → **insurance_products** (deductible, reimbursement, monthly_premium, plan_id, isDefaultPlan).
+- Transform **quotes** → **insurance_products** (deductible, reimbursement, monthly_premium, plan_id, isDefaultPlan, **`quote_detail_id`** per HP quote line).
 - Call **Call 3** (below).
 
 ### 3.2 Call 3: PATCH session (products + lead ids)
@@ -135,7 +135,7 @@ If we have both ids:
 | What | Details |
 |------|---------|
 | **Call** | `POST https://api.petrxbyflex.com/api/enrollment/set-plan` (via adapter) |
-| **Body** | `emailAddress`, `affiliateCode`, `zipCode`, `quoteDetailId`, `planId` |
+| **Body** | `emailAddress`, `affiliateCode`, `zipCode`, `quoteDetailId`, `planId` — **`quoteDetailId` must be the id for the same quote line as `planId`** (from `insurance_products[].quote_detail_id` for the selected plan; session `quote_detail_id` alone is not sufficient when multiple HP quotes exist). |
 | **Returns** | Adapter returns `step: "details"` and optional `redirectUrl` |
 
 **Possible issues:**
@@ -148,7 +148,7 @@ If we have both ids:
 | What | Details |
 |------|---------|
 | **Call** | `PATCH https://api.petrxbyflex.com/enroll/session` |
-| **Body** | `session_id`, `current_step: "details"`, `plan: { reimbursement, deductible }` |
+| **Body** | `session_id`, `current_step: "details"`, `plan: { reimbursement, deductible, … }`, **`quote_detail_id`** (same value sent to SetPlan) |
 
 **Possible issues:**
 
@@ -167,17 +167,22 @@ Then we set `transitioning(false)` and the UI shows the **Your details** step.
 
 ## 6. User clicks “Continue to Payment” (details → payment)
 
+### 6.0 Call 8b: POST SetPlan (resync, same adapter)
+
+Immediately before SetupPending, **`setPlan` runs again** with the details-form **email** and **zip**, the **same `quoteDetailId` / `planId` as the selected policy**, so HP’s stored lead/plan matches the SetupPending payload. Skipping this when the user changes email or zip on the details step commonly produced **HP 500 → PetRx 502**.
+
 ### 6.1 Call 9: SetupPending (adapter)
 
 | What | Details |
 |------|---------|
 | **Call** | Backend enrollment API (SetupPending) via adapter |
 | **Input** | lead (email, zipCode, leadId, …), pets (with deductible/reimbursement), acceptElectronicConsent |
+| **Pet DOB** | Must match **CreateLead**: if `birth_month` + `birth_year` exist, use `YYYY-MM-01` (or year-only → `YYYY-01-01`); do **not** prefer a full `date_of_birth` ahead of month/year when both exist, or HP `setuppendingaccount` can fail. |
 
 **Possible issues:**
 
 - **Missing enrollmentState.leadId** → We show “Missing leadId. Please start from the quote step.” (shouldn’t happen if user came from quote step in same session).
-- **Missing pet.date_of_birth** → Session has `birth_month`/`birth_year` but adapter may expect `date_of_birth`; could cause validation/API errors.
+- **502 from PetRx** → Usually HP upstream 5xx (`Unknown exception` / generic). After the resync + DOB + per-plan `quoteDetailId` fixes, remaining cases are often **breed / tenant data**; check API logs for `SetupPending failure context` and open an HP ticket with `leadId`.
 
 ### 6.2 Call 10: PATCH session (step = payment)
 
@@ -205,7 +210,7 @@ Then we set `transitioning(false)` and the UI shows the **Your details** step.
 | 4 | After PATCH | GET | `/enroll/session?session_id=...` — refetch |
 | 5 | If zip present | GET | `https://api.zippopotam.us/us/{zip}` — city/state (optional) |
 | 6 | “Continue to Details” | POST | `/api/enrollment/set-plan` — SetPlan |
-| 7 | After SetPlan | PATCH | `/enroll/session` — step + plan |
+| 7 | After SetPlan | PATCH | `/enroll/session` — step + plan + **quote_detail_id** |
 | 8 | After PATCH | GET | `/enroll/session?session_id=...` — refetch |
 
 ---
@@ -228,4 +233,4 @@ Then we set `transitioning(false)` and the UI shows the **Your details** step.
    External, CORS or rate limits can prevent city/state pre-fill; flow still works, details form just doesn’t get city/state from zip.
 
 6. **SetupPending / Enroll**  
-   Depend on correct lead/pet/consent data; mismatched or missing fields (e.g. date_of_birth) can cause API errors even if quote and SetPlan succeeded.
+   Depend on correct lead/pet/consent data and **consistency with CreateLead + SetPlan** (`quoteDetailId` for the selected plan row, pet DOB derivation, resync SetPlan before setup when details form edits email/zip). Stale sessions without `quote_detail_id` on each `insurance_products` row still fall back to session-level `quote_detail_id` until the shopper refreshes or gets a new lead.
