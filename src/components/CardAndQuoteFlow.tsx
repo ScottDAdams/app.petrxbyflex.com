@@ -722,12 +722,45 @@ export function CardAndQuoteFlow() {
           return
         }
 
+        // SetPlan was called at quote→details with session owner email + pet/owner zip. If the
+        // customer edits email or zip on the details form, HP often returns 500 on SetupPending
+        // unless SetPlan is repeated with the same values we send here.
+        const zipForHp =
+          activeFormData.zip?.trim() || ((pet.zip_code || owner.zip_code || "") as string).trim()
+        const planIdForResync =
+          (sessionPlan?.plan_id as string | undefined) ||
+          (selectedPolicy?.plan_id as string | undefined)
+        if (!sessionQuoteDetailId || !planIdForResync) {
+          setTransitionError(
+            "Missing quote or plan information. Return to the quote step, then continue again.",
+          )
+          setTransitioning(false)
+          return
+        }
+        if (!zipForHp) {
+          setTransitionError("Zip code is required.")
+          setTransitioning(false)
+          return
+        }
+        const setPlanResync = await enrollmentAdapter.setPlan({
+          emailAddress: activeFormData.email.trim(),
+          affiliateCode: "FLEXEMBD",
+          zipCode: zipForHp,
+          quoteDetailId: sessionQuoteDetailId,
+          planId: planIdForResync,
+        })
+        if (setPlanResync.error) {
+          setTransitionError(setPlanResync.error)
+          setTransitioning(false)
+          return
+        }
+
         result = await enrollmentAdapter.setupPending({
           session_id: session.session_id,
           lead: {
             emailAddress: activeFormData.email.trim(),
             affiliateCode: "FLEXEMBD",
-            zipCode: activeFormData.zip?.trim() || (pet.zip_code || owner.zip_code || "") as string,
+            zipCode: zipForHp,
             stateCode,
             firstName: activeFormData.firstName.trim(),
             lastName: activeFormData.lastName.trim(),
