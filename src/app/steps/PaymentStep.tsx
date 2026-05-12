@@ -24,11 +24,7 @@ export type PaymentStepProps = {
    * Hides the review CTA and shows a submitting indicator so the Continue button never flashes.
    */
   submitting?: boolean
-  /**
-   * Customer identity threaded into the ConfirmPaymentModal greeting and into
-   * OneInc V2 makePayment so "Name On Card" / "Billing Zip" come pre-filled.
-   */
-  customerFirstName?: string
+  /** Threaded into OneInc V2 ``makePayment`` for card / zip pre-fill */
   customerFullName?: string
   billingZip?: string
   billingAddressStreet?: string
@@ -48,7 +44,6 @@ export function PaymentStep({
   paymentAlreadyComplete,
   onPersistedSuccess,
   submitting = false,
-  customerFirstName,
   customerFullName,
   billingZip,
   billingAddressStreet,
@@ -86,11 +81,9 @@ export function PaymentStep({
                 enrollmentSessionId={enrollmentSessionId}
                 paymentAlreadyComplete={paymentAlreadyComplete}
                 onPersistedSuccess={onPersistedSuccess}
-                customerFirstName={customerFirstName}
                 customerFullName={customerFullName}
                 billingZip={billingZip}
                 billingAddressStreet={billingAddressStreet}
-                onCancel={onBack}
               />
             </div>
           </div>

@@ -1028,7 +1028,7 @@ export function CardAndQuoteFlow() {
         const ownerForPayment = session.owner as Record<string, unknown> | undefined
         const firstName = ((ownerForPayment?.first_name as string) || "").trim()
         const lastName = ((ownerForPayment?.last_name as string) || "").trim()
-        const fullName = [firstName, lastName].filter(Boolean).join(" ").trim()
+        const fullName = [firstName, lastName].filter(Boolean).join(" ").trim() // OneInc name-on-card pre-fill
         const billingZipFromOwner =
           ((ownerForPayment?.zip as string) ||
             (ownerForPayment?.zip_code as string) ||
@@ -1046,7 +1046,6 @@ export function CardAndQuoteFlow() {
             enrollmentSessionId={session.session_id}
             paymentAlreadyComplete={paymentAlreadyComplete}
             onPersistedSuccess={() => void refetch()}
-            customerFirstName={firstName || undefined}
             customerFullName={fullName || undefined}
             billingZip={billingZipFromOwner || undefined}
             billingAddressStreet={billingStreetFromOwner || undefined}

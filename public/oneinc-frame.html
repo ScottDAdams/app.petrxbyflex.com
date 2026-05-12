@@ -270,14 +270,9 @@
           amountContextDefault: "minimumAmountDue",
           minAmountDue: amount,
           accountBalance: amount,
-          // OneInc V2 shows its confirmation notice unless these are explicitly
-          // false. The OneInc V2 SDK's makePayment options object is checked as
-          // booleans for these flags; pass primitive false (NOT the string
-          // "false" — that gets coerced to truthy by JS-side checks in their
-          // SDK). Our React ConfirmPaymentModal is the pre-payment summary now,
-          // so we suppress OneInc's notice and go straight to card entry.
-          confirmationDisplay: false,
-          acknowledgmentRequired: false,
+          // Do not set confirmationDisplay / acknowledgmentRequired here: Healthy
+          // Paws production runs NOTICE → portal “MAKE A PAYMENT” → PAYMENT TYPE.
+          // Omitting these lets OneInc apply portal defaults for the session origin.
           saveOption: "Save",
           clientReferenceData1: leadId,
           operation: "makePayment",
