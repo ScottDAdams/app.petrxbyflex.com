@@ -54,12 +54,12 @@ const CONTENT_HOMEPAGE = {
 }
 
 const CONTENT_INSURANCE = {
-  teaserTitle: "Have questions about Pet Insurance?",
-  teaserText: "I'm here to help with PetRx cards, coverage, claims, and more! 🐕",
-  headerTitle: "PetRx & Insurance Assistant",
-  placeholder: "Ask me anything about PetRx cards or pet insurance...",
+  teaserTitle: "Questions while you enroll?",
+  teaserText: "Ask about Healthy Paws coverage, your PetRx card, or what happens next — I'm here for it. 🐾",
+  headerTitle: "PetRx & Healthy Paws helper",
+  placeholder: "Try: What's covered? How do claims work? Can I use any vet?",
   initialMessage:
-    "Hi! I'm here to help answer any questions you have about PetRx cards and pet insurance. What can I assist you with today?",
+    "Hi — I'm here to walk through **Healthy Paws** insurance questions and how the **PetRx** savings card fits in. Ask me anything in your own words (coverage, exclusions, claims, or using your card at the pharmacy). Where it matters, I'll remind you to double-check your policy or HP support for your exact situation. What's on your mind?",
 }
 
 function MessageCircle({ size = 24, color = "currentColor" }: { size?: number; color?: string }) {
