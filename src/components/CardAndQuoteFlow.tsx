@@ -32,15 +32,48 @@ function parseMonthlyPremium(p: Record<string, unknown>): number {
   return NaN
 }
 
-/** Default = lowest-cost Signature plan. Tie-break: lower reimbursement, then higher deductible. */
-function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<string, unknown> | null {
-  if (allPolicies.length === 0) return null
-  const signaturePolicies = allPolicies.filter((p) => (p.isHighDeductible as boolean) !== true)
-  const candidates = signaturePolicies.length > 0 ? signaturePolicies : allPolicies
-  const withPremium = candidates
+/** Target monthly premium for default reimbursement + deductible selection. */
+const TARGET_MONTHLY_PREMIUM_USD = 40
+
+function comparePolicyTieBreak(
+  a: Record<string, unknown>,
+  b: Record<string, unknown>,
+): number {
+  const reimA = (a.reimbursement as number) ?? 0
+  const reimB = (b.reimbursement as number) ?? 0
+  if (reimA !== reimB) return reimB - reimA
+  const dedA = Number(a.deductible) || 0
+  const dedB = Number(b.deductible) || 0
+  return dedA - dedB
+}
+
+/**
+ * Pick reimbursement + deductible closest to $40/mo without going over.
+ * If every option is above target, pick the lowest monthly premium.
+ */
+function pickSweetSpotPolicy(
+  policies: Record<string, unknown>[],
+): Record<string, unknown> | null {
+  if (policies.length === 0) return null
+
+  const withPremium = policies
     .map((p) => ({ p, premium: parseMonthlyPremium(p) }))
     .filter(({ premium }) => Number.isFinite(premium) && premium > 0)
-  if (withPremium.length === 0) return candidates[0] ?? null
+
+  if (withPremium.length === 0) return policies[0] ?? null
+
+  const atOrUnderTarget = withPremium.filter(
+    ({ premium }) => premium <= TARGET_MONTHLY_PREMIUM_USD,
+  )
+
+  if (atOrUnderTarget.length > 0) {
+    atOrUnderTarget.sort((a, b) => {
+      if (a.premium !== b.premium) return b.premium - a.premium
+      return comparePolicyTieBreak(a.p as Record<string, unknown>, b.p as Record<string, unknown>)
+    })
+    return atOrUnderTarget[0].p as Record<string, unknown>
+  }
+
   withPremium.sort((a, b) => {
     if (a.premium !== b.premium) return a.premium - b.premium
     const reimA = (a.p.reimbursement as number) ?? 0
@@ -51,6 +84,14 @@ function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<st
     return dedB - dedA
   })
   return withPremium[0].p as Record<string, unknown>
+}
+
+/** Default Signature plan: sweet spot near $40/mo, else lowest premium. */
+function computeDefaultPolicy(allPolicies: Record<string, unknown>[]): Record<string, unknown> | null {
+  if (allPolicies.length === 0) return null
+  const signaturePolicies = allPolicies.filter((p) => (p.isHighDeductible as boolean) !== true)
+  const candidates = signaturePolicies.length > 0 ? signaturePolicies : allPolicies
+  return pickSweetSpotPolicy(candidates)
 }
 
 function processInsuranceProducts(products: unknown[]): ProcessedPlans {
@@ -309,7 +350,7 @@ export function CardAndQuoteFlow() {
     [products]
   )
 
-  // Hydrate quote selection from DB when session has plan, else lowest-premium Signature default.
+  // Hydrate quote selection from DB when session has plan, else ~$40/mo Signature default.
   const sessionPlan = (session as Record<string, unknown>)?.plan as { plan_id?: string; reimbursement?: string; deductible?: string; is_high_deductible?: boolean } | undefined
   const quoteStepActive = (mockStep ?? session.current_step ?? "quote").toLowerCase() === "quote"
   const lastQuoteSelectionAppliedRef = React.useRef<{ sessionId: string; planId: string | null }>({ sessionId: "", planId: null })
@@ -328,7 +369,7 @@ export function CardAndQuoteFlow() {
     const sessionId = String((session as Record<string, unknown>)?.session_id ?? "")
     const planId = sessionPlan?.plan_id ?? null
     const applied = lastQuoteSelectionAppliedRef.current
-    // When products first load (0 -> N), force re-apply so lowest-cost default is set
+    // When products first load (0 -> N), force re-apply so sweet-spot default is set
     if (prevPoliciesLengthRef.current === 0 && policiesLength > 0) {
       lastQuoteSelectionAppliedRef.current = { sessionId: "", planId: null }
     }
@@ -388,10 +429,10 @@ export function CardAndQuoteFlow() {
   const handlePlanChange = (planId: "signature" | "value") => {
     setSelectedPlanId(planId)
     const isHighDeductible = planId === "value"
-    // Find the first policy matching the plan type (Signature or Value)
-    const matchingPolicy = processedPlans.allPolicies.find(
-      (p) => (p.isHighDeductible as boolean) === isHighDeductible
-    )
+    const tierPolicies = processedPlans.allPolicies.filter(
+      (p) => ((p.isHighDeductible as boolean) ?? false) === isHighDeductible,
+    ) as Record<string, unknown>[]
+    const matchingPolicy = pickSweetSpotPolicy(tierPolicies)
     if (matchingPolicy) {
       const reimbursement = Math.round(((matchingPolicy.reimbursement as number) || 0.8) * 100).toString()
       const deductible = String(matchingPolicy.deductible ?? (isHighDeductible ? "1500" : "500"))
