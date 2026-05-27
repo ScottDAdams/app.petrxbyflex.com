@@ -8,6 +8,8 @@
 
 React (Vite) app for the PetRx card + insurance quote flow. Framer sends users here with a `session_id`; this app owns the product flow, API calls, and deployment to Fly.io (see root `README.md` for run/build and breed-asset notes).
 
+**Google Analytics:** `G-J0FNGS1NH3` in `index.html` (shared with www.petrxbyflex.com). Covers all SPA routes after deploy.
+
 **Drug pricing / search:** Implemented in **`src/features/prescriptions/`** (the “prescriptions” feature). This replaces the old standalone **drug-lookup** app, which exists only as historical backup if you still have a zip/repo.
 
 ---
