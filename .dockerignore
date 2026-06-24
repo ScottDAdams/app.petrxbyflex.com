@@ -6,6 +6,9 @@
 !.dockerignore
 !Dockerfile
 !nginx.conf
+!start.sh
+!admin
+!admin/**
 !package.json
 !package-lock.json
 !index.html

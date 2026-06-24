@@ -1,0 +1,99 @@
+{% extends "admin/base.html" %}
+{% block title %}Signup #{{ signup.id }} — PetRx Admin{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <a href="{{ url_for('admin.signups_index') }}" class="text-sm text-brand hover:underline">← Card signups</a>
+  <h1 class="text-2xl font-bold text-gray-900 mt-1">Signup #{{ signup.id }}</h1>
+  <p class="text-sm text-gray-500">
+    {% if signup.created_at %}{{ signup.created_at | dt_short }}{% endif %}
+    · member <span class="font-mono">{{ signup.member_id }}</span>
+  </p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h2 class="text-sm font-semibold text-gray-800 mb-3">Customer</h2>
+    <dl class="space-y-2 text-sm">
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Name</dt><dd>{{ signup.owner_first_name or '' }} {{ signup.owner_last_name or '' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Email</dt><dd>{{ signup.email or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">ZIP</dt><dd>{{ signup.zip_code or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Campaign</dt><dd>{{ signup.campaign or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Affiliate</dt><dd>{{ signup.aff_id or '—' }}</dd></div>
+    </dl>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h2 class="text-sm font-semibold text-gray-800 mb-3">Pet</h2>
+    <dl class="space-y-2 text-sm">
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Name</dt><dd>{{ signup.pet_name or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Type</dt><dd>{{ signup.pet_type or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Sex</dt><dd>{{ signup.pet_sex or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Breed</dt><dd>{{ signup.pet_breed_name or signup.pet_breed or '—' }}</dd></div>
+      <div class="flex gap-4"><dt class="text-gray-500 w-28">Birth</dt>
+        <dd>{% if signup.pet_birth_month and signup.pet_birth_year %}{{ signup.pet_birth_month }}/{{ signup.pet_birth_year }}{% else %}—{% endif %}</dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+  <h2 class="text-sm font-semibold text-gray-800 mb-3">Attribution</h2>
+  <dl class="grid sm:grid-cols-2 gap-2 text-sm">
+    <div class="flex gap-4"><dt class="text-gray-500 w-28">Channel</dt>
+      <dd>
+        {% if signup.shop_id == default_shop_id or signup.shop_id is none or signup.shop_url == 'default_shop' %}
+        <a href="{{ url_for('admin.direct_channel') }}"
+           class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-100 text-violet-800 hover:bg-violet-200">{{ direct_label }}</a>
+        <span class="text-xs text-gray-400 ml-2">shop_id={{ signup.shop_id if signup.shop_id is not none else 'null' }}</span>
+        {% else %}
+        <a href="{{ url_for('admin.partner_detail', shop_domain=signup.shop_url) }}" class="text-brand hover:underline font-mono text-xs">{{ signup.shop_url }}</a>
+        {% endif %}
+      </dd>
+    </div>
+    <div class="flex gap-4"><dt class="text-gray-500 w-28">Shop name</dt><dd>{{ signup.shop_name or '—' }}</dd></div>
+  </dl>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
+    <h2 class="text-sm font-semibold text-gray-800">Enrollment sessions</h2>
+    <p class="text-xs text-gray-500 mt-0.5">All sessions for this member (newest first)</p>
+  </div>
+  {% if sessions %}
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-100">
+      <tr>
+        <th class="text-left px-4 py-2 text-gray-500 font-medium">Created</th>
+        <th class="text-left px-4 py-2 text-gray-500 font-medium">Step</th>
+        <th class="text-left px-4 py-2 text-gray-500 font-medium">HP status</th>
+        <th class="text-left px-4 py-2 text-gray-500 font-medium">Plan</th>
+        <th class="text-left px-4 py-2 text-gray-500 font-medium">Lead</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for e in sessions %}
+      <tr>
+        <td class="px-4 py-2 text-xs text-gray-600">{% if e.created_at %}{{ e.created_at | dt_short }}{% endif %}</td>
+        <td class="px-4 py-2 text-gray-700">{{ e.current_step or '—' }}</td>
+        <td class="px-4 py-2">
+          {% if e.hp_enrollment_status == 'completed' %}
+          <span class="text-emerald-700 font-medium">completed</span>
+          {% elif e.hp_enrollment_status == 'enroll_submitted_unknown' %}
+          <span class="text-amber-700">unknown</span>
+          {% else %}
+          <span class="text-gray-500">{{ e.hp_enrollment_status or '—' }}</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-2 text-xs font-mono">{{ e.selected_plan_id or '—' }}</td>
+        <td class="px-4 py-2 text-xs font-mono truncate max-w-[120px]" title="{{ e.lead_id or '' }}">{{ e.lead_id or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="px-5 py-8 text-sm text-gray-500">No enrollment session — customer registered for the card only.</p>
+  {% endif %}
+</div>
+
+<p class="text-xs text-gray-400 mt-4">Internal use only — contains PII. Do not share outside ops.</p>
+{% endblock %}

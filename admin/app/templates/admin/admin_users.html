@@ -1,0 +1,80 @@
+{% extends "admin/base.html" %}
+{% block title %}Admin Users — PetRx Admin{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Admin users</h1>
+    <p class="text-sm text-gray-500 mt-1">
+      Portal accounts for <span class="font-mono">admin.petrxbyflex.com</span>.
+      Add colleagues here instead of new Fly secrets.
+    </p>
+  </div>
+  <a href="{{ url_for('admin.admin_users_new') }}"
+     class="inline-flex items-center px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium hover:bg-brand-dark">
+    Add admin
+  </a>
+</div>
+
+<div class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+  <strong>Fly secrets</strong> (<code class="text-xs">ADMIN_EMAIL</code> / <code class="text-xs">ADMIN_PASSWORD_HASH</code>)
+  are only used to <em>bootstrap</em> the first account when this table is empty. After that, manage users here.
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-4 py-3 font-medium text-gray-600">Email</th>
+        <th class="text-left px-4 py-3 font-medium text-gray-600">Name</th>
+        <th class="text-left px-4 py-3 font-medium text-gray-600">Status</th>
+        <th class="text-left px-4 py-3 font-medium text-gray-600">Last login</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for u in users %}
+      <tr class="hover:bg-gray-50 {% if not u.is_active %}opacity-60{% endif %}">
+        <td class="px-4 py-3">
+          <span class="font-mono text-gray-900">{{ u.email }}</span>
+          {% if current_email and u.email == current_email %}
+          <span class="ml-2 text-xs text-brand font-medium">you</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-gray-600">{{ u.display_name or '—' }}</td>
+        <td class="px-4 py-3">
+          {% if u.is_active %}
+          <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">Active</span>
+          {% else %}
+          <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-gray-500 text-xs">
+          {% if u.last_login_at %}{{ u.last_login_at | dt_short }}{% else %}—{% endif %}
+        </td>
+        <td class="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+          <a href="{{ url_for('admin.admin_users_password', user_id=u.id) }}"
+             class="text-xs font-medium text-brand hover:underline">Password</a>
+          {% if u.is_active %}
+          <form method="POST" action="{{ url_for('admin.admin_users_deactivate', user_id=u.id) }}" class="inline">
+            <button type="submit" class="text-xs font-medium text-amber-700 hover:underline"
+                    onclick="return confirm('Deactivate {{ u.email }}?')">Deactivate</button>
+          </form>
+          {% else %}
+          <form method="POST" action="{{ url_for('admin.admin_users_activate', user_id=u.id) }}" class="inline">
+            <button type="submit" class="text-xs font-medium text-emerald-700 hover:underline">Activate</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="px-4 py-10 text-center text-gray-400">
+          No admin users in database yet. Log in once (Fly secrets) to auto-bootstrap, or run the migration.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "admin/base.html" %}
+{% block title %}Ledger — {{ shop.shop_url }}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <a href="{{ url_for('admin.partner_detail', shop_domain=shop.shop_url) }}" class="text-sm text-brand hover:underline">← Partner</a>
+  <h1 class="text-2xl font-bold text-gray-900 mt-1">Referral payout ledger</h1>
+  <p class="text-sm font-mono text-gray-400">{{ shop.shop_url }}</p>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <p class="text-xs text-gray-500 uppercase">HP completed</p>
+    <p class="text-2xl font-bold text-gray-900 mt-1">{{ earnings.completed_total }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-amber-200 p-4 bg-amber-50/20">
+    <p class="text-xs text-amber-700 uppercase">Calc owed (all time)</p>
+    <p class="text-2xl font-bold text-amber-800 mt-1">{{ format_cents(earnings.partner_owed_total_cents) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-blue-200 p-4">
+    <p class="text-xs text-blue-700 uppercase">Recorded paid</p>
+    <p class="text-2xl font-bold text-blue-900 mt-1">{{ format_cents(ledger.paid_total_cents) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-emerald-200 p-4 bg-emerald-50/20">
+    <p class="text-xs text-emerald-700 uppercase">Flex retained (calc)</p>
+    <p class="text-2xl font-bold text-emerald-800 mt-1">{{ format_cents(earnings.flex_retained_total_cents) }}</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+  <div class="bg-white rounded-xl border border-gray-200 p-5 lg:col-span-2">
+    <h2 class="text-sm font-semibold text-gray-900 mb-3">Ledger events</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm min-w-[640px]">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="text-left px-3 py-2 font-medium text-gray-600">Date</th>
+            <th class="text-left px-3 py-2 font-medium text-gray-600">Type</th>
+            <th class="text-right px-3 py-2 font-medium text-gray-600">Amount</th>
+            <th class="text-left px-3 py-2 font-medium text-gray-600">Notes</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for e in ledger.events %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-3 py-2 text-xs text-gray-500">{{ e.created_at | dt_short }}</td>
+            <td class="px-3 py-2">
+              {% if e.event_type == 'referral_paid' %}
+              <span class="text-xs font-medium text-blue-700">Payout</span>
+              {% if e.period_year %}<span class="text-xs text-gray-400">· {{ e.period_year }}-{{ '%02d'|format(e.period_month) }}</span>{% endif %}
+              {% else %}
+              <span class="text-xs font-medium text-gray-700">Adjustment</span>
+              {% endif %}
+            </td>
+            <td class="px-3 py-2 text-right font-mono {% if e.amount_cents < 0 %}text-blue-800{% else %}text-emerald-700{% endif %}">
+              {{ format_cents(e.amount_cents) }}
+            </td>
+            <td class="px-3 py-2 text-xs text-gray-600">{{ e.notes or '—' }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="px-3 py-8 text-center text-gray-400">No ledger events yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if ledger.total_pages > 1 %}
+    <div class="flex gap-2 mt-4">
+      {% if ledger.page > 1 %}
+      <a href="{{ url_for('admin.partner_ledger', shop_domain=shop.shop_url, page=ledger.page - 1) }}"
+         class="text-sm text-brand hover:underline">← Previous</a>
+      {% endif %}
+      <span class="text-xs text-gray-400">Page {{ ledger.page }} of {{ ledger.total_pages }}</span>
+      {% if ledger.page < ledger.total_pages %}
+      <a href="{{ url_for('admin.partner_ledger', shop_domain=shop.shop_url, page=ledger.page + 1) }}"
+         class="text-sm text-brand hover:underline">Next →</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h2 class="text-sm font-semibold text-gray-900 mb-3">Manual adjustment</h2>
+    <p class="text-xs text-gray-500 mb-3">Positive reduces what we owe; negative increases it.</p>
+    <form method="post" class="space-y-3">
+      <input type="hidden" name="form" value="ledger_adjustment">
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Amount ($)</label>
+        <input type="text" name="adjustment_dollars" placeholder="-25.00 or 25.00"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Notes</label>
+        <textarea name="adjustment_notes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea>
+      </div>
+      <button type="submit" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium">Record adjustment</button>
+    </form>
+    <a href="{{ url_for('admin.reconciliation') }}" class="inline-block mt-4 text-sm text-brand hover:underline">Monthly reconciliation →</a>
+  </div>
+</div>
+{% endblock %}

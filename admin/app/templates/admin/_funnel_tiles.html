@@ -1,0 +1,52 @@
+{# Clickable funnel metric tiles. Set page='direct' or page='signups' before import. #}
+{% macro funnel_tile_href(key) -%}
+  {%- if page == 'direct' -%}
+    {{ url_for('admin.direct_channel', period=period, funnel=(key if key != 'all' else none)) }}
+  {%- else -%}
+    {{ url_for('admin.signups_index', scope=scope, period=period, shop=shop_url or none, funnel=(key if key != 'all' else none)) }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro funnel_tile_class(key, border_extra='', bg_extra='') -%}
+  block rounded-xl border p-3 transition-colors hover:border-brand hover:shadow-sm cursor-pointer
+  {%- if funnel_filter == key %} ring-2 ring-brand border-brand{% endif %}
+  {{ border_extra }} {{ bg_extra }}
+{%- endmacro %}
+
+{% macro render_funnel_tiles(funnel, conversion_pct=0) %}
+{% if funnel_filter and funnel_filter != 'all' %}
+<div class="mb-3 flex flex-wrap items-center gap-2 text-sm">
+  <span class="text-gray-600">Showing:</span>
+  <span class="inline-flex px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium">{{ funnel_filter_label }}</span>
+  <a href="{{ funnel_tile_href('all') }}" class="text-xs text-gray-500 hover:text-brand hover:underline">Clear filter</a>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+  <a href="{{ funnel_tile_href('all') }}" class="{{ funnel_tile_class('all', 'border-gray-200') }}">
+    <p class="text-[10px] font-semibold text-gray-500 uppercase">Signups</p>
+    <p class="text-xl font-bold text-gray-900">{{ funnel.total }}</p>
+  </a>
+  <a href="{{ funnel_tile_href('with_session') }}" class="{{ funnel_tile_class('with_session', 'border-gray-200') }}">
+    <p class="text-[10px] font-semibold text-gray-500 uppercase">Started insurance</p>
+    <p class="text-xl font-bold text-gray-900">{{ funnel.with_session }}</p>
+  </a>
+  <a href="{{ funnel_tile_href('hp_completed') }}" class="{{ funnel_tile_class('hp_completed', 'border-emerald-200', 'bg-emerald-50/50') }}">
+    <p class="text-[10px] font-semibold text-emerald-700 uppercase">HP completed</p>
+    <p class="text-xl font-bold text-emerald-800">{{ funnel.hp_completed }}</p>
+    {% if funnel.total and conversion_pct %}<p class="text-[10px] text-emerald-600">{{ conversion_pct }}% of signups</p>{% endif %}
+  </a>
+  <a href="{{ funnel_tile_href('hp_unknown') }}" class="{{ funnel_tile_class('hp_unknown', 'border-amber-200') }}">
+    <p class="text-[10px] font-semibold text-amber-700 uppercase">HP unknown</p>
+    <p class="text-xl font-bold text-amber-800">{{ funnel.hp_unknown }}</p>
+  </a>
+  <a href="{{ funnel_tile_href('in_funnel') }}" class="{{ funnel_tile_class('in_funnel', 'border-gray-200') }}">
+    <p class="text-[10px] font-semibold text-gray-500 uppercase">In funnel</p>
+    <p class="text-xl font-bold text-gray-700">{{ funnel.in_funnel }}</p>
+  </a>
+  <a href="{{ funnel_tile_href('no_session') }}" class="{{ funnel_tile_class('no_session', 'border-gray-200') }}">
+    <p class="text-[10px] font-semibold text-gray-500 uppercase">Card only</p>
+    <p class="text-xl font-bold text-gray-400">{{ funnel.no_session }}</p>
+  </a>
+</div>
+{% endmacro %}

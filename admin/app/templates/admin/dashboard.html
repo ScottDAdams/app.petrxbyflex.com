@@ -1,0 +1,154 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard — PetRx Admin{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+  <p class="text-sm text-gray-500 mt-1">Install health and funnel activity · last 30 days for signups &amp; HP enrollments</p>
+</div>
+
+{% if pass_cert and pass_cert.available and pass_cert.status != 'ok' %}
+{% set _tone = {
+  'warning': ('amber', 'Pass Type ID cert renews soon'),
+  'urgent':  ('amber', 'Pass Type ID cert renewal due'),
+  'critical':('red',   'Pass Type ID cert renewal CRITICAL'),
+  'expired': ('red',   'Pass Type ID cert EXPIRED'),
+  'unknown': ('gray',  'Pass Type ID cert status unknown')
+}.get(pass_cert.status, ('gray', 'Pass Type ID cert')) %}
+<div class="mb-6 rounded-xl border p-4
+            {% if _tone[0] == 'red' %}border-red-300 bg-red-50
+            {% elif _tone[0] == 'amber' %}border-amber-300 bg-amber-50
+            {% else %}border-gray-300 bg-gray-50{% endif %}">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <p class="text-sm font-bold
+                {% if _tone[0] == 'red' %}text-red-900
+                {% elif _tone[0] == 'amber' %}text-amber-900
+                {% else %}text-gray-900{% endif %}">{{ _tone[1] }}</p>
+      <p class="text-xs text-gray-700 mt-1">
+        {% if pass_cert.status == 'expired' %}
+          Apple Wallet pass signing is broken. Renew at developer.apple.com immediately, then redeploy <code>flex-pet-rx-api</code>.
+        {% else %}
+          {{ pass_cert.days_left }} days left{% if pass_cert.expires_at %} (expires {{ pass_cert.expires_at[:10] }}){% endif %}. Renew at developer.apple.com before this date or new Wallet passes and update pushes will break.
+        {% endif %}
+      </p>
+    </div>
+    <a href="https://developer.apple.com/account/resources/certificates/list" target="_blank" rel="noopener"
+       class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold
+              {% if _tone[0] == 'red' %}bg-red-600 text-white hover:bg-red-700
+              {% elif _tone[0] == 'amber' %}bg-amber-600 text-white hover:bg-amber-700
+              {% else %}bg-gray-600 text-white hover:bg-gray-700{% endif %}">
+      Open Apple cert list →
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <a href="{{ url_for('admin.partners') }}"
+     class="block bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-brand transition-colors">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Installed shops</p>
+    <p class="text-2xl font-bold text-gray-900 mt-1">{{ stats.installed_shops }}</p>
+    <p class="text-xs text-brand mt-1">View partners →</p>
+  </a>
+  <a href="{{ url_for('admin.partners') }}"
+     class="block bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-emerald-300 transition-colors">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Setup complete</p>
+    <p class="text-2xl font-bold text-emerald-700 mt-1">{{ stats.setup_complete }}</p>
+    <p class="text-xs text-gray-400 mt-1">{{ stats.setup_in_progress }} in progress</p>
+  </a>
+  <a href="{{ url_for('admin.partners') }}"
+     class="block bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-brand transition-colors">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">PetRx enabled</p>
+    <p class="text-2xl font-bold text-brand mt-1">{{ stats.petrx_enabled }}</p>
+    <p class="text-xs text-gray-400 mt-1">cart add-on active</p>
+  </a>
+  <a href="{{ url_for('admin.partners') }}"
+     class="block bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-amber-300 transition-colors">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Needs attention</p>
+    <p class="text-2xl font-bold {% if stats.needs_revalidation %}text-amber-600{% else %}text-gray-400{% endif %} mt-1">{{ stats.needs_revalidation }}</p>
+    <p class="text-xs text-gray-400 mt-1">revalidation / compat red</p>
+  </a>
+</div>
+
+<a href="{{ url_for('admin.direct_channel') }}"
+   class="block mb-6 bg-violet-50 border border-violet-200 rounded-xl p-5 hover:border-violet-300 transition-colors">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-violet-200 text-violet-900">DIRECT</span>
+      <p class="text-sm font-semibold text-gray-900 mt-2">Direct-to-consumer channel</p>
+      <p class="text-xs text-gray-600 mt-0.5">No Shopify merchant · petrxbyflex.com and unattributed traffic</p>
+    </div>
+    <div class="flex gap-6 text-center">
+      <a href="{{ url_for('admin.direct_channel', period='30') }}" class="hover:opacity-80" onclick="event.stopPropagation()">
+        <p class="text-2xl font-bold text-gray-900">{{ stats.direct_signups_30d }}</p>
+        <p class="text-[10px] text-gray-500 uppercase">signups 30d</p>
+      </a>
+      <a href="{{ url_for('admin.direct_channel', period='30', funnel='hp_completed') }}" class="hover:opacity-80" onclick="event.stopPropagation()">
+        <p class="text-2xl font-bold text-emerald-700">{{ stats.direct_hp_completed_30d }}</p>
+        <p class="text-[10px] text-gray-500 uppercase">HP done 30d</p>
+      </a>
+    </div>
+  </div>
+</a>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+  <a href="{{ url_for('admin.signups_index', scope='all', period='30') }}"
+     class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-brand transition-colors block">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Card signups (30d)</p>
+    <p class="text-2xl font-bold text-gray-900 mt-1">{{ stats.signups_30d }}</p>
+    <p class="text-xs text-brand mt-1">View all signups →</p>
+  </a>
+  <a href="{{ url_for('admin.signups_index', scope='all', period='30', funnel='hp_completed') }}"
+     class="bg-white rounded-xl border border-emerald-200 shadow-sm p-4 hover:border-emerald-400 transition-colors block bg-emerald-50/30">
+    <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wide">HP enrolls completed (30d)</p>
+    <p class="text-2xl font-bold text-emerald-700 mt-1">{{ stats.hp_completed_30d }}</p>
+    <p class="text-xs text-emerald-600 mt-1">Drill down →</p>
+  </a>
+  <a href="{{ url_for('admin.signups_index', scope='all', period='30', funnel='hp_unknown') }}"
+     class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:border-amber-300 transition-colors block">
+    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">HP enrolls unknown (30d)</p>
+    <p class="text-2xl font-bold {% if stats.hp_unknown_30d %}text-amber-600{% else %}text-gray-400{% endif %} mt-1">{{ stats.hp_unknown_30d }}</p>
+    <p class="text-xs text-gray-400 mt-1">timeout / reconcile pending · Drill down →</p>
+  </a>
+</div>
+
+{% if alerts %}
+<div class="bg-white rounded-xl border border-amber-200 shadow-sm mb-6 overflow-hidden">
+  <div class="px-5 py-3 border-b border-amber-100 bg-amber-50">
+    <p class="text-sm font-semibold text-amber-900">Shops needing attention</p>
+  </div>
+  <ul class="divide-y divide-gray-100">
+    {% for a in alerts %}
+    <li class="px-5 py-3 flex items-start justify-between gap-4">
+      <div>
+        <a href="{{ url_for('admin.partner_detail', shop_domain=a.shop_url) }}"
+           class="font-mono text-sm text-brand hover:underline">{{ a.shop_url }}</a>
+        {% if a.name and a.name != a.shop_url %}
+        <span class="text-xs text-gray-400 ml-2">{{ a.name }}</span>
+        {% endif %}
+        <p class="text-xs text-gray-500 mt-0.5">
+          setup: {{ a.setup_status or '—' }}
+          {% if a.last_compat_verdict %} · compat: {{ a.last_compat_verdict }}{% endif %}
+          {% if a.needs_revalidation %} · needs revalidation{% endif %}
+        </p>
+      </div>
+      <a href="{{ url_for('admin.partner_detail', shop_domain=a.shop_url) }}"
+         class="text-xs font-medium text-brand whitespace-nowrap">View →</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="flex flex-wrap gap-3">
+  <a href="{{ url_for('admin.partners') }}"
+     class="inline-flex items-center px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium hover:bg-brand-dark">
+    All partners
+  </a>
+  <a href="{{ url_for('admin.petrx_product_content') }}"
+     class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50">
+    Product content
+  </a>
+</div>
+{% endblock %}

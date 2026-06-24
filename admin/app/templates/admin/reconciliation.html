@@ -1,0 +1,294 @@
+{% extends "admin/base.html" %}
+{% block title %}Reconciliation — PetRx Admin{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Commission reconciliation</h1>
+  <p class="text-sm text-gray-500 mt-1">
+    HP owes Flex {{ format_cents(hp_csa_fee_cents) }} per completed CSA (contract).
+    Configure partner share on each merchant; {{ direct_label }} keeps 100% with no vendor payout.
+  </p>
+</div>
+
+<form method="get" class="flex flex-wrap items-end gap-3 mb-6">
+  <div>
+    <label class="block text-xs text-gray-500 mb-1">Year</label>
+    <input type="number" name="year" value="{{ summary.year }}" min="2025" max="2035"
+           class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-24">
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500 mb-1">Month</label>
+    <input type="number" name="month" value="{{ summary.month }}" min="1" max="12"
+           class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-20">
+  </div>
+  <button type="submit" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium">View period</button>
+</form>
+
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <p class="text-xs text-gray-500 uppercase">Our HP completed</p>
+    <p class="text-2xl font-bold text-gray-900 mt-1">{{ summary.our_hp_completed_count }}</p>
+    <p class="text-xs text-gray-400 mt-1">Expected: {{ format_cents(summary.flex_expected_cents) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-emerald-200 p-4 bg-emerald-50/30">
+    <p class="text-xs text-emerald-700 uppercase">Flex net</p>
+    <p class="text-2xl font-bold text-emerald-800 mt-1">{{ format_cents(summary.flex_net_cents) }}</p>
+    <p class="text-xs text-emerald-600 mt-1">After partner share</p>
+  </div>
+  <div class="bg-white rounded-xl border border-amber-200 p-4">
+    <p class="text-xs text-amber-700 uppercase">Partner outstanding</p>
+    <p class="text-2xl font-bold text-amber-800 mt-1">{{ format_cents(summary.partner_outstanding_cents) }}</p>
+    <p class="text-xs text-amber-600 mt-1">Owed {{ format_cents(summary.partner_owed_cents) }} · Paid {{ format_cents(summary.partner_paid_cents) }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-blue-200 p-4">
+    <p class="text-xs text-blue-700 uppercase">HP reported</p>
+    {% if summary.hp_received_cents is not none %}
+    <p class="text-2xl font-bold text-blue-900 mt-1">{{ format_cents(summary.hp_received_cents) }}</p>
+    <p class="text-xs text-blue-600 mt-1">{{ summary.hp_received_count or '—' }} CSAs</p>
+    {% else %}
+    <p class="text-2xl font-bold text-gray-400 mt-1">—</p>
+    <p class="text-xs text-gray-400 mt-1">Record statement below</p>
+    {% endif %}
+  </div>
+  <div class="bg-white rounded-xl border {% if summary.variance_cents and summary.variance_cents != 0 %}border-amber-300{% else %}border-gray-200{% endif %} p-4">
+    <p class="text-xs text-gray-500 uppercase">Variance</p>
+    {% if summary.variance_cents is not none %}
+    <p class="text-2xl font-bold {% if summary.variance_cents != 0 %}text-amber-800{% else %}text-gray-900{% endif %} mt-1">
+      {{ format_cents(summary.variance_cents) }}
+    </p>
+    <p class="text-xs text-gray-500 mt-1">{{ summary.variance_count }} CSA diff</p>
+    {% else %}
+    <p class="text-sm text-gray-400 mt-2">Enter HP statement</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h2 class="text-sm font-semibold text-gray-900 mb-3">Record HP monthly statement</h2>
+    <p class="text-xs text-gray-500 mb-4">Totals from HP producer statement (Layer 1 cash verification).</p>
+    <form method="post" class="space-y-3">
+      <input type="hidden" name="form" value="hp_period">
+      <input type="hidden" name="year" value="{{ summary.year }}">
+      <input type="hidden" name="month" value="{{ summary.month }}">
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Statement reference</label>
+        <input type="text" name="hp_statement_ref" placeholder="e.g. PARTNER-May-2026"
+               value="{{ summary.hp_period.hp_statement_ref if summary.hp_period else '' }}"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs text-gray-500 mb-1">CSA count</label>
+          <input type="number" name="hp_csa_count" min="0"
+                 value="{{ summary.hp_period.hp_csa_count if summary.hp_period and summary.hp_period.hp_csa_count is not none else '' }}"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-1">Gross paid ($)</label>
+          <input type="text" name="hp_gross_dollars" placeholder="250.00"
+                 value="{% if summary.hp_period and summary.hp_period.hp_gross_cents is not none %}{{ '%.2f' | format(summary.hp_period.hp_gross_cents / 100) }}{% endif %}"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Status</label>
+        <select name="hp_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          {% for st, label in [('open', 'Open'), ('hp_received', 'HP received'), ('reconciled', 'Reconciled'), ('closed', 'Closed')] %}
+          <option value="{{ st }}" {% if summary.hp_period and summary.hp_period.status == st %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Notes</label>
+        <textarea name="hp_notes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">{{ summary.hp_period.notes if summary.hp_period else '' }}</textarea>
+      </div>
+      <button type="submit" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium">Save HP period</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 p-5">
+    <h2 class="text-sm font-semibold text-gray-900 mb-3">Import HP Excel detail</h2>
+    <p class="text-xs text-gray-500 mb-4">
+      Layer 2 line-item match on <code class="text-xs">LeadId</code> / <code class="text-xs">Account_Id</code>.
+    </p>
+    <form method="post" enctype="multipart/form-data" class="space-y-3">
+      <input type="hidden" name="form" value="hp_excel">
+      <input type="hidden" name="year" value="{{ summary.year }}">
+      <input type="hidden" name="month" value="{{ summary.month }}">
+      <div>
+        <label class="block text-xs text-gray-500 mb-1">Excel file</label>
+        <input type="file" name="hp_excel_file" accept=".xlsx,.xls"
+               class="w-full text-sm text-gray-600">
+      </div>
+      <button type="submit" class="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium">Upload &amp; match</button>
+    </form>
+    {% if summary.latest_hp_import %}
+    <div class="mt-4 p-3 rounded-lg bg-gray-50 border border-gray-100 text-xs text-gray-600">
+      <p class="font-medium text-gray-800">Latest import</p>
+      <p>{{ summary.latest_hp_import.filename }} · {{ summary.latest_hp_import.uploaded_at | dt_short }}</p>
+      <p>{{ summary.latest_hp_import.matched_count }}/{{ summary.latest_hp_import.row_count }} matched ·
+         {{ summary.latest_hp_import.in_period_count }} in this period</p>
+      <a href="{{ url_for('admin.reconciliation', year=summary.year, month=summary.month, upload_id=summary.latest_hp_import.id) }}"
+         class="text-brand hover:underline">View match details →</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+    <h2 class="text-sm font-semibold text-gray-900 mb-2">{{ direct_label }} channel</h2>
+    <p class="text-sm text-gray-700">
+      No merchant payout. Flex retains the full HP CSA fee for {{ direct_label }} enrollments.
+    </p>
+    <a href="{{ url_for('admin.direct_channel') }}" class="inline-block mt-3 text-sm text-brand font-medium hover:underline">View {{ direct_label }} →</a>
+  </div>
+</div>
+
+{% if import_results and import_results.ok %}
+<div class="bg-white rounded-xl border border-gray-200 p-5 mb-8">
+  <h2 class="text-sm font-semibold text-gray-900 mb-3">Import results — {{ import_results.filename }}</h2>
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4 text-sm">
+    <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-100">
+      <p class="text-xs text-emerald-700">Matched</p>
+      <p class="text-xl font-bold text-emerald-800">{{ import_results.matched_count }}</p>
+    </div>
+    <div class="p-3 rounded-lg bg-red-50 border border-red-100">
+      <p class="text-xs text-red-700">Not in DB</p>
+      <p class="text-xl font-bold text-red-800">{{ import_results.unmatched_count }}</p>
+    </div>
+    <div class="p-3 rounded-lg bg-amber-50 border border-amber-100">
+      <p class="text-xs text-amber-700">Not completed</p>
+      <p class="text-xl font-bold text-amber-800">{{ import_results.not_completed_count }}</p>
+    </div>
+    <div class="p-3 rounded-lg bg-orange-50 border border-orange-100">
+      <p class="text-xs text-orange-700">Amount mismatch</p>
+      <p class="text-xl font-bold text-orange-800">{{ import_results.mismatch_count }}</p>
+    </div>
+    <div class="p-3 rounded-lg bg-gray-50 border border-gray-100">
+      <p class="text-xs text-gray-600">In period</p>
+      <p class="text-xl font-bold text-gray-800">{{ import_results.in_period_count }}</p>
+    </div>
+  </div>
+  {% include 'admin/_hp_import_buckets.html' %}
+</div>
+{% endif %}
+
+{% if import_detail %}
+<div class="bg-white rounded-xl border border-gray-200 p-5 mb-8">
+  <h2 class="text-sm font-semibold text-gray-900 mb-1">Import detail — {{ import_detail.upload.filename }}</h2>
+  <p class="text-xs text-gray-500 mb-4">{{ import_detail.upload.uploaded_at | dt_short }} · uploaded by {{ import_detail.upload.uploaded_by or 'admin' }}</p>
+  {% set import_results = {'buckets': import_detail.buckets} %}
+  {% include 'admin/_hp_import_buckets.html' %}
+</div>
+{% endif %}
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto mb-8">
+  <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
+    <h2 class="text-sm font-semibold text-gray-800">Partner breakdown — {{ summary.year }}-{{ '%02d' | format(summary.month) }}</h2>
+  </div>
+  <table class="w-full text-sm min-w-[1100px]">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-4 py-2 font-medium text-gray-600">Partner</th>
+        <th class="text-left px-4 py-2 font-medium text-gray-600">Terms</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">HP done</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Partner owed</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Paid</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Outstanding</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Flex net</th>
+        <th class="px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for row in summary.by_shop %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3">
+          {% if row.is_direct %}
+          <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-100 text-violet-800">{{ direct_label }}</span>
+          {% else %}
+          <div class="font-medium">{{ row.shop_name or row.shop_url }}</div>
+          <div class="text-xs font-mono text-gray-400">{{ row.shop_url }}</div>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-xs text-gray-600">
+          {% if row.is_direct %}No payout
+          {% elif row.referral_payout_mode == 'flat' %}{{ format_cents(row.referral_payout_flat_cents) }} / enroll
+          {% elif row.referral_payout_mode == 'percent' %}{{ row.referral_payout_percent }}%
+          {% else %}<span class="text-amber-600">Not set</span>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-right">{{ row.hp_completed_count }}</td>
+        <td class="px-4 py-3 text-right">{{ format_cents(row.partner_owed_cents) }}</td>
+        <td class="px-4 py-3 text-right text-blue-800">{{ format_cents(row.partner_paid_cents) }}</td>
+        <td class="px-4 py-3 text-right {% if row.partner_outstanding_cents %}text-amber-800 font-medium{% endif %}">
+          {{ format_cents(row.partner_outstanding_cents) }}
+        </td>
+        <td class="px-4 py-3 text-right font-medium text-emerald-700">{{ format_cents(row.flex_net_cents) }}</td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">
+          {% if not row.is_direct and row.shop_url %}
+          {% if row.partner_outstanding_cents > 0 and summary.hp_period_id %}
+          <form method="post" class="inline">
+            <input type="hidden" name="form" value="mark_partner_paid">
+            <input type="hidden" name="year" value="{{ summary.year }}">
+            <input type="hidden" name="month" value="{{ summary.month }}">
+            <input type="hidden" name="shop_id" value="{{ row.shop_id }}">
+            <button type="submit" class="text-xs px-2 py-1 rounded bg-brand text-white hover:opacity-90"
+                    onclick="return confirm('Record payout of {{ format_cents(row.partner_outstanding_cents) }} for this partner?')">
+              Mark paid
+            </button>
+          </form>
+          {% elif row.payout_recorded %}
+          <span class="text-xs text-emerald-600 font-medium">Paid ✓</span>
+          {% elif row.payout_partial %}
+          <span class="text-xs text-amber-600">Partial</span>
+          {% endif %}
+          <a href="{{ url_for('admin.partner_detail', shop_domain=row.shop_url) }}" class="text-brand text-xs hover:underline ml-2">Terms</a>
+          <a href="{{ url_for('admin.partner_ledger', shop_domain=row.shop_url) }}" class="text-brand text-xs hover:underline ml-1">Ledger</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="px-4 py-10 text-center text-gray-400">No completed HP enrollments in this period.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if import_history %}
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+  <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
+    <h2 class="text-sm font-semibold text-gray-800">Recent HP Excel imports</h2>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-4 py-2 font-medium text-gray-600">When</th>
+        <th class="text-left px-4 py-2 font-medium text-gray-600">Period</th>
+        <th class="text-left px-4 py-2 font-medium text-gray-600">File</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Matched</th>
+        <th class="text-right px-4 py-2 font-medium text-gray-600">Issues</th>
+        <th class="px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for h in import_history %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2 text-xs text-gray-500">{{ h.uploaded_at | dt_short }}</td>
+        <td class="px-4 py-2">{{ h.period_year }}-{{ '%02d'|format(h.period_month) }}</td>
+        <td class="px-4 py-2 truncate max-w-[200px]" title="{{ h.filename }}">{{ h.filename }}</td>
+        <td class="px-4 py-2 text-right">{{ h.matched_count }}/{{ h.row_count }}</td>
+        <td class="px-4 py-2 text-right text-xs text-gray-500">
+          {{ h.unmatched_count }} missing · {{ h.not_completed_count }} incomplete · {{ h.mismatch_count }} amt
+        </td>
+        <td class="px-4 py-2 text-right">
+          <a href="{{ url_for('admin.reconciliation', year=h.period_year, month=h.period_month, upload_id=h.id) }}"
+             class="text-brand text-xs hover:underline">Details</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

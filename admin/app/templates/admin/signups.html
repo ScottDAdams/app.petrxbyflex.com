@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+{% from "admin/_funnel_tiles.html" import render_funnel_tiles %}
+{% block title %}Card Signups — PetRx Admin{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Card signups</h1>
+  <p class="text-sm text-gray-500 mt-1">
+    Pet prescription registrations with insurance funnel status (latest enrollment session per member).
+    {% if shop_url %}<span class="font-mono text-gray-600">· {{ shop_url }}</span>{% endif %}
+  </p>
+</div>
+
+{% if hidden_direct_count %}
+<div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <strong>{{ hidden_direct_count }}</strong> <strong>{{ direct_label }}</strong> signup{{ 's' if hidden_direct_count != 1 else '' }}
+  in this period are hidden by the <strong>Merchant shops</strong> filter.
+  <a href="{{ url_for('admin.direct_channel', period=period) }}"
+     class="font-medium text-brand hover:underline ml-1">View {{ direct_label }} channel →</a>
+</div>
+{% endif %}
+
+<div class="flex flex-wrap gap-2 mb-4">
+  {% for s, label in [('all', 'All'), ('merchants', 'Merchant shops'), ('direct', direct_label)] %}
+  <a href="{{ url_for('admin.signups_index', scope=s, period=period, shop=shop_url or none, funnel=funnel_filter if funnel_filter != 'all' else none) }}"
+     class="px-3 py-1.5 rounded-lg text-xs font-medium border
+            {{ 'bg-brand text-white border-brand' if scope == s else 'bg-white text-gray-600 border-gray-300 hover:border-brand' }}">
+    {{ label }}
+  </a>
+  {% endfor %}
+</div>
+
+<div class="flex flex-wrap gap-2 mb-6">
+  {% for p, label in [('30', '30 days'), ('90', '90 days'), ('all', 'All time')] %}
+  <a href="{{ url_for('admin.signups_index', scope=scope, period=p, shop=shop_url or none, funnel=funnel_filter if funnel_filter != 'all' else none) }}"
+     class="px-3 py-1.5 rounded-lg text-xs font-medium border
+            {{ 'bg-gray-800 text-white border-gray-800' if period == p else 'bg-white text-gray-600 border-gray-300' }}">
+    {{ label }}
+  </a>
+  {% endfor %}
+</div>
+
+{{ render_funnel_tiles(funnel, conversion_pct) }}
+
+<p class="text-xs text-gray-400 mb-3">
+  “Started insurance” = at least one <code class="text-[10px]">enrollment_sessions</code> row for that member.
+  HP status comes from the latest session. Card-only signups never opened the quote funnel on app.petrxbyflex.com.
+</p>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-x-auto">
+  <table class="w-full text-sm min-w-[960px]">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-3 py-2 font-medium text-gray-600">When</th>
+        <th class="text-left px-3 py-2 font-medium text-gray-600">Customer</th>
+        <th class="text-left px-3 py-2 font-medium text-gray-600">Pet</th>
+        <th class="text-left px-3 py-2 font-medium text-gray-600">Shop</th>
+        <th class="text-left px-3 py-2 font-medium text-gray-600">Insurance</th>
+        <th class="px-3 py-2"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for s in signups %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-3 py-2 whitespace-nowrap text-gray-500 text-xs">
+          {% if s.created_at %}{{ s.created_at | dt_short }}{% endif %}
+        </td>
+        <td class="px-3 py-2">
+          <div class="font-medium text-gray-900">
+            {{ s.owner_first_name or '' }} {{ s.owner_last_name or '' }}
+          </div>
+          <div class="text-xs text-gray-500">{{ s.email or '—' }}</div>
+          <div class="text-[10px] font-mono text-gray-400">{{ s.member_id or '' }}</div>
+        </td>
+        <td class="px-3 py-2 text-gray-700">
+          {{ s.pet_name or '—' }}
+          {% if s.pet_type %}<span class="text-xs text-gray-400">· {{ s.pet_type }}</span>{% endif %}
+        </td>
+        <td class="px-3 py-2 text-xs font-mono text-gray-500">
+          {% if s.shop_id == 0 or s.shop_id is none or s.shop_url == default_shop_url %}
+          <a href="{{ url_for('admin.direct_channel') }}"
+             class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-100 text-violet-800 hover:bg-violet-200">{{ direct_label }}</a>
+          {% else %}
+          {{ s.shop_url or '—' }}
+          {% endif %}
+          {% if s.campaign %}<div class="text-[10px] text-gray-400">{{ s.campaign }}</div>{% endif %}
+        </td>
+        <td class="px-3 py-2 text-xs">
+          {% if s.hp_enrollment_status == 'completed' %}
+          <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-medium">completed</span>
+          {% elif s.hp_enrollment_status == 'enroll_submitted_unknown' %}
+          <span class="inline-flex px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">unknown</span>
+          {% elif s.session_id %}
+          <span class="inline-flex px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">{{ s.current_step or 'in progress' }}</span>
+          {% else %}
+          <span class="text-gray-400">card only</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-right">
+          <a href="{{ url_for('admin.signup_detail', signup_id=s.id) }}"
+             class="text-brand text-xs font-medium hover:underline">View →</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="px-4 py-10 text-center text-gray-400">No signups for this filter.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% if signups|length >= 150 %}
+<p class="text-xs text-gray-400 mt-2">Showing latest 150 rows — narrow by shop or period if you need more.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}PetRx Admin{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#2563eb',
+            'brand-dark': '#1d4ed8',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div class="flex h-screen overflow-hidden">
+    <aside class="w-56 bg-gray-900 text-gray-200 flex flex-col flex-shrink-0">
+      <div class="px-5 py-5 border-b border-gray-700">
+        <img src="https://framerusercontent.com/images/hWE32j1qq9RYKbw4llAuqCYawmQ.svg?width=202&height=39"
+             alt="PetRx by Flex" class="h-8 w-auto" />
+        <div class="text-xs text-gray-500 mt-2">Admin Portal</div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint == 'admin.dashboard' %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          Dashboard
+        </a>
+        <a href="{{ url_for('admin.partners') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint in ('admin.partners', 'admin.partner_detail') %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          Partners
+        </a>
+        <a href="{{ url_for('admin.direct_channel') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint == 'admin.direct_channel' %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          DIRECT
+        </a>
+        <a href="{{ url_for('admin.signups_index') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint in ('admin.signups_index', 'admin.signup_detail') %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          Card Signups
+        </a>
+        <a href="{{ url_for('admin.reconciliation') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint == 'admin.reconciliation' %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          Reconciliation
+        </a>
+        <a href="{{ url_for('admin.petrx_product_content') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint in ('admin.petrx_product_content', 'admin.upload_product_image_route') %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          Product Content
+        </a>
+      </nav>
+      <div class="px-3 py-4 border-t border-gray-700 space-y-2">
+        <a href="{{ url_for('admin.admin_users_list') }}"
+           class="block text-xs text-gray-400 hover:text-white {% if request.endpoint and 'admin_users' in request.endpoint %}text-white{% endif %}">
+          Admin users
+        </a>
+        <a href="{{ url_for('admin.logout') }}" class="block text-xs text-gray-400 hover:text-white">Sign out</a>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="max-w-6xl mx-auto px-6 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-banner mb-4 px-4 py-3 rounded-lg text-sm border font-medium
+                {% if category == 'error' %}bg-red-50 text-red-800 border-red-200
+                {% elif category == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
+                {% else %}bg-emerald-50 text-emerald-800 border-emerald-200{% endif %}"
+                role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>
