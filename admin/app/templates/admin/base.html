@@ -51,6 +51,10 @@
            class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint in ('admin.petrx_product_content', 'admin.upload_product_image_route') %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
           Product Content
         </a>
+        <a href="{{ url_for('admin.ops_dashboards') }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md {% if request.endpoint == 'admin.ops_dashboards' %}bg-brand text-white{% else %}hover:bg-gray-800{% endif %}">
+          System Dashboards
+        </a>
       </nav>
       <div class="px-3 py-4 border-t border-gray-700 space-y-2">
         <a href="{{ url_for('admin.admin_users_list') }}"

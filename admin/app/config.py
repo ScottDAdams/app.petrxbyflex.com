@@ -22,3 +22,8 @@ class Config:
     SHOPIFY_APP_URL = os.environ.get('SHOPIFY_APP_URL', 'https://petrx.petrxbyflex.com')
     FULFILLMENT_INTERNAL_SECRET = os.environ.get('FULFILLMENT_INTERNAL_SECRET', '')
     FLEX_PET_RX_API_URL = os.environ.get('FLEX_PET_RX_API_URL', 'https://api.petrxbyflex.com')
+
+    # Grafana Cloud embed (admin dashboards page). Token is a Viewer-role
+    # service-account token, set as a Fly secret (never in code/git).
+    GRAFANA_URL = os.environ.get('GRAFANA_URL', 'https://livelybison1846.grafana.net')
+    GRAFANA_SA_TOKEN = os.environ.get('GRAFANA_SA_TOKEN', '')

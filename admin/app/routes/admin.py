@@ -1,7 +1,8 @@
 """PetRx admin portal — product content push to all merchant stores."""
 import logging
 
-from flask import Blueprint, flash, make_response, redirect, render_template, request, url_for
+import requests
+from flask import Blueprint, Response, flash, make_response, redirect, render_template, request, url_for
 from sqlalchemy import text
 
 from ..auth import clear_auth_cookie, get_current_admin, require_admin, set_auth_cookie
@@ -303,6 +304,72 @@ def dashboard():
         alerts=fetch_dashboard_alerts(),
         pass_cert=fetch_pass_cert_status(),
     )
+
+
+# --- Grafana embed (rendered-image glance; approach A) --------------------
+# The admin backend proxies Grafana's render API with a Viewer service-account
+# token (Fly secret GRAFANA_SA_TOKEN). The token never reaches the browser;
+# only logged-in admins can hit these routes. Panels render as PNGs that the
+# /ops/dashboards page auto-refreshes.
+GRAFANA_DASHBOARDS = {
+    'product-health': {'uid': 'scjtq72', 'title': 'Product Health', 'from': 'now-6h', 'to': 'now', 'height': 720},
+    'api-performance': {'uid': 'sckxqjz', 'title': 'API Performance', 'from': 'now-6h', 'to': 'now', 'height': 1000},
+    'business-flow': {'uid': 'scpdlf8', 'title': 'Business Flow', 'from': 'now-24h', 'to': 'now', 'height': 720},
+}
+
+
+@admin_bp.route('/ops/dashboards')
+@require_admin
+def ops_dashboards():
+    return render_template(
+        'admin/ops_dashboards.html',
+        dashboards=GRAFANA_DASHBOARDS,
+        grafana_configured=bool(Config.GRAFANA_SA_TOKEN),
+        grafana_url=Config.GRAFANA_URL.rstrip('/'),
+    )
+
+
+@admin_bp.route('/ops/dashboard-image/<key>')
+@require_admin
+def ops_dashboard_image(key):
+    """Server-side proxy for a Grafana full-dashboard render. Keeps the SA
+    token server-side; gated by require_admin."""
+    meta = GRAFANA_DASHBOARDS.get(key)
+    if not meta:
+        return Response('unknown dashboard', status=404)
+    if not Config.GRAFANA_SA_TOKEN:
+        return Response('GRAFANA_SA_TOKEN not configured', status=503)
+
+    base = Config.GRAFANA_URL.rstrip('/')
+    render_url = f"{base}/render/d/{meta['uid']}/_"
+    params = {
+        'orgId': 1,
+        'from': meta['from'],
+        'to': meta['to'],
+        'width': 1200,
+        'height': meta['height'],
+        'theme': 'light',
+        'kiosk': 'true',
+        'var-DS_PROM': 'afq4f8yg5on40d',
+    }
+    try:
+        r = requests.get(
+            render_url,
+            params=params,
+            headers={'Authorization': f'Bearer {Config.GRAFANA_SA_TOKEN}'},
+            timeout=30,
+        )
+    except Exception as e:  # noqa: BLE001 — never 500 the admin page over a render hiccup
+        logger.warning('grafana render fetch failed for %s: %s', key, e)
+        return Response(f'render fetch failed: {e}', status=502)
+
+    if r.status_code != 200:
+        logger.warning('grafana render %s returned %s: %s', key, r.status_code, r.text[:200])
+        return Response(f'grafana render returned {r.status_code}', status=502)
+
+    resp = Response(r.content, mimetype=r.headers.get('Content-Type', 'image/png'))
+    resp.headers['Cache-Control'] = 'no-store'
+    return resp
 
 
 @admin_bp.route('/partners')
