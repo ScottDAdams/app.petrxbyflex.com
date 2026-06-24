@@ -6,15 +6,26 @@ auto_start_machines = true
 auto_stop_machines = true
 force_https = true
 internal_port = 80
-min_machines_running = 0
+min_machines_running = 1
 processes = [ "app" ]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/healthz"
 
 [[vm]]
 cpu_kind = "shared"
 cpus = 1
-memory = "1gb"
-memory_mb = 256
+memory = "512mb"
+memory_mb = 512
 
 [mounts]
   source = "breed_avatars"
   destination = "/data/breed-avatars"
+
+[build]
+  [build.args]
+    VITE_ONEINC_MODAL_VERSION = "v2"

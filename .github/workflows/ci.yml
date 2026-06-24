@@ -1,0 +1,37 @@
+name: CI
+
+# Quality gate for the combined customer SPA (Vite/React) + admin (Flask).
+# The SPA build runs `tsc -b && vite build`, so it typechecks AND bundles —
+# a real gate. The admin job byte-compiles the Flask modules for a syntax gate.
+
+on:
+  push:
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  spa:
+    name: Customer SPA build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+
+  admin:
+    name: Admin (Flask) compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Byte-compile admin modules (syntax gate)
+        run: python -m compileall -q admin/app
