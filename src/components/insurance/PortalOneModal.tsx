@@ -1,5 +1,4 @@
 import * as React from "react"
-import { createPortal } from "react-dom"
 
 const PORTALONE_SCRIPT_CACHE: Record<string, Promise<void>> = {}
 const _initializedSessions = new Set<string>()
@@ -261,11 +260,9 @@ function ensureJQuery(): Promise<void> {
 /**
  * PortalOne SDK script URL — selects which OneInc modal build the browser loads.
  *
- * Selection is now driven by the env flag `VITE_ONEINC_MODAL_VERSION`:
- *   - "legacy" (default) → GenericModal (v1). Known-good production path.
- *   - "v2"               → GenericModalV2. Requires HP to allowlist our parent origin
- *                          on their OneInc V2 tenant; otherwise `getportalconfiguration`
- *                          returns 401 and the modal cannot bootstrap.
+ * Selection is driven by `VITE_ONEINC_MODAL_VERSION`:
+ *   - "v2" (default) → GenericModalV2 + isolated iframe host (`oneinc-frame.html`)
+ *   - "legacy"       → GenericModal v1 (loads `/GenericModal/?sessionId=…` via SDK)
  *
  * Background (2026-04-16 retry note): HAR comparison with hptest.info showed V2
  * `getportalconfiguration` rejects `https://app.petrxbyflex.com` with 401 because that
@@ -283,7 +280,8 @@ export type OneIncModalVersion = "legacy" | "v2"
 
 export function getOneIncModalVersion(): OneIncModalVersion {
   const raw = (import.meta.env.VITE_ONEINC_MODAL_VERSION as string | undefined)?.trim().toLowerCase()
-  return raw === "v2" ? "v2" : "legacy"
+  if (raw === "legacy") return "legacy"
+  return "v2"
 }
 
 function modalVariantForVersion(v: OneIncModalVersion): OneIncModalVariant {
@@ -381,6 +379,11 @@ export function PortalOneModal({
   const paymentCompleteRef = React.useRef(false)
   // Resolved once per render so the render branch below stays in sync with the effect.
   const modalVersion = React.useMemo<OneIncModalVersion>(() => getOneIncModalVersion(), [])
+  // V2-only: OneInc's inner #PortalOneFrame reports its rendered height via
+  // postMessage `resize`. We size our outer iframe to match so it embeds inline
+  // (no full-viewport overlay, no backdrop) and grows/shrinks with the form
+  // (Notice → MAKE A PAYMENT → PAYMENT TYPE → …).
+  const [iframeHeight, setIframeHeight] = React.useState<number>(560)
 
   // ---------------------------------------------------------------------------
   // V2 path: load OneInc inside an isolated <iframe src="/oneinc-frame.html">.
@@ -437,14 +440,17 @@ export function PortalOneModal({
         return
       }
 
-      // Resize events are no longer used: V2's #PortalOneFrame stays at
-      // height:100% and OneInc never assigns an explicit pixel height, so we
-      // make the outer iframe full-viewport+transparent instead and let
-      // OneInc's modal float centered in it. Logged for diagnostics only.
+      // V2 inline mode: the iframe page posts the true content height (bottom
+      // edge of #PortalOneFrame + the Healthy Paws footer, already including a
+      // small breathing-room pad) as OneInc swaps screens (Notice → MAKE A
+      // PAYMENT → PAYMENT TYPE → …). We use it as-is — no buffer here, since
+      // the iframe's measurement is loop-immune. Floor 480 covers the smallest
+      // Notice screen; ceiling 2200 defends against jitter spikes.
       if (action === "resize") {
         const h = Number(d.height)
         if (Number.isFinite(h) && h > 0) {
-          console.info(`[PortalOne] iframe resize (ignored, full-viewport mode) h=${h}`)
+          const clamped = Math.min(Math.max(Math.ceil(h), 480), 2200)
+          setIframeHeight((prev) => (prev === clamped ? prev : clamped))
         }
         return
       }
@@ -747,59 +753,34 @@ export function PortalOneModal({
     )
   }
 
-  // GenericModalV2: rendered inside an isolated iframe at /oneinc-frame.html. This
-  // is the same pattern Healthy Paws uses in production (/Enrollment/PaymentPage):
-  //   - OneInc's Angular CDK overlay container lives inside the iframe's document,
-  //     so CDK ``height: 100%`` fills the iframe (not our React layout), and there
-  //     is zero risk of host-app CSS interfering with OneInc styles.
-  //   - The parent (this component) just owns the dim backdrop, iframe sizing,
-  //     and the postMessage bridge defined in the effect above.
-  //   - The iframe is anchored to #payment-step-overlay-host (the right column on
-  //     PaymentStep) so it sits centered on the quote panel; falls back to the
-  //     viewport center if the host is absent.
+  // GenericModalV2 inline embed: render the isolated /oneinc-frame.html iframe
+  // directly inside this component's parent (the .oneinc-container slot on
+  // PaymentStep), sized to the height OneInc reports via postMessage. No
+  // backdrop, no portal, no full-viewport overlay — the form lives in the
+  // page flow like any other React subtree.
+  //
+  // We still get OneInc's CSS isolation (their Angular CDK overlay lives
+  // inside our iframe's document, not ours), so this is purely a presentation
+  // change — the postMessage bridge above is unaffected.
   if (typeof document === "undefined") return null
   if (!sessionId || !iframeSrc) return null
   return (
-    <>
-      {createPortal(
-        // Page-wide dim. OneInc's modal page itself draws no backdrop in
-        // GenericModalV2, so we render the dim here.
-        <div
-          aria-hidden="true"
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 45000,
-            background: "rgba(15, 23, 42, 0.55)",
-          }}
-        />,
-        document.body,
-      )}
-      {createPortal(
-        // The iframe is full viewport and transparent. OneInc V2's
-        // #PortalOneFrame sits inside as position:fixed; top:0; left:0;
-        // width:100%; height:100% and renders its modal centered. Because
-        // our iframe is the size of the screen and has no background, there
-        // is no visible "white box" around the modal — just the OneInc modal
-        // itself floating on our dim, the way HP's iframe pattern looks.
-        <iframe
-          title="Payment"
-          src={iframeSrc}
-          allow="payment"
-          style={{
-            position: "fixed",
-            inset: 0,
-            width: "100vw",
-            height: "100dvh",
-            minHeight: "100vh",
-            border: "none",
-            background: "transparent",
-            colorScheme: "normal",
-            zIndex: 45001,
-          }}
-        />,
-        document.body,
-      )}
-    </>
+    <iframe
+      title="Payment"
+      src={iframeSrc}
+      allow="payment"
+      scrolling="no"
+      style={{
+        display: "block",
+        width: "100%",
+        height: `${iframeHeight}px`,
+        border: "none",
+        background: "transparent",
+        colorScheme: "normal",
+        // Height changes instantly on screen swap — animating it added a brief
+        // visual lag between the inner form rendering and our box catching up,
+        // which read as "clunky." Instant matches OneInc's own transition.
+      }}
+    />
   )
 }

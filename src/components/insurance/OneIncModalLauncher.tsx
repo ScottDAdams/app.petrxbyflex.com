@@ -391,7 +391,7 @@ export function OneIncModalLauncher({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="oneinc-payment-success__text">Payment method added successfully</span>
+          <span className="oneinc-payment-success__text">Payment received — finalizing your enrollment…</span>
         </div>
         <button
           type="button"

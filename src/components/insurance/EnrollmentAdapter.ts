@@ -104,6 +104,8 @@ export type SetupPendingInput = {
     firstName: string
     lastName: string
     mailingStreet: string
+    /** City on lead; HP Enrollment UI and website SetupPending send mailingCity */
+    mailingCity?: string
     phone: string
     leadId: string
   }
@@ -135,6 +137,8 @@ export type EnrollInput = {
     firstName: string
     lastName: string
     mailingStreet: string
+    /** City on lead; HP Enrollment UI and website SetupPending send mailingCity */
+    mailingCity?: string
     phone: string
     acceptElectronicConsent: boolean
     /**

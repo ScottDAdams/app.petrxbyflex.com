@@ -17,6 +17,19 @@ export type ConfirmStepProps = {
    * User completes activation on HP; not documented in our UI spec beyond this CTA.
    */
   healthyPawsHandoffUrl?: string | null
+  /**
+   * OneInc payment receipt (server-persisted from /api/oneinc/complete). Shown
+   * as a confirmation block so the buyer sees the actual charge instead of a
+   * vague "payment added" message. Omitted/undefined renders nothing.
+   */
+  payment?: {
+    method?: "CreditCard" | "ECheck"
+    cardType?: string
+    amountCharged?: number
+    convenienceFee?: number
+    transactionId?: string
+    status?: string
+  }
 }
 
 export function ConfirmStep({
@@ -29,6 +42,7 @@ export function ConfirmStep({
   monthlyPrice,
   pendingConfirmation = false,
   healthyPawsHandoffUrl,
+  payment,
 }: ConfirmStepProps) {
   const species = (petType ?? "dog").toLowerCase()
   const speciesKey = species === "cat" ? "cats" : "dogs"
@@ -49,6 +63,25 @@ export function ConfirmStep({
   const hasDeductible = Boolean(deductible && String(deductible).trim())
   const hasReimbursement = Boolean(reimbursement && String(reimbursement).trim())
   const hasMonthly = Boolean(monthlyPrice && String(monthlyPrice).trim())
+
+  // Payment receipt (OneInc). Only render when we have a real charge to show.
+  const fmtMoney = (n: number) =>
+    n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const payMethodLabel =
+    payment?.method === "ECheck"
+      ? "Bank account"
+      : payment?.cardType
+        ? `Credit card (${payment.cardType})`
+        : payment?.method === "CreditCard"
+          ? "Credit card"
+          : undefined
+  const hasAmountCharged =
+    typeof payment?.amountCharged === "number" && payment.amountCharged > 0
+  const hasConvenienceFee =
+    typeof payment?.convenienceFee === "number" && payment.convenienceFee > 0
+  const showPaymentReceipt = Boolean(
+    payment && (hasAmountCharged || payMethodLabel || payment.transactionId)
+  )
 
   return (
     <div className="step-body step-body--confirm">
@@ -145,11 +178,6 @@ export function ConfirmStep({
           </div>
         </div>
       </div>
-      <div className="confirm-petrx-note">
-        <p className="confirm-petrx-note__text">
-          Your PetRx savings card can be used right away — even before coverage begins.
-        </p>
-      </div>
       <div className="confirm-summary">
         <h3 className="confirm-summary__title">Policy information</h3>
         <div className="step-summary step-summary--confirm">
@@ -182,6 +210,55 @@ export function ConfirmStep({
             </div>
           )}
         </div>
+      </div>
+
+      {showPaymentReceipt && (
+        <div className="confirm-receipt">
+          <h3 className="confirm-receipt__title">
+            <span className="confirm-receipt__check" aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                <path d="M16.667 5L7.5 14.167 3.333 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            Payment received
+          </h3>
+          <div className="step-summary step-summary--confirm">
+            {hasAmountCharged && (
+              <div className="step-summary__row">
+                <span className="step-summary__label">Amount charged</span>
+                <span className="step-summary__value">${fmtMoney(payment!.amountCharged!)}</span>
+              </div>
+            )}
+            {payMethodLabel && (
+              <div className="step-summary__row">
+                <span className="step-summary__label">Payment method</span>
+                <span className="step-summary__value">{payMethodLabel}</span>
+              </div>
+            )}
+            {hasConvenienceFee && (
+              <div className="step-summary__row">
+                <span className="step-summary__label">Convenience fee</span>
+                <span className="step-summary__value">${fmtMoney(payment!.convenienceFee!)}</span>
+              </div>
+            )}
+            {payment?.transactionId && (
+              <div className="step-summary__row">
+                <span className="step-summary__label">Transaction ID</span>
+                <span className="step-summary__value">{payment.transactionId}</span>
+              </div>
+            )}
+            <div className="step-summary__row">
+              <span className="step-summary__label">Status</span>
+              <span className="step-summary__value">{payment?.status || "Approved"}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="confirm-petrx-note">
+        <p className="confirm-petrx-note__text">
+          Your PetRx savings card can be used right away — even before coverage begins.
+        </p>
       </div>
     </div>
   )

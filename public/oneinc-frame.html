@@ -10,6 +10,13 @@
   html, body { margin: 0; padding: 0; height: 100%; min-height: 100dvh; background: transparent; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   #portalOneContainer { position: relative; width: 100%; min-height: 100%; height: 100%; }
   #petrx-frame-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #475569; font-size: 14px; padding: 16px; text-align: center; }
+  /* NOTE: OneInc's V2 modal — including the ONE INC header logo and the
+     "Healthy Paws / a Chubb Company" footer logo — renders entirely inside a
+     nested cross-origin iframe (#PortalOneFrame). Our CSS here CANNOT reach
+     any of it (confirmed: a `portal-image.logo img { padding }` rule had no
+     effect). Logo padding/spacing, header branding, and footer logo are all
+     controlled by OneInc's modal config under the "HealthyPaws" client key —
+     change requests for those go to OneInc, not here. */
 </style>
 </head>
 <body>
@@ -90,16 +97,45 @@
 
     // OneInc V2's SDK creates <iframe id="PortalOneFrame"> and dynamically
     // sets its style.height as the inner OneInc page posts UpdateContentHeight
-    // commands (notice screen -> ~470px, card-entry -> ~620px). We just need
-    // to observe that height and forward it to our React parent so the outer
-    // iframe matches and there's no gutter.
+    // commands (notice screen -> ~470px, card-entry -> ~620px). OneInc also
+    // injects a "Healthy Paws / a Chubb Company" footer image BELOW the frame.
+    //
+    // We must NOT report document/body scrollHeight: this page's body is
+    // height:100% so it tracks the OUTER iframe we set from the parent. Using
+    // scrollHeight creates a feedback loop (we grow the iframe -> body grows ->
+    // scrollHeight grows -> we report bigger -> ...) that ratchets straight to
+    // the parent's clamp ceiling. Instead we measure the BOTTOM EDGE of the
+    // real content elements (#PortalOneFrame + footer img), which have fixed
+    // pixel heights assigned by OneInc and are therefore immune to the loop.
     var _lastReportedHeight = 0;
-    function reportHeight(h) {
-      var rounded = Math.ceil(h);
-      if (rounded <= 0) return;
-      if (Math.abs(rounded - _lastReportedHeight) < 4) return;
-      _lastReportedHeight = rounded;
-      post("resize", { height: rounded });
+    function findFrameEl() {
+      return document.getElementById("PortalOneFrame")
+        || document.querySelector("iframe[id^='PortalOne']")
+        || null;
+    }
+    function contentHeight() {
+      var bottom = 0;
+      var frame = findFrameEl();
+      if (frame) {
+        // page isn't scrolled (scrolling disabled), so rect.bottom == content offset
+        bottom = Math.max(bottom, frame.getBoundingClientRect().bottom);
+      }
+      // OneInc appends the sponsor footer image(s) below the frame; include them.
+      var imgs = document.body ? document.body.getElementsByTagName("img") : [];
+      for (var i = 0; i < imgs.length; i++) {
+        bottom = Math.max(bottom, imgs[i].getBoundingClientRect().bottom);
+      }
+      return Math.ceil(bottom);
+    }
+    function reportHeight(_triggerHeight) {
+      var h = contentHeight();
+      if (h <= 0) h = Math.ceil(_triggerHeight || 0);
+      if (h <= 0) return;
+      // 12px breathing room below the footer logo so it isn't flush to the edge.
+      h += 12;
+      if (Math.abs(h - _lastReportedHeight) < 4) return;
+      _lastReportedHeight = h;
+      post("resize", { height: h });
     }
     function snapshotFrame(frame) {
       try {
@@ -115,6 +151,28 @@
         };
       } catch (_) { return null; }
     }
+    // Also watch the document body itself — OneInc appends a "Healthy Paws"
+    // footer image after the frame loads, and other late-arriving DOM bits
+    // can change total height even when PortalOneFrame's own size is stable.
+    function watchDocument() {
+      var report = function () { reportHeight(0); };
+      if (typeof MutationObserver === "function") {
+        try {
+          new MutationObserver(report).observe(document.body, {
+            childList: true,
+            subtree: true,
+          });
+        } catch (_) { /* ignore */ }
+      }
+      // ResizeObserver on body catches image-load reflows the MutationObserver
+      // doesn't (the <img> node exists but its rendered size changes once the
+      // bytes arrive).
+      if (typeof ResizeObserver === "function") {
+        try { new ResizeObserver(report).observe(document.body); } catch (_) { /* ignore */ }
+      }
+    }
+    watchDocument();
+
     function watchPortalOneFrame() {
       var attempts = 0;
       function findFrame() {
@@ -276,7 +334,7 @@
           saveOption: "Save",
           clientReferenceData1: leadId,
           operation: "makePayment",
-          displayMode: "Modal"
+          displayMode: "Inline"
         };
         if (policyHolderName)     payload.policyHolderName     = policyHolderName;
         if (billingZip)           payload.billingZip           = billingZip;

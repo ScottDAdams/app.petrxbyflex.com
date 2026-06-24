@@ -141,6 +141,10 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
     if (!input.acceptElectronicConsent) {
       throw new Error("SetupPending requires: acceptElectronicConsent=true (explicit consent required)")
     }
+    const acceptTermsAndConditionsConsent = input.acceptTermsAndConditionsConsent ?? true
+    if (!acceptTermsAndConditionsConsent) {
+      throw new Error("SetupPending requires: acceptTermsAndConditionsConsent=true")
+    }
     if (!input.lead.leadId) {
       throw new Error("SetupPending requires: lead.leadId")
     }
@@ -177,10 +181,11 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
             firstName: input.lead.firstName,
             lastName: input.lead.lastName,
             mailingStreet: input.lead.mailingStreet,
+            ...(input.lead.mailingCity ? { mailingCity: input.lead.mailingCity } : {}),
             phone: input.lead.phone,
             acceptElectronicConsent: input.acceptElectronicConsent,
-            // 2026 HP docs require acceptTermsAndConditionsConsent on setuppendingaccount.
-            acceptTermsAndConditionsConsent: input.acceptTermsAndConditionsConsent,
+            // 2026 HP API requires acceptTermsAndConditionsConsent on setuppendingaccount.
+            acceptTermsAndConditionsConsent,
             leadId: input.lead.leadId,
           },
           pets: input.pets.map((p) => ({
@@ -197,7 +202,10 @@ export class HpEnrollmentAdapter implements EnrollmentAdapter {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: `HTTP ${response.status}` }))
-        const nested = error as { error?: { upstream?: { message?: string; subMessage?: string } } }
+        const nested = error as {
+          message?: string
+          error?: { upstream?: { message?: string; subMessage?: string; code?: string }; code?: string }
+        }
         const upstreamMsg = nested.error?.upstream
         const upstreamStr =
           upstreamMsg &&

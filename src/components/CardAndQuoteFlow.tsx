@@ -722,8 +722,8 @@ export function CardAndQuoteFlow() {
           return
         }
         
-        if (!activeFormData.phone?.trim() || !activeFormData.mailingStreet?.trim() || !activeFormData.state?.trim()) {
-          setTransitionError("Please fill out phone number, street address, and state.")
+        if (!activeFormData.phone?.trim() || !activeFormData.mailingStreet?.trim() || !activeFormData.city?.trim() || !activeFormData.state?.trim()) {
+          setTransitionError("Please fill out phone, street address, city, and state.")
           setTransitioning(false)
           return
         }
@@ -831,6 +831,7 @@ export function CardAndQuoteFlow() {
             firstName: activeFormData.firstName.trim(),
             lastName: activeFormData.lastName.trim(),
             mailingStreet: activeFormData.mailingStreet.trim(),
+            mailingCity: activeFormData.city.trim() || zipLookup?.city || "",
             phone: normalizedPhone,
             leadId: sessionLeadId,
           },
@@ -978,7 +979,7 @@ export function CardAndQuoteFlow() {
           chosen: creditCardConvenienceFee,
           paymentMethod: pmEnroll,
         })
-        // fullPaymentResponse: JSON of entire POST /api/oneinc/complete body (undocumented HP requirement; see EnrollmentAdapter).
+        // fullPaymentResponse: JSON string of entire POST /api/oneinc/complete body (Enrollment API v1.1).
         let fullPaymentResponse: string | undefined
         const completeObj = effectivePaymentResult.oneIncCompleteResponse
         if (completeObj && typeof completeObj === "object") {
@@ -1022,6 +1023,7 @@ export function CardAndQuoteFlow() {
             firstName: (owner.first_name || "") as string,
             lastName: (owner.last_name || "") as string,
             mailingStreet: (owner.mailing_street || owner.street || "") as string,
+            mailingCity: ((owner.city || billingCity || "") as string),
             phone: (owner.phone || "") as string,
             acceptElectronicConsent: true,
             // 2026 HP docs require acceptTermsAndConditionsConsent on /api/v1/enrollment/enroll.
@@ -1191,6 +1193,25 @@ export function CardAndQuoteFlow() {
             monthlyPrice={monthlyPrice}
             pendingConfirmation={enrollmentPendingConfirmation}
             healthyPawsHandoffUrl={healthyPawsHandoffUrl}
+            payment={
+              sessionPayment?.transaction_id || sessionPayment?.payment_token
+                ? {
+                    method:
+                      sessionPayment?.payment_method === "ECheck" ? "ECheck" : "CreditCard",
+                    cardType: effectivePaymentResult?.cardType,
+                    amountCharged:
+                      typeof sessionPayment?.authorized_amount === "number"
+                        ? sessionPayment.authorized_amount
+                        : undefined,
+                    convenienceFee:
+                      typeof sessionPayment?.convenience_fee === "number"
+                        ? sessionPayment.convenience_fee
+                        : undefined,
+                    transactionId: sessionPayment?.transaction_id as string | undefined,
+                    status: (sessionPayment?.status as string | undefined) || "Approved",
+                  }
+                : undefined
+            }
           />
         )
       }
