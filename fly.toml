@@ -29,3 +29,4 @@ memory_mb = 512
 [build]
   [build.args]
     VITE_ONEINC_MODAL_VERSION = "v2"
+    VITE_ONEINC_ENV = "prod"

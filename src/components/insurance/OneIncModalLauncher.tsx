@@ -10,9 +10,10 @@ const API_BASE = import.meta.env.VITE_API_BASE || "https://api.petrxbyflex.com"
 const BUILD_VERSION = "oneinc-portalone-session-v1-" + Date.now()
 console.log("[OneIncModalLauncher] Loaded version:", BUILD_VERSION)
 
-/** Allowed origins for postMessage from returnUrl (our API) or OneInc staging */
+/** Allowed origins for postMessage from returnUrl (our API) or OneInc (prod + staging) */
 const ALLOWED_MESSAGE_ORIGINS = [
   "https://api.petrxbyflex.com",
+  "https://portalone.processonepayments.com",
   "https://stgportalone.processonepayments.com",
 ]
 
