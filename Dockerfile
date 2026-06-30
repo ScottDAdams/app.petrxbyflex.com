@@ -2,10 +2,14 @@ FROM node:20-alpine AS frontend-builder
 WORKDIR /app
 ARG VITE_ONEINC_MODAL_VERSION=v2
 ENV VITE_ONEINC_MODAL_VERSION=$VITE_ONEINC_MODAL_VERSION
-# OneInc environment: "staging" (default) or "prod". Controls which PortalOne
-# SDK host the frontend loads. Production is set in fly.toml [build.args].
-ARG VITE_ONEINC_ENV=staging
-ENV VITE_ONEINC_ENV=$VITE_ONEINC_ENV
+# Global environment toggle (single knob). "production" or "development".
+# Set in fly.toml [build.args]; the DEV clone sets "development". Defaults to
+# development so a missing value can never bake a prod payment host into a dev build.
+# The frontend's OneInc host derives from VITE_ONEINC_ENV (which we set = APP_ENV;
+# its prod check accepts "production"/"prod"), keeping one source of truth.
+ARG APP_ENV=development
+ENV VITE_APP_ENV=$APP_ENV
+ENV VITE_ONEINC_ENV=$APP_ENV
 COPY package*.json ./
 RUN npm ci
 COPY . .
