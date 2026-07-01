@@ -1,0 +1,41 @@
+# DEV config for the customer SPA + admin.  Deploy with:  fly deploy -c fly.dev.toml
+#
+# Identical to prod fly.toml EXCEPT: app name, the APP_ENV build arg, and
+# scale-to-zero. NOTE: APP_ENV is a BUILD arg (Vite bakes it into the bundle),
+# so dev is a SEPARATE build — you can't flip it with a runtime secret.
+# Secrets (dev DATABASE_URL, GRAFANA_SA_TOKEN, etc.) set per app — see docs.
+app = "app-petrxbyflex-com-dev"
+primary_region = "iad"
+
+[http_service]
+auto_start_machines = true
+auto_stop_machines = 'suspend'
+force_https = true
+internal_port = 80
+min_machines_running = 0
+processes = [ "app" ]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/healthz"
+
+[[vm]]
+cpu_kind = "shared"
+cpus = 1
+memory = "512mb"
+memory_mb = 512
+
+# Dev needs its OWN volume named breed_avatars in the dev app
+# (fly volumes create breed_avatars -a app-petrxbyflex-com-dev).
+[mounts]
+  source = "breed_avatars"
+  destination = "/data/breed-avatars"
+
+[build]
+  [build.args]
+    VITE_ONEINC_MODAL_VERSION = "v2"
+    # Dev build -> OneInc staging SDK host. This is the toggle.
+    APP_ENV = "development"
