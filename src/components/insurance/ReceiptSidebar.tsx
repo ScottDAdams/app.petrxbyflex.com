@@ -38,14 +38,16 @@ export function ReceiptSidebar({
   const speciesKey = species === "cat" ? "cats" : "dogs"
   const iconSrc = getBreedAvatarPath(speciesKey, petBreedId)
   const defaultIconSrc = getBreedAvatarPath(speciesKey, null)
-  const [imgSrc, setImgSrc] = React.useState(iconSrc)
-
+  // Derive shown src from an "errored" flag so a re-render can't reset it back to a
+  // cached-404 breed URL (which wouldn't re-fire onError) — see QuoteStep for detail.
+  const [errored, setErrored] = React.useState(false)
   React.useEffect(() => {
-    setImgSrc(getBreedAvatarPath(speciesKey, petBreedId))
-  }, [speciesKey, petBreedId])
+    setErrored(false)
+  }, [iconSrc])
+  const imgSrc = errored ? defaultIconSrc : iconSrc
 
   const handleImgError = () => {
-    setImgSrc(defaultIconSrc)
+    setErrored(true)
   }
 
   // Pet label: show real name, or "Your Pet" if missing or equals "your pet" (any casing)

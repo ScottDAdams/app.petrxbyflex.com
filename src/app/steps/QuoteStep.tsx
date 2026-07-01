@@ -64,14 +64,18 @@ export function QuoteStep({
   const speciesKey = species === "cat" ? "cats" : "dogs"
   const iconSrc = getBreedAvatarPath(speciesKey, petBreedId)
   const defaultIconSrc = getBreedAvatarPath(speciesKey, null)
-  const [imgSrc, setImgSrc] = React.useState(iconSrc)
-
+  // Derive the shown src from an "errored" flag rather than resetting state on every
+  // render. A re-render used to reset imgSrc back to the breed URL; if that URL had a
+  // cached 404 (e.g. breed 317 with no avatar), onError wouldn't re-fire and the broken
+  // image stuck instead of the fallback. Reset the error only when the breed truly changes.
+  const [errored, setErrored] = React.useState(false)
   React.useEffect(() => {
-    setImgSrc(getBreedAvatarPath(speciesKey, petBreedId))
-  }, [speciesKey, petBreedId])
+    setErrored(false)
+  }, [iconSrc])
+  const imgSrc = errored ? defaultIconSrc : iconSrc
 
   const handleImgError = () => {
-    setImgSrc(defaultIconSrc)
+    setErrored(true)
   }
   
   // Derive available options from HP-returned policies only, grouped by isHighDeductible
